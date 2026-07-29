@@ -5,13 +5,14 @@ import '../domain/models.dart';
 enum SoundEffect { click, reveal, flag, blocked, animalFound, win, lose }
 
 class GameAudio {
-  GameAudio({required this.musicEnabled});
+  GameAudio({required this.musicEnabled, required this.effectsEnabled});
 
   static final _homeSource = AssetSource('audio/home_theme.m4a');
   final AudioPlayer _musicPlayer = AudioPlayer();
   final AudioPlayer _effectPlayer = AudioPlayer();
   AssetSource _source = _homeSource;
   bool musicEnabled;
+  bool effectsEnabled;
 
   Future<void> initialize() async {
     await _musicPlayer.setReleaseMode(ReleaseMode.loop);
@@ -47,6 +48,7 @@ class GameAudio {
   }
 
   Future<void> playEffect(SoundEffect effect) async {
+    if (!effectsEnabled) return;
     final name = switch (effect) {
       SoundEffect.animalFound => 'animal_found',
       _ => effect.name,
@@ -54,6 +56,8 @@ class GameAudio {
     await _effectPlayer.stop();
     await _effectPlayer.play(AssetSource('audio/sfx_$name.m4a'));
   }
+
+  void setEffectsEnabled(bool value) => effectsEnabled = value;
 
   Future<void> dispose() async {
     await _musicPlayer.dispose();

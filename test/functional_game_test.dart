@@ -60,6 +60,29 @@ void main() {
     expect(session.status, GameStatus.won);
   });
 
+  test('une défaite ne révèle pas les autres animaux', () {
+    const config = BoardConfig(9, 9, 10);
+    final board = generateCertifiedBoard(
+      config,
+      const CellPosition(4, 4),
+      47,
+    )!;
+    final animals = [
+      for (var y = 0; y < config.height; y++)
+        for (var x = 0; x < config.width; x++)
+          if (board.isAnimal(CellPosition(x, y))) CellPosition(x, y),
+    ];
+    final session = GameSession(config)..prepare(board, practice: false);
+
+    session.reveal(animals.first);
+
+    expect(session.status, GameStatus.lost);
+    expect(session.cell(animals.first).isRevealed, isTrue);
+    for (final animal in animals.skip(1)) {
+      expect(session.cell(animal).isRevealed, isFalse);
+    }
+  });
+
   test('la génération experte respecte le budget de performance', () {
     const config = BoardConfig(30, 16, 99);
     final stopwatch = Stopwatch()..start();

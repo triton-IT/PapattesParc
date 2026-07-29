@@ -7,6 +7,7 @@ import 'package:papatte_parc/domain/game_session.dart';
 import 'package:papatte_parc/domain/levels.dart';
 import 'package:papatte_parc/domain/models.dart';
 import 'package:papatte_parc/presentation/app_theme.dart';
+import 'package:papatte_parc/presentation/custom_game_screen.dart';
 import 'package:papatte_parc/presentation/game_screen.dart';
 import 'package:papatte_parc/presentation/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,14 +35,27 @@ void main() {
           store: store,
           onSelectLevel: (_) {},
           onPlayLevel: (_) {},
+          onCreateCustom: () {},
           musicEnabled: true,
           onToggleMusic: () {},
+          effectsEnabled: true,
+          onToggleEffects: () {},
           onButtonClick: () {},
         ),
       );
       await expectLater(
         find.byType(Scaffold),
         matchesGoldenFile('goldens/home-${_name(size)}.png'),
+      );
+
+      await _pump(
+        tester,
+        size,
+        CustomGameScreen(onBack: () {}, onStart: (_) {}, onButtonClick: () {}),
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('goldens/custom-${_name(size)}.png'),
       );
 
       final playing = _playingSession(level);

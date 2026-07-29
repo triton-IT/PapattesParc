@@ -40,57 +40,94 @@ class GameScreen extends StatelessWidget {
   final VoidCallback onNext;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: Stack(
-      children: [
-        Positioned.fill(child: LevelBackdrop(level: level)),
-        const Positioned.fill(child: _GameBackdropVeil()),
-        Column(
-          children: [
-            _GameHeader(level: level, session: session, onHome: onHome),
-            Expanded(
-              child: BoardView(
-                level: level,
-                session: session,
-                onReveal: onReveal,
-                onFlag: onFlag,
-              ),
+  Widget build(BuildContext context) {
+    final wide = MediaQuery.sizeOf(context).width >= 1000;
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Transform.scale(
+              scale: wide ? 1.12 : 1.2,
+              alignment: wide ? Alignment.centerRight : Alignment.bottomCenter,
+              child: LevelBackdrop(level: level),
             ),
-          ],
-        ),
-        if (generating) const _GenerationOverlay(),
-        if (finished)
-          _EndOverlay(
-            level: level,
-            session: session,
-            newRecord: newRecord,
-            onReplaySame: onReplaySame,
-            onReplayNew: onReplayNew,
-            onNext: onNext,
-            onHome: onHome,
           ),
-      ],
-    ),
-  );
+          Positioned.fill(child: _GameBackdropVeil(wide: wide)),
+          Column(
+            children: [
+              _GameHeader(level: level, session: session, onHome: onHome),
+              Expanded(
+                child: BoardView(
+                  level: level,
+                  session: session,
+                  onReveal: onReveal,
+                  onFlag: onFlag,
+                ),
+              ),
+            ],
+          ),
+          if (generating) const _GenerationOverlay(),
+          if (finished)
+            _EndOverlay(
+              level: level,
+              session: session,
+              newRecord: newRecord,
+              onReplaySame: onReplaySame,
+              onReplayNew: onReplayNew,
+              onNext: onNext,
+              onHome: onHome,
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class _GameBackdropVeil extends StatelessWidget {
-  const _GameBackdropVeil();
+  const _GameBackdropVeil({required this.wide});
+
+  final bool wide;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        stops: const [0, .22, 1],
-        colors: [
-          AppColors.deep.withValues(alpha: .78),
-          AppColors.surface.withValues(alpha: .72),
-          AppColors.surface.withValues(alpha: .88),
-        ],
+  Widget build(BuildContext context) => Stack(
+    children: [
+      Positioned.fill(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: wide ? Alignment.centerLeft : Alignment.topCenter,
+              end: wide ? Alignment.centerRight : Alignment.bottomCenter,
+              colors: wide
+                  ? [
+                      Colors.transparent,
+                      AppColors.deep.withValues(alpha: .08),
+                      AppColors.deep.withValues(alpha: .4),
+                    ]
+                  : [
+                      AppColors.deep.withValues(alpha: .12),
+                      Colors.transparent,
+                      AppColors.deep.withValues(alpha: .2),
+                    ],
+            ),
+          ),
+        ),
       ),
-    ),
+      Positioned.fill(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.deep.withValues(alpha: .68),
+                Colors.transparent,
+              ],
+              stops: const [0, .24],
+            ),
+          ),
+        ),
+      ),
+    ],
   );
 }
 
@@ -110,19 +147,10 @@ class _GameHeader extends StatelessWidget {
     bottom: false,
     child: Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-      child: Material(
-        color: AppColors.deep.withValues(alpha: .94),
-        elevation: 10,
-        shadowColor: AppColors.deep.withValues(alpha: .28),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22),
-          side: BorderSide(color: Colors.white.withValues(alpha: .2)),
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) => constraints.maxWidth >= 760
-              ? _WideHeader(level: level, session: session, onHome: onHome)
-              : _CompactHeader(level: level, session: session, onHome: onHome),
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) => constraints.maxWidth >= 760
+            ? _WideHeader(level: level, session: session, onHome: onHome)
+            : _CompactHeader(level: level, session: session, onHome: onHome),
       ),
     ),
   );
@@ -154,8 +182,11 @@ class _WideHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
             ),
           ),
-          icon: const Icon(Icons.map_rounded, size: 20),
-          label: const Text('Parcours'),
+          icon: Icon(
+            level.isCustom ? Icons.home_rounded : Icons.map_rounded,
+            size: 20,
+          ),
+          label: Text(level.isCustom ? 'Accueil' : 'Parcours'),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -164,7 +195,9 @@ class _WideHeader extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'MISSION ${level.number.toString().padLeft(2, '0')}',
+                level.isCustom
+                    ? 'PARTIE LIBRE'
+                    : 'MISSION ${level.number.toString().padLeft(2, '0')}',
                 style: const TextStyle(
                   color: AppColors.sun,
                   fontSize: 11,
@@ -173,7 +206,9 @@ class _WideHeader extends StatelessWidget {
                 ),
               ),
               Text(
-                'Niveau ${level.number} · ${level.title}',
+                level.isCustom
+                    ? level.title
+                    : 'Niveau ${level.number} · ${level.title}',
                 key: const Key('game-level-title'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -226,10 +261,12 @@ class _CompactHeader extends StatelessWidget {
           children: [
             IconButton(
               key: const Key('back-to-course'),
-              tooltip: 'Parcours',
+              tooltip: level.isCustom ? 'Accueil' : 'Parcours',
               onPressed: onHome,
               color: AppColors.sun,
-              icon: const Icon(Icons.map_rounded),
+              icon: Icon(
+                level.isCustom ? Icons.home_rounded : Icons.map_rounded,
+              ),
             ),
             const SizedBox(width: 3),
             Expanded(
@@ -237,7 +274,9 @@ class _CompactHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'MISSION ${level.number.toString().padLeft(2, '0')}',
+                    level.isCustom
+                        ? 'PARTIE LIBRE'
+                        : 'MISSION ${level.number.toString().padLeft(2, '0')}',
                     style: const TextStyle(
                       color: AppColors.sun,
                       fontSize: 9,
@@ -246,7 +285,9 @@ class _CompactHeader extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Niveau ${level.number} · ${level.title}',
+                    level.isCustom
+                        ? level.title
+                        : 'Niveau ${level.number} · ${level.title}',
                     key: const Key('game-level-title'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -368,50 +409,52 @@ class BoardView extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < 600;
+      final wide = constraints.maxWidth >= 1000;
       final config = session.config;
       final compactHeight =
           config.height * 48 + (config.height - 1) * spacing + padding * 2 + 54;
       return Padding(
         padding: EdgeInsets.all(compact ? 12 : 20),
-        child: Center(
+        child: Align(
+          alignment: wide ? Alignment.centerRight : Alignment.center,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 820, maxHeight: 820),
+            constraints: BoxConstraints(
+              maxWidth: wide ? min(820, constraints.maxWidth * .47) : 820,
+              maxHeight: 820,
+            ),
             child: SizedBox(
               height: compact
                   ? min(compactHeight, constraints.maxHeight - 24)
                   : null,
-              child: Material(
+              child: Column(
                 key: const Key('board-background'),
-                color: AppColors.surface.withValues(alpha: .96),
-                elevation: 18,
-                shadowColor: AppColors.deep.withValues(alpha: .3),
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(compact ? 24 : 30),
-                  side: BorderSide(
-                    color: Colors.white.withValues(alpha: .72),
-                    width: 2,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _BoardLabel(level: level, compact: compact),
-                    Expanded(
-                      child: ColoredBox(
-                        color: biomeBoardColor(
-                          level.biome,
-                        ).withValues(alpha: .82),
-                        child: _BoardGrid(
-                          level: level,
-                          session: session,
-                          onReveal: onReveal,
-                          onFlag: onFlag,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _BoardLabel(level: level, compact: compact),
+                  Expanded(
+                    child: Material(
+                      color: biomeBoardColor(
+                        level.biome,
+                      ).withValues(alpha: .92),
+                      elevation: 16,
+                      shadowColor: AppColors.deep.withValues(alpha: .32),
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(compact ? 22 : 28),
+                        side: BorderSide(
+                          color: Colors.white.withValues(alpha: .72),
+                          width: 2,
                         ),
                       ),
+                      child: _BoardGrid(
+                        level: level,
+                        session: session,
+                        onReveal: onReveal,
+                        onFlag: onFlag,
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -429,23 +472,10 @@ class _BoardLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.fromLTRB(18, compact ? 11 : 14, 18, compact ? 10 : 13),
+    padding: EdgeInsets.fromLTRB(8, compact ? 5 : 8, 8, compact ? 8 : 10),
     child: Row(
       children: [
-        DecoratedBox(
-          decoration: const BoxDecoration(
-            color: AppColors.background,
-            shape: BoxShape.circle,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(7),
-            child: Icon(
-              Icons.eco_rounded,
-              color: biomeCoveredColor(level.biome),
-              size: compact ? 18 : 20,
-            ),
-          ),
-        ),
+        Icon(Icons.eco_rounded, color: Colors.white, size: compact ? 18 : 20),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
@@ -455,7 +485,7 @@ class _BoardLabel extends StatelessWidget {
               Text(
                 'ZONE D’OBSERVATION',
                 style: TextStyle(
-                  color: AppColors.deep,
+                  color: Colors.white,
                   fontSize: compact ? 11 : 12,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1,
@@ -466,7 +496,10 @@ class _BoardLabel extends StatelessWidget {
                   level.species,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppColors.muted, fontSize: 13),
+                  style: const TextStyle(
+                    color: Color(0xffe3eee8),
+                    fontSize: 13,
+                  ),
                 ),
             ],
           ),
@@ -868,185 +901,180 @@ class _EndOverlay extends StatelessWidget {
     final won = session.status == GameStatus.won;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 600;
-        return ColoredBox(
+        final compact = constraints.maxWidth < 900;
+        return Stack(
           key: const Key('end-overlay'),
-          color: const Color(0xb3173d30),
-          child: SafeArea(
-            top: !compact,
-            child: Align(
-              alignment: compact ? Alignment.bottomCenter : Alignment.center,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: compact ? constraints.maxWidth : 680,
-                  maxHeight: constraints.maxHeight * (compact ? .9 : .92),
+          children: [
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: compact ? Alignment.topCenter : Alignment.centerLeft,
+                    end: compact
+                        ? Alignment.bottomCenter
+                        : Alignment.centerRight,
+                    colors: [
+                      AppColors.deep.withValues(alpha: compact ? .16 : .34),
+                      AppColors.deep.withValues(alpha: .98),
+                    ],
+                    stops: compact ? const [.12, .42] : const [.28, .62],
+                  ),
                 ),
-                child: Material(
-                  color: AppColors.surface,
-                  elevation: 18,
-                  clipBehavior: Clip.antiAlias,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: compact
-                        ? const BorderRadius.vertical(top: Radius.circular(28))
-                        : BorderRadius.circular(28),
+              ),
+            ),
+            SafeArea(
+              child: Align(
+                alignment: compact
+                    ? Alignment.bottomCenter
+                    : Alignment.centerRight,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: compact ? constraints.maxWidth : 680,
+                    maxHeight: constraints.maxHeight,
                   ),
                   child: SingleChildScrollView(
+                    padding: EdgeInsets.all(compact ? 22 : 38),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        SizedBox(
-                          height: 150,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              LevelBackdrop(level: level),
-                              ColoredBox(
-                                color: (won ? AppColors.deep : AppColors.danger)
-                                    .withValues(alpha: .76),
-                              ),
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        won
-                                            ? Icons.verified_rounded
-                                            : Icons.pets_rounded,
-                                        color: Colors.white,
-                                        size: 34,
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        won
-                                            ? 'REFUGE SÉCURISÉ !'
-                                            : 'UN ANIMAL S’EST ÉLOIGNÉ',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                        if (compact)
+                          SizedBox(height: constraints.maxHeight * .22),
+                        Icon(
+                          won ? Icons.verified_rounded : Icons.pets_rounded,
+                          color: won ? AppColors.sun : AppColors.danger,
+                          size: 36,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          won ? 'REFUGE SÉCURISÉ !' : 'UN ANIMAL S’EST ÉLOIGNÉ',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(compact ? 22 : 30),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Niveau ${level.number} · ${level.title}',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleLarge,
+                        const SizedBox(height: 18),
+                        Text(
+                          level.isCustom
+                              ? level.title
+                              : 'Niveau ${level.number} · ${level.title}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge?.copyWith(color: Colors.white),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          level.species,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color(0xffe3eee8),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (newRecord || session.isPractice) ...[
+                          const SizedBox(height: 14),
+                          Center(
+                            child: _ResultBadge(
+                              icon: newRecord
+                                  ? Icons.emoji_events_rounded
+                                  : Icons.replay_rounded,
+                              text: newRecord
+                                  ? 'Nouveau meilleur temps !'
+                                  : 'Entraînement · record non enregistré',
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 22),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _ResultMetric(
+                                label: 'Terrain',
+                                value:
+                                    '${level.config.width} × ${level.config.height}',
                               ),
-                              const SizedBox(height: 5),
-                              Text(
-                                level.species,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: AppColors.muted,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                            ),
+                            Expanded(
+                              child: _ResultMetric(
+                                label: 'Animaux',
+                                value: '${level.config.animalCount}',
                               ),
-                              if (newRecord || session.isPractice) ...[
-                                const SizedBox(height: 14),
-                                Center(
-                                  child: _ResultBadge(
-                                    icon: newRecord
-                                        ? Icons.emoji_events_rounded
-                                        : Icons.replay_rounded,
-                                    text: newRecord
-                                        ? 'Nouveau meilleur temps !'
-                                        : 'Entraînement · record non enregistré',
-                                  ),
-                                ),
-                              ],
-                              const SizedBox(height: 22),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _ResultMetric(
-                                      label: 'Terrain',
-                                      value:
-                                          '${level.config.width} × ${level.config.height}',
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: _ResultMetric(
-                                      label: 'Animaux',
-                                      value: '${level.config.animalCount}',
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: _ResultMetric(
-                                      label: 'Temps',
-                                      value: formatDuration(session.elapsed),
-                                    ),
-                                  ),
-                                ],
+                            ),
+                            Expanded(
+                              child: _ResultMetric(
+                                label: 'Temps',
+                                value: formatDuration(session.elapsed),
                               ),
-                              const SizedBox(height: 22),
-                              Text(
-                                won
-                                    ? 'Tous les animaux sont en sécurité.'
-                                    : 'Observe les indices avant de '
-                                          't’approcher.',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: AppColors.muted,
-                                  fontSize: 17,
-                                ),
-                              ),
-                              const SizedBox(height: 22),
-                              if (won)
-                                if (level.number < levels.length) ...[
-                                  _PrimaryResultButton(
-                                    icon: Icons.arrow_forward_rounded,
-                                    label: 'Niveau suivant',
-                                    onPressed: onNext,
-                                  ),
-                                  _SecondaryResultButton(
-                                    icon: Icons.refresh_rounded,
-                                    label: 'Nouvelle observation',
-                                    onPressed: onReplayNew,
-                                  ),
-                                ] else
-                                  _PrimaryResultButton(
-                                    icon: Icons.refresh_rounded,
-                                    label: 'Nouvelle observation',
-                                    onPressed: onReplayNew,
-                                  )
-                              else
-                                _PrimaryResultButton(
-                                  icon: Icons.replay_rounded,
-                                  label: 'Revoir cette grille',
-                                  onPressed: onReplaySame,
-                                ),
-                              if (won)
-                                _SecondaryResultButton(
-                                  icon: Icons.replay_rounded,
-                                  label: 'Revoir cette grille · entraînement',
-                                  onPressed: onReplaySame,
-                                )
-                              else
-                                _SecondaryResultButton(
-                                  icon: Icons.refresh_rounded,
-                                  label: 'Nouvelle observation',
-                                  onPressed: onReplayNew,
-                                ),
-                              TextButton.icon(
-                                onPressed: onHome,
-                                icon: const Icon(Icons.map_rounded),
-                                label: const Text('Retour au parcours'),
-                              ),
-                            ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 22),
+                        Text(
+                          won
+                              ? 'Tous les animaux sont en sécurité.'
+                              : 'Observe les indices avant de t’approcher.',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color(0xffe3eee8),
+                            fontSize: 17,
+                          ),
+                        ),
+                        const SizedBox(height: 22),
+                        if (won)
+                          if (!level.isCustom &&
+                              level.number < levels.length) ...[
+                            _PrimaryResultButton(
+                              icon: Icons.arrow_forward_rounded,
+                              label: 'Niveau suivant',
+                              onPressed: onNext,
+                            ),
+                            _SecondaryResultButton(
+                              icon: Icons.refresh_rounded,
+                              label: 'Nouvelle observation',
+                              onPressed: onReplayNew,
+                            ),
+                          ] else
+                            _PrimaryResultButton(
+                              icon: Icons.refresh_rounded,
+                              label: 'Nouvelle observation',
+                              onPressed: onReplayNew,
+                            )
+                        else
+                          _PrimaryResultButton(
+                            icon: Icons.replay_rounded,
+                            label: 'Revoir cette grille',
+                            onPressed: onReplaySame,
+                          ),
+                        if (won)
+                          _SecondaryResultButton(
+                            icon: Icons.replay_rounded,
+                            label: level.isCustom
+                                ? 'Revoir cette grille'
+                                : 'Revoir cette grille · entraînement',
+                            onPressed: onReplaySame,
+                          )
+                        else
+                          _SecondaryResultButton(
+                            icon: Icons.refresh_rounded,
+                            label: 'Nouvelle observation',
+                            onPressed: onReplayNew,
+                          ),
+                        TextButton.icon(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white,
+                          ),
+                          onPressed: onHome,
+                          icon: Icon(
+                            level.isCustom
+                                ? Icons.home_rounded
+                                : Icons.map_rounded,
+                          ),
+                          label: Text(
+                            level.isCustom
+                                ? 'Retour à l’accueil'
+                                : 'Retour au parcours',
                           ),
                         ),
                       ],
@@ -1055,7 +1083,7 @@ class _EndOverlay extends StatelessWidget {
                 ),
               ),
             ),
-          ),
+          ],
         );
       },
     );
@@ -1079,13 +1107,16 @@ class _ResultBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: AppColors.muted, size: 19),
+          Icon(icon, color: AppColors.sun, size: 19),
           const SizedBox(width: 7),
           Flexible(
             child: Text(
               text,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
@@ -1103,11 +1134,15 @@ class _ResultMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Text(label, style: const TextStyle(color: AppColors.muted)),
+      Text(label, style: const TextStyle(color: Color(0xffb9d8c9))),
       const SizedBox(height: 3),
       Text(
         value,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+        ),
       ),
     ],
   );
@@ -1152,6 +1187,10 @@ class _SecondaryResultButton extends StatelessWidget {
     padding: const EdgeInsets.only(bottom: 10),
     child: OutlinedButton.icon(
       onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.white,
+        side: const BorderSide(color: Colors.white70),
+      ),
       icon: Icon(icon),
       label: Text(label),
     ),

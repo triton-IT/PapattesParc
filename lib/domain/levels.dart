@@ -367,40 +367,42 @@ const levels = <LevelDefinition>[
 ];
 
 extension LevelTemperament on LevelDefinition {
-  AnimalTemperament get temperament => switch (number) {
-    6 ||
-    7 ||
-    8 ||
-    9 ||
-    10 ||
-    13 ||
-    25 ||
-    34 ||
-    37 ||
-    38 ||
-    39 ||
-    40 ||
-    44 => AnimalTemperament.curious,
-    2 ||
-    11 ||
-    15 ||
-    18 ||
-    28 ||
-    30 ||
-    41 ||
-    42 ||
-    43 => AnimalTemperament.majestic,
-    3 ||
-    4 ||
-    12 ||
-    14 ||
-    16 ||
-    17 ||
-    29 ||
-    36 ||
-    45 => AnimalTemperament.peaceful,
-    5 || 21 || 22 || 23 || 24 || 31 || 33 => AnimalTemperament.adventurous,
-    1 || 19 || 20 || 26 || 27 || 32 || 35 => AnimalTemperament.brave,
-    _ => throw StateError('Niveau sans tempérament : $number'),
-  };
+  AnimalTemperament get temperament =>
+      customTemperament ??
+      switch (number) {
+        6 ||
+        7 ||
+        8 ||
+        9 ||
+        10 ||
+        13 ||
+        25 ||
+        34 ||
+        37 ||
+        38 ||
+        39 ||
+        40 ||
+        44 => AnimalTemperament.curious,
+        2 ||
+        11 ||
+        15 ||
+        18 ||
+        28 ||
+        30 ||
+        41 ||
+        42 ||
+        43 => AnimalTemperament.majestic,
+        3 ||
+        4 ||
+        12 ||
+        14 ||
+        16 ||
+        17 ||
+        29 ||
+        36 ||
+        45 => AnimalTemperament.peaceful,
+        5 || 21 || 22 || 23 || 24 || 31 || 33 => AnimalTemperament.adventurous,
+        1 || 19 || 20 || 26 || 27 || 32 || 35 => AnimalTemperament.brave,
+        _ => throw StateError('Niveau sans tempérament : $number'),
+      };
 }
