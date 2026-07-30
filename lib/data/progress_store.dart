@@ -7,6 +7,7 @@ class ProgressStore {
 
   static const _unlockedLevelKey = 'journey:unlockedLevel';
   static const _musicEnabledKey = 'settings:musicEnabled';
+  static const _effectsEnabledKey = 'settings:effectsEnabled';
   final SharedPreferences _preferences;
 
   static Future<ProgressStore> load() async =>
@@ -16,6 +17,8 @@ class ProgressStore {
       (_preferences.getInt(_unlockedLevelKey) ?? 1).clamp(1, 45);
 
   bool get musicEnabled => _preferences.getBool(_musicEnabledKey) ?? true;
+
+  bool get effectsEnabled => _preferences.getBool(_effectsEnabledKey) ?? true;
 
   double bestTime(LevelDefinition level) =>
       _preferences.getDouble('bestTime:level:${level.number}') ?? 0;
@@ -35,4 +38,7 @@ class ProgressStore {
 
   Future<void> setMusicEnabled(bool enabled) =>
       _preferences.setBool(_musicEnabledKey, enabled);
+
+  Future<void> setEffectsEnabled(bool enabled) =>
+      _preferences.setBool(_effectsEnabledKey, enabled);
 }

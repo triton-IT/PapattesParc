@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +10,14 @@ import '../domain/game_session.dart';
 import '../domain/levels.dart';
 import '../domain/models.dart';
 import 'app_theme.dart';
+import 'custom_game_screen.dart';
 import 'game_audio.dart';
 import 'game_screen.dart';
 import 'home_screen.dart';
 
 export 'game_screen.dart' show BoardView;
+
+const _applicationChannel = MethodChannel('papatte_parc/application');
 
 class PapatteParcApp extends StatelessWidget {
   const PapatteParcApp({required this.store, super.key});
@@ -31,7 +33,7 @@ class PapatteParcApp extends StatelessWidget {
   );
 }
 
-enum _Screen { home, playing, generating, finished }
+enum _Screen { home, custom, playing, generating, finished }
 
 class GameFlow extends StatefulWidget {
   const GameFlow({required this.store, super.key});
@@ -54,13 +56,18 @@ class _GameFlowState extends State<GameFlow> {
   bool _newRecord = false;
   late final GameAudio _audio;
   late bool _musicEnabled;
+  late bool _effectsEnabled;
 
   @override
   void initState() {
     super.initState();
     _selectedLevelIndex = widget.store.unlockedLevel - 1;
     _musicEnabled = widget.store.musicEnabled;
-    _audio = GameAudio(musicEnabled: _musicEnabled);
+    _effectsEnabled = widget.store.effectsEnabled;
+    _audio = GameAudio(
+      musicEnabled: _musicEnabled,
+      effectsEnabled: _effectsEnabled,
+    );
     unawaited(_audio.initialize());
     _timer = Timer.periodic(const Duration(milliseconds: 100), (_) => _tick());
   }
@@ -93,6 +100,15 @@ class _GameFlowState extends State<GameFlow> {
   void _startLevel(int index) {
     _selectedLevelIndex = index;
     _startSelectedLevel();
+  }
+
+  void _startCustomLevel(LevelDefinition level) {
+    _level = level;
+    unawaited(_audio.playLevel(level.temperament));
+    _board = null;
+    _session = GameSession(level.config);
+    _lastTick = DateTime.now();
+    setState(() => _screen = _Screen.playing);
   }
 
   Future<void> _reveal(CellPosition position) async {
@@ -169,14 +185,18 @@ class _GameFlowState extends State<GameFlow> {
     unawaited(_audio.playEffect(won ? SoundEffect.win : SoundEffect.lose));
     _newRecord =
         won &&
+        !_level!.isCustom &&
         !_session!.isPractice &&
         await widget.store.saveIfBetter(_level!, _session!.elapsed);
-    if (won) await widget.store.unlockAfter(_level!.number);
+    if (won && !_level!.isCustom) {
+      await widget.store.unlockAfter(_level!.number);
+    }
     if (mounted) setState(() => _screen = _Screen.finished);
   }
 
   void _replaySameBoard() {
-    _session = GameSession(_level!.config)..prepare(_board!, practice: true);
+    _session = GameSession(_level!.config)
+      ..prepare(_board!, practice: !_level!.isCustom);
     _lastTick = DateTime.now();
     setState(() => _screen = _Screen.playing);
   }
@@ -194,7 +214,9 @@ class _GameFlowState extends State<GameFlow> {
   }
 
   void _showHome() {
-    if (_level != null) _selectedLevelIndex = _level!.number - 1;
+    if (_level != null && !_level!.isCustom) {
+      _selectedLevelIndex = _level!.number - 1;
+    }
     setState(() => _screen = _Screen.home);
     unawaited(_audio.playHome());
   }
@@ -206,9 +228,14 @@ class _GameFlowState extends State<GameFlow> {
     await _audio.setMusicEnabled(enabled);
   }
 
-  Future<void> _quit() async {
-    await ServicesBinding.instance.exitApplication(AppExitType.required);
+  Future<void> _toggleEffects() async {
+    final enabled = !_effectsEnabled;
+    setState(() => _effectsEnabled = enabled);
+    await widget.store.setEffectsEnabled(enabled);
+    _audio.setEffectsEnabled(enabled);
   }
+
+  Future<void> _quit() => _applicationChannel.invokeMethod<void>('quit');
 
   Future<void> _requestHome() async {
     if (_session?.status == GameStatus.running) {
@@ -260,12 +287,22 @@ class _GameFlowState extends State<GameFlow> {
         store: widget.store,
         onSelectLevel: (index) => setState(() => _selectedLevelIndex = index),
         onPlayLevel: _startLevel,
+        onCreateCustom: () => setState(() => _screen = _Screen.custom),
         musicEnabled: _musicEnabled,
         onToggleMusic: _toggleMusic,
+        effectsEnabled: _effectsEnabled,
+        onToggleEffects: _toggleEffects,
         onButtonClick: _playClick,
         onQuit: !kIsWeb && defaultTargetPlatform == TargetPlatform.windows
             ? _quit
             : null,
+      );
+    }
+    if (_screen == _Screen.custom) {
+      return CustomGameScreen(
+        onBack: _showHome,
+        onStart: _startCustomLevel,
+        onButtonClick: _playClick,
       );
     }
     return GameScreen(

@@ -1,5 +1,8 @@
 #include "flutter_window.h"
 
+#include <flutter/method_channel.h>
+#include <flutter/standard_method_codec.h>
+
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
@@ -25,6 +28,19 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
+  flutter::MethodChannel<> application_channel(
+      flutter_controller_->engine()->messenger(), "papatte_parc/application",
+      &flutter::StandardMethodCodec::GetInstance());
+  application_channel.SetMethodCallHandler(
+      [this](const flutter::MethodCall<>& call,
+             std::unique_ptr<flutter::MethodResult<>> result) {
+        if (call.method_name() != "quit") {
+          result->NotImplemented();
+          return;
+        }
+        result->Success();
+        PostMessage(GetHandle(), WM_CLOSE, 0, 0);
+      });
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {

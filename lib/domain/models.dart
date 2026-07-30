@@ -106,7 +106,19 @@ class LevelDefinition {
     this.biome, [
     this.artAsset,
     this.animalMarkerAsset,
-  ]);
+  ]) : customTemperament = null,
+       isCustom = false;
+
+  const LevelDefinition.custom(
+    this.title,
+    this.species,
+    this.config,
+    this.biome,
+    this.artAsset,
+    this.animalMarkerAsset,
+    this.customTemperament,
+  ) : number = 0,
+      isCustom = true;
 
   final int number;
   final String title;
@@ -115,4 +127,6 @@ class LevelDefinition {
   final LevelBiome biome;
   final String? artAsset;
   final String? animalMarkerAsset;
+  final AnimalTemperament? customTemperament;
+  final bool isCustom;
 }

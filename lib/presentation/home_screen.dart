@@ -12,8 +12,11 @@ class HomeScreen extends StatelessWidget {
     required this.store,
     required this.onSelectLevel,
     required this.onPlayLevel,
+    required this.onCreateCustom,
     required this.musicEnabled,
     required this.onToggleMusic,
+    required this.effectsEnabled,
+    required this.onToggleEffects,
     required this.onButtonClick,
     this.onQuit,
     super.key,
@@ -23,8 +26,11 @@ class HomeScreen extends StatelessWidget {
   final ProgressStore store;
   final ValueChanged<int> onSelectLevel;
   final ValueChanged<int> onPlayLevel;
+  final VoidCallback onCreateCustom;
   final bool musicEnabled;
   final VoidCallback onToggleMusic;
+  final bool effectsEnabled;
+  final VoidCallback onToggleEffects;
   final VoidCallback onButtonClick;
   final VoidCallback? onQuit;
 
@@ -57,8 +63,16 @@ class HomeScreen extends StatelessWidget {
             final header = _ParkHeader(
               unlockedLevel: store.unlockedLevel,
               musicEnabled: musicEnabled,
+              effectsEnabled: effectsEnabled,
               onToggleMusic: _withClick(onToggleMusic),
+              onToggleEffects: _withClick(onToggleEffects),
               onQuit: onQuit == null ? null : _withClick(onQuit!),
+            );
+            final customGameButton = FilledButton.tonalIcon(
+              key: const Key('open-custom-game'),
+              onPressed: _withClick(onCreateCustom),
+              icon: const Icon(Icons.grid_view_rounded),
+              label: const Text('PARTIE LIBRE'),
             );
             if (!wide) {
               return Column(
@@ -68,14 +82,20 @@ class HomeScreen extends StatelessWidget {
                     child: Stack(
                       children: [
                         Positioned.fill(child: map),
-                        const Positioned(top: 8, right: 12, child: _MapLabel()),
+                        const Positioned(
+                          top: 8,
+                          right: 12,
+                          child: _MapLabel(),
+                        ),
+                        Positioned(
+                          right: 12,
+                          bottom: 12,
+                          child: customGameButton,
+                        ),
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    child: mission,
-                  ),
+                  mission,
                 ],
               );
             }
@@ -86,9 +106,14 @@ class HomeScreen extends StatelessWidget {
                 Positioned(left: 0, right: 0, top: 0, child: header),
                 const Positioned(top: 88, right: 28, child: _MapLabel()),
                 Positioned(
-                  left: 28,
+                  right: 28,
                   bottom: 28,
-                  width: constraints.maxWidth < 1200 ? 340 : 390,
+                  child: customGameButton,
+                ),
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  width: constraints.maxWidth < 1200 ? 420 : 520,
                   child: mission,
                 ),
               ],
@@ -117,7 +142,7 @@ class HomeScreen extends StatelessWidget {
       showModalBottomSheet<void>(
         context: context,
         isScrollControlled: true,
-        backgroundColor: AppColors.surface,
+        backgroundColor: Colors.transparent,
         builder: (_) => FractionallySizedBox(heightFactor: .9, child: content),
       );
       return;
@@ -125,6 +150,8 @@ class HomeScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         clipBehavior: Clip.antiAlias,
         insetPadding: const EdgeInsets.all(24),
         child: ConstrainedBox(
@@ -145,13 +172,17 @@ class _ParkHeader extends StatelessWidget {
   const _ParkHeader({
     required this.unlockedLevel,
     required this.musicEnabled,
+    required this.effectsEnabled,
     required this.onToggleMusic,
+    required this.onToggleEffects,
     required this.onQuit,
   });
 
   final int unlockedLevel;
   final bool musicEnabled;
+  final bool effectsEnabled;
   final VoidCallback onToggleMusic;
+  final VoidCallback onToggleEffects;
   final VoidCallback? onQuit;
 
   @override
@@ -214,20 +245,22 @@ class _ParkHeader extends StatelessWidget {
             ),
           ),
           SizedBox(width: compact ? 5 : 8),
-          if (onQuit != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: _HudButton(
-                key: const Key('quit-app'),
-                tooltip: 'Quitter l’application',
-                onPressed: onQuit!,
-                icon: const Icon(
-                  Icons.power_settings_new_rounded,
-                  color: AppColors.danger,
-                ),
-              ),
+          _HudButton(
+            key: const Key('toggle-effects'),
+            tooltip: effectsEnabled
+                ? 'Couper les effets sonores'
+                : 'Activer les effets sonores',
+            onPressed: onToggleEffects,
+            icon: Icon(
+              effectsEnabled
+                  ? Icons.volume_up_rounded
+                  : Icons.volume_off_rounded,
+              color: effectsEnabled ? AppColors.primary : AppColors.muted,
             ),
+          ),
+          SizedBox(width: compact ? 5 : 8),
           DecoratedBox(
+            key: const Key('journey-progress'),
             decoration: BoxDecoration(
               color: AppColors.surface.withValues(alpha: .92),
               borderRadius: BorderRadius.circular(99),
@@ -265,6 +298,18 @@ class _ParkHeader extends StatelessWidget {
               ),
             ),
           ),
+          if (onQuit != null) ...[
+            SizedBox(width: compact ? 5 : 8),
+            _HudButton(
+              key: const Key('quit-app'),
+              tooltip: 'Quitter l’application',
+              onPressed: onQuit!,
+              icon: const Icon(
+                Icons.exit_to_app_rounded,
+                color: AppColors.danger,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -311,132 +356,134 @@ class _MissionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = completedLevels / levels.length;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: .96),
-        borderRadius: BorderRadius.circular(compact ? 22 : 28),
-        border: Border.all(color: Colors.white.withValues(alpha: .8), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.deep.withValues(alpha: .22),
-            blurRadius: 28,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(compact ? 14 : 18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.explore_rounded,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                const Expanded(
-                  child: Text(
-                    'PARC EN SÉCURITÉ',
-                    style: TextStyle(
-                      color: AppColors.deep,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                    ),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: compact
+              ? Image.asset(
+                  level.artAsset!,
+                  key: const Key('level-art'),
+                  fit: BoxFit.cover,
+                )
+              : ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: (bounds) => const RadialGradient(
+                    center: Alignment.bottomLeft,
+                    radius: 1,
+                    colors: [Colors.white, Colors.white, Colors.transparent],
+                    stops: [0, .66, 1],
+                  ).createShader(bounds),
+                  child: Image.asset(
+                    level.artAsset!,
+                    key: const Key('level-art'),
+                    fit: BoxFit.cover,
                   ),
                 ),
-                Text(
-                  '${(progress * 100).round()} %',
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            LinearProgressIndicator(
-              value: progress,
-              minHeight: 6,
-              borderRadius: BorderRadius.circular(99),
-              backgroundColor: AppColors.background,
-              color: AppColors.success,
-            ),
-            SizedBox(height: compact ? 12 : 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: SizedBox(
-                height: compact ? 92 : 145,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      level.artAsset!,
-                      key: const Key('level-art'),
-                      fit: BoxFit.cover,
-                    ),
-                    const DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, Color(0x990f3027)],
-                          stops: [.45, 1],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 12,
-                      bottom: 9,
-                      child: Text(
-                        'PROCHAINE MISSION · ${level.number.toString().padLeft(2, '0')}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: .8,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: compact ? 10 : 14),
-            Text(
-              level.title,
-              key: const Key('home-level-title'),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            Text(
-              level.species,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.muted),
-            ),
-            SizedBox(height: compact ? 10 : 14),
-            _MissionStats(level: level, bestTime: bestTime),
-            SizedBox(height: compact ? 10 : 14),
-            FilledButton.icon(
-              key: const Key('start-mission'),
-              onPressed: onPlay,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.success,
-                foregroundColor: Colors.white,
-                elevation: 4,
-                shadowColor: AppColors.deep.withValues(alpha: .35),
-              ),
-              icon: const Icon(Icons.play_arrow_rounded),
-              label: const Text('CONTINUER L’AVENTURE'),
-            ),
-          ],
         ),
-      ),
+        const Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0x0018382f),
+                  Color(0x5518382f),
+                  Color(0xf218382f),
+                ],
+                stops: [0, .44, 1],
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(compact ? 14 : 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.explore_rounded,
+                    color: AppColors.sun,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'PARC EN SÉCURITÉ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '${(progress * 100).round()} %',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: progress,
+                minHeight: 6,
+                borderRadius: BorderRadius.circular(99),
+                backgroundColor: Colors.white24,
+                color: AppColors.success,
+              ),
+              SizedBox(height: compact ? 112 : 170),
+              Text(
+                'PROCHAINE MISSION · ${level.number.toString().padLeft(2, '0')}',
+                style: const TextStyle(
+                  color: AppColors.sun,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: .8,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                level.title,
+                key: const Key('home-level-title'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: Colors.white),
+              ),
+              Text(
+                level.species,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Color(0xffe3eee8)),
+              ),
+              SizedBox(height: compact ? 10 : 14),
+              _MissionStats(
+                level: level,
+                bestTime: bestTime,
+                color: Colors.white,
+              ),
+              SizedBox(height: compact ? 10 : 14),
+              FilledButton.icon(
+                key: const Key('start-mission'),
+                onPressed: onPlay,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.success,
+                  foregroundColor: Colors.white,
+                ),
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: const Text('CONTINUER L’AVENTURE'),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -464,36 +511,21 @@ class _MapLabel extends StatelessWidget {
   const _MapLabel();
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: AppColors.deep.withValues(alpha: .9),
-      borderRadius: BorderRadius.circular(99),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x33245b4a),
-          blurRadius: 14,
-          offset: Offset(0, 5),
+  Widget build(BuildContext context) => const IgnorePointer(
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.touch_app_rounded, color: AppColors.primary, size: 18),
+        SizedBox(width: 7),
+        Text(
+          'Clique sur un point de la carte',
+          style: TextStyle(
+            color: AppColors.primary,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ],
-    ),
-    child: const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.touch_app_rounded, color: AppColors.sun, size: 19),
-          SizedBox(width: 8),
-          Text(
-            'CHOISIS UN REFUGE',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w900,
-              letterSpacing: .9,
-            ),
-          ),
-        ],
-      ),
     ),
   );
 }
@@ -687,39 +719,66 @@ class _MissionPopup extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final horizontal = constraints.maxWidth >= 700;
-      final image = ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Image.asset(
-            level.artAsset!,
-            key: const Key('selected-level-art'),
-            fit: BoxFit.cover,
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              level.artAsset!,
+              key: const Key('selected-level-art'),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-      );
-      final info = _MissionInfo(
-        level: level,
-        unlocked: unlocked,
-        bestTime: bestTime,
-        onPlay: onPlay,
-        onButtonClick: onButtonClick,
-      );
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(22),
-        child: horizontal
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(flex: 12, child: image),
-                  const SizedBox(width: 24),
-                  Expanded(flex: 10, child: info),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [image, const SizedBox(height: 18), info],
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: horizontal
+                      ? Alignment.centerLeft
+                      : Alignment.topCenter,
+                  end: horizontal
+                      ? Alignment.centerRight
+                      : Alignment.bottomCenter,
+                  colors: const [Colors.transparent, Color(0xf218382f)],
+                  stops: horizontal ? const [.18, .68] : const [.2, .5],
+                ),
               ),
+            ),
+          ),
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(22),
+            child: horizontal
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Expanded(flex: 12, child: SizedBox(height: 420)),
+                      const SizedBox(width: 24),
+                      Expanded(
+                        flex: 10,
+                        child: _MissionInfo(
+                          level: level,
+                          unlocked: unlocked,
+                          bestTime: bestTime,
+                          onPlay: onPlay,
+                          onButtonClick: onButtonClick,
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 220),
+                      _MissionInfo(
+                        level: level,
+                        unlocked: unlocked,
+                        bestTime: bestTime,
+                        onPlay: onPlay,
+                        onButtonClick: onButtonClick,
+                      ),
+                    ],
+                  ),
+          ),
+        ],
       );
     },
   );
@@ -747,7 +806,7 @@ class _MissionInfo extends StatelessWidget {
       Text(
         'MISSION ${level.number.toString().padLeft(2, '0')}',
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: AppColors.primary,
+          color: AppColors.sun,
           letterSpacing: 1.3,
         ),
       ),
@@ -755,43 +814,34 @@ class _MissionInfo extends StatelessWidget {
       Text(
         level.title,
         key: const Key('selected-level-title'),
-        style: Theme.of(context).textTheme.headlineMedium,
+        style: Theme.of(
+          context,
+        ).textTheme.headlineMedium?.copyWith(color: Colors.white),
       ),
       const SizedBox(height: 5),
-      Text(level.species, style: const TextStyle(color: AppColors.muted)),
+      Text(level.species, style: const TextStyle(color: Color(0xffe3eee8))),
       const SizedBox(height: 20),
-      _MissionStats(level: level, bestTime: bestTime),
+      _MissionStats(level: level, bestTime: bestTime, color: Colors.white),
       const SizedBox(height: 18),
-      DecoratedBox(
-        decoration: BoxDecoration(
-          color: unlocked
-              ? AppColors.background
-              : AppColors.danger.withValues(alpha: .1),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(13),
-          child: Row(
-            children: [
-              Icon(
-                unlocked ? Icons.explore_rounded : Icons.lock_rounded,
-                color: unlocked ? AppColors.success : AppColors.danger,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  unlocked
-                      ? 'Mission disponible'
-                      : 'Termine la mission précédente pour continuer.',
-                  style: TextStyle(
-                    color: unlocked ? AppColors.deep : AppColors.danger,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
+      Row(
+        children: [
+          Icon(
+            unlocked ? Icons.explore_rounded : Icons.lock_rounded,
+            color: unlocked ? AppColors.sun : AppColors.danger,
           ),
-        ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              unlocked
+                  ? 'Mission disponible'
+                  : 'Termine la mission précédente pour continuer.',
+              style: TextStyle(
+                color: unlocked ? Colors.white : AppColors.danger,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
       ),
       const SizedBox(height: 16),
       FilledButton.icon(
@@ -802,6 +852,7 @@ class _MissionInfo extends StatelessWidget {
         label: const Text('COMMENCER LA MISSION'),
       ),
       TextButton(
+        style: TextButton.styleFrom(foregroundColor: Colors.white),
         onPressed: () {
           onButtonClick();
           Navigator.pop(context);
@@ -813,10 +864,15 @@ class _MissionInfo extends StatelessWidget {
 }
 
 class _MissionStats extends StatelessWidget {
-  const _MissionStats({required this.level, required this.bestTime});
+  const _MissionStats({
+    required this.level,
+    required this.bestTime,
+    this.color = AppColors.primary,
+  });
 
   final LevelDefinition level;
   final double bestTime;
+  final Color color;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -825,18 +881,21 @@ class _MissionStats extends StatelessWidget {
         child: _Metric(
           icon: Icons.grid_view_rounded,
           value: '${level.config.width} × ${level.config.height}',
+          color: color,
         ),
       ),
       Expanded(
         child: _Metric(
           icon: Icons.pets_rounded,
           value: '${level.config.animalCount}',
+          color: color,
         ),
       ),
       Expanded(
         child: _Metric(
           icon: Icons.timer_rounded,
           value: bestTime > 0 ? formatSeconds(bestTime) : '—',
+          color: color,
         ),
       ),
     ],
@@ -844,17 +903,21 @@ class _MissionStats extends StatelessWidget {
 }
 
 class _Metric extends StatelessWidget {
-  const _Metric({required this.icon, required this.value});
+  const _Metric({required this.icon, required this.value, required this.color});
 
   final IconData icon;
   final String value;
+  final Color color;
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Icon(icon, color: AppColors.primary, size: 20),
+      Icon(icon, color: color, size: 20),
       const SizedBox(height: 3),
-      Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
+      Text(
+        value,
+        style: TextStyle(color: color, fontWeight: FontWeight.w800),
+      ),
     ],
   );
 }

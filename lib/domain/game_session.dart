@@ -40,6 +40,7 @@ class GameSession {
     final index = _index(position);
     if (_revealed[index] || _flagged[index]) return;
     if (board!.isAnimal(position)) {
+      _revealed[index] = true;
       triggeredAnimal = position;
       status = GameStatus.lost;
       return;
@@ -68,10 +69,9 @@ class GameSession {
   CellSnapshot cell(CellPosition position) {
     final index = _index(position);
     final animal = board?.isAnimal(position) ?? false;
-    final finishedAnimal = status == GameStatus.lost && animal;
     return CellSnapshot(
       isAnimal: animal,
-      isRevealed: _revealed[index] || finishedAnimal,
+      isRevealed: _revealed[index],
       isFlagged: _flagged[index],
       isTriggeredAnimal:
           status == GameStatus.lost && animal && position == triggeredAnimal,

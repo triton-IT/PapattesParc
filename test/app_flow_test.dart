@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:papatte_parc/data/progress_store.dart';
 import 'package:papatte_parc/domain/board_generator.dart';
+import 'package:papatte_parc/domain/custom_game.dart';
 import 'package:papatte_parc/domain/game_session.dart';
 import 'package:papatte_parc/domain/levels.dart';
 import 'package:papatte_parc/domain/models.dart';
@@ -17,11 +18,29 @@ void main() {
   testWidgets('le bouton quitter est réservé à Windows', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final store = await ProgressStore.load();
+    MethodCall? applicationCall;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('papatte_parc/application'),
+      (call) async {
+        applicationCall = call;
+        return null;
+      },
+    );
     addTearDown(() => debugDefaultTargetPlatformOverride = null);
 
     debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     await _pumpApp(tester, store, const Size(1366, 768));
     expect(find.byKey(const Key('quit-app')), findsOneWidget);
+    expect(find.text('QUITTER'), findsNothing);
+    expect(find.byIcon(Icons.exit_to_app_rounded), findsOneWidget);
+    expect(
+      tester.getCenter(find.byKey(const Key('quit-app'))).dx,
+      greaterThan(
+        tester.getCenter(find.byKey(const Key('journey-progress'))).dx,
+      ),
+    );
+    await tester.tap(find.byKey(const Key('quit-app')));
+    expect(applicationCall?.method, 'quit');
 
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     await _pumpApp(tester, store, const Size(1366, 768));
@@ -36,12 +55,97 @@ void main() {
 
     expect(find.text('PAPATTE PARC'), findsOneWidget);
     expect(find.text('Terrier des sentinelles'), findsOneWidget);
+    expect(find.text('Clique sur un point de la carte'), findsOneWidget);
     await tester.tap(find.byKey(const Key('start-mission')));
     await tester.pump();
 
     expect(find.textContaining('Niveau 1 · Terrier'), findsOneWidget);
     expect(find.byKey(const Key('cell-0-0')), findsOneWidget);
     expect(find.textContaining('À localiser : 5'), findsOneWidget);
+  });
+
+  testWidgets('une grille personnalisée reprend les choix du joueur', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = await ProgressStore.load();
+    await _pumpApp(tester, store, const Size(800, 1280));
+
+    final customButton = tester.getCenter(
+      find.byKey(const Key('open-custom-game')),
+    );
+    expect(customButton.dx, greaterThan(400));
+    expect(customButton.dy, greaterThan(640));
+    await tester.tap(find.byKey(const Key('open-custom-game')));
+    await tester.pump();
+    expect(find.text('Crée ton refuge'), findsOneWidget);
+    expect(find.byKey(const Key('level-art')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('custom-animal-type')));
+    await tester.pumpAndSettle();
+    expect(
+      find.byWidgetPredicate((widget) {
+        if (widget is! Ink) return false;
+        final decoration = widget.decoration;
+        return decoration is BoxDecoration &&
+            decoration.color == AppColors.primary;
+      }),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Lions d’Afrique').last);
+    await tester.pumpAndSettle();
+    final preview = tester.widget<Image>(find.byKey(const Key('level-art')));
+    expect((preview.image as AssetImage).assetName, levels[1].artAsset);
+
+    await tester.tap(find.byKey(const Key('start-custom-game')));
+    await tester.pump();
+
+    expect(find.text('PARTIE LIBRE'), findsOneWidget);
+    expect(find.text('Lions d’Afrique'), findsOneWidget);
+    expect(find.textContaining('À localiser : 10'), findsOneWidget);
+    expect(find.byKey(const Key('cell-7-7')), findsOneWidget);
+  });
+
+  testWidgets('les limites personnalisées bloquent les choix impossibles', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = await ProgressStore.load();
+    await _pumpApp(tester, store, const Size(800, 1280));
+    await tester.tap(find.byKey(const Key('open-custom-game')));
+    await tester.pump();
+
+    final width = find.byKey(const Key('custom-width'));
+    final decrease = find.descendant(
+      of: width,
+      matching: find.byIcon(Icons.remove_rounded),
+    );
+    for (var i = 0; i < 3; i++) {
+      await tester.tap(decrease);
+      await tester.pump();
+    }
+
+    expect(find.text('Pour une grille 5 × 8 : 1 à 8 animaux.'), findsOneWidget);
+    final decreaseButton = find.ancestor(
+      of: decrease,
+      matching: find.byType(IconButton),
+    );
+    expect(tester.widget<IconButton>(decreaseButton).onPressed, isNull);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('custom-animal-count')),
+        matching: find.text('8'),
+      ),
+      findsOneWidget,
+    );
+    final increaseAnimals = find.ancestor(
+      of: find.descendant(
+        of: find.byKey(const Key('custom-animal-count')),
+        matching: find.byIcon(Icons.add_rounded),
+      ),
+      matching: find.byType(IconButton),
+    );
+    expect(tester.widget<IconButton>(increaseAnimals).onPressed, isNull);
   });
 
   testWidgets('l’accueil remplit les quatre formats de référence', (
@@ -135,6 +239,27 @@ void main() {
     expect(find.byIcon(Icons.music_off_rounded), findsOneWidget);
   });
 
+  testWidgets('le choix des effets sonores est mémorisé séparément', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = await ProgressStore.load();
+    await _pumpApp(tester, store, const Size(800, 1280));
+
+    await tester.tap(find.byKey(const Key('toggle-effects')));
+    await tester.pump();
+
+    expect(store.effectsEnabled, isFalse);
+    expect(store.musicEnabled, isTrue);
+    expect(find.byIcon(Icons.volume_off_rounded), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('toggle-music')));
+    await tester.pump();
+
+    expect(store.effectsEnabled, isFalse);
+    expect(store.musicEnabled, isFalse);
+  });
+
   testWidgets('le plateau accepte appui long, clic droit et clavier', (
     tester,
   ) async {
@@ -203,6 +328,17 @@ void main() {
     await tester.tap(find.text('Revoir cette grille'));
     expect(replayPressed, isTrue);
     expect(tester.takeException(), isNull);
+
+    final customLevel = createCustomLevel(level, level.config);
+    await _pumpGame(
+      tester,
+      customLevel,
+      _wonSession(customLevel),
+      const Size(800, 1280),
+    );
+    expect(find.text('Niveau suivant'), findsNothing);
+    expect(find.text('Revoir cette grille'), findsOneWidget);
+    expect(find.text('Retour à l’accueil'), findsOneWidget);
   });
 }
 
