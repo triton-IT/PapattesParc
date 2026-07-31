@@ -24,6 +24,8 @@ flutter:
     - assets/park_map.png
     - assets/level_art/
     - assets/animal_markers/
+    - assets/match3/
+    - assets/match3/animals/
   fonts:
     - family: Nunito
       fonts:
