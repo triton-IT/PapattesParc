@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:papatte_parc/app/game_app.dart';
 import 'package:papatte_parc/games/pattes_friandises/data/match3_progress_store.dart';
+import 'package:papatte_parc/games/mahjong_animaux/data/mahjong_progress_store.dart';
 import 'package:papatte_parc/games/refuge/data/progress_store.dart';
 import 'package:papatte_parc/games/refuge/domain/board_generator.dart';
 import 'package:papatte_parc/games/refuge/domain/custom_game.dart';
@@ -17,7 +18,7 @@ import 'package:papatte_parc/shared/settings_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('le menu principal ouvre les deux jeux', (tester) async {
+  testWidgets('le menu principal ouvre les trois jeux', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final refugeStore = await ProgressStore.load();
     await _pumpRoot(tester, refugeStore, const Size(1366, 768));
@@ -33,6 +34,15 @@ void main() {
 
     expect(find.byKey(const Key('match3-cell-0-0')), findsOneWidget);
     expect(find.textContaining('28 coups'), findsWidgets);
+
+    await _pumpRoot(tester, refugeStore, const Size(1366, 768));
+    expect(find.text('Mahjong des animaux'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('game-mahjong-animaux')));
+    await tester.pump();
+    expect(find.byKey(const Key('mahjong-level-grid')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('mahjong-level-1')));
+    await tester.pump();
+    expect(find.byKey(const Key('mahjong-board')), findsOneWidget);
   });
 
   testWidgets('le bouton quitter est réservé à Windows', (tester) async {
@@ -382,6 +392,7 @@ Future<void> _pumpApp(
       key: UniqueKey(),
       refugeStore: store,
       match3Store: await Match3ProgressStore.load(),
+      mahjongStore: await MahjongProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
@@ -403,6 +414,7 @@ Future<void> _pumpRoot(
       key: UniqueKey(),
       refugeStore: store,
       match3Store: await Match3ProgressStore.load(),
+      mahjongStore: await MahjongProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );

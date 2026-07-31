@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:papatte_parc/app/main_menu_screen.dart';
 import 'package:papatte_parc/games/pattes_friandises/data/match3_progress_store.dart';
+import 'package:papatte_parc/games/mahjong_animaux/data/mahjong_progress_store.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/campaign.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/match3_session.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/models.dart';
@@ -33,6 +34,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = await ProgressStore.load();
     final match3Store = await Match3ProgressStore.load();
+    final mahjongStore = await MahjongProgressStore.load();
     final level = levels.first;
     final match3Levels = buildMatch3Campaign(levels);
     for (final size in _sizes) {
@@ -42,6 +44,7 @@ void main() {
         MainMenuScreen(
           refugeStore: store,
           match3Store: match3Store,
+          mahjongStore: mahjongStore,
           musicEnabled: true,
           effectsEnabled: true,
           onSelect: (_) {},
@@ -171,7 +174,7 @@ void main() {
         matchesGoldenFile('../goldens/match3-mission-${_name(size)}.png'),
       );
 
-      _finish(match3Session);
+      _finishMatch3(match3Session);
       await _pump(
         tester,
         size,
@@ -219,6 +222,7 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
   );
   for (final asset in [
     'assets/level_art/level-45-alpagas.png',
+    'assets/mahjong/mahjong-cover.png',
     'assets/match3/animals/suricate.png',
     'assets/match3/animals/lion.png',
     'assets/match3/animals/girafe.png',
@@ -236,7 +240,7 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
   expect(tester.takeException(), isNull, reason: '$size');
 }
 
-void _finish(Match3Session session) {
+void _finishMatch3(Match3Session session) {
   for (
     var turn = 0;
     turn < 80 && session.status == Match3Status.playing;

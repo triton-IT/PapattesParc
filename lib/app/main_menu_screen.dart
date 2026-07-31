@@ -2,15 +2,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../games/pattes_friandises/data/match3_progress_store.dart';
+import '../games/mahjong_animaux/data/mahjong_progress_store.dart';
 import '../games/refuge/data/progress_store.dart';
 import '../shared/app_theme.dart';
 
-enum GameId { refuge, pattesFriandises }
+enum GameId { refuge, pattesFriandises, mahjongAnimaux }
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({
     required this.refugeStore,
     required this.match3Store,
+    required this.mahjongStore,
     required this.musicEnabled,
     required this.effectsEnabled,
     required this.onSelect,
@@ -22,6 +24,7 @@ class MainMenuScreen extends StatelessWidget {
 
   final ProgressStore refugeStore;
   final Match3ProgressStore match3Store;
+  final MahjongProgressStore mahjongStore;
   final bool musicEnabled;
   final bool effectsEnabled;
   final ValueChanged<GameId> onSelect;
@@ -82,6 +85,19 @@ class MainMenuScreen extends StatelessWidget {
                         color: const Color(0xffc9694b),
                         onPlay: () => onSelect(GameId.pattesFriandises),
                       ),
+                      _GameCard(
+                        key: const Key('game-mahjong-animaux'),
+                        title: 'Mahjong des animaux',
+                        description:
+                            'Libère les tuiles et rassemble les animaux par paires.',
+                        progress:
+                            '${mahjongStore.unlockedLevel} / 45 niveaux · '
+                            '${mahjongStore.totalFootprints} empreintes',
+                        artAsset: 'assets/mahjong/mahjong-cover.png',
+                        icon: Icons.view_module_rounded,
+                        color: AppColors.success,
+                        onPlay: () => onSelect(GameId.mahjongAnimaux),
+                      ),
                     ];
                     return Center(
                       child: ConstrainedBox(
@@ -93,9 +109,14 @@ class MainMenuScreen extends StatelessWidget {
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
                                   children: [
-                                    Expanded(child: cards[0]),
-                                    const SizedBox(width: 18),
-                                    Expanded(child: cards[1]),
+                                    for (
+                                      var index = 0;
+                                      index < cards.length;
+                                      index++
+                                    ) ...[
+                                      if (index > 0) const SizedBox(width: 14),
+                                      Expanded(child: cards[index]),
+                                    ],
                                   ],
                                 )
                               : ListView.separated(
