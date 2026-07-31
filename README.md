@@ -1,10 +1,12 @@
 # Papatte Parc
 
-Port Flutter fidèle du projet Unity `Demineur`.
+Application Flutter multijeux autour du parcours animalier :
 
-Le jeu conserve le parcours de 45 missions, la génération déterministe de
-grilles résolubles sans hasard, le premier secteur protégé, les balises, les
-records locaux, la progression et les interactions souris/tactile.
+- **Balises du refuge**, jeu de déduction en 45 missions ;
+- **Pattes & Friandises**, match-3 original en 45 niveaux.
+
+Les deux jeux conservent des progressions locales séparées. Les réglages audio
+restent communs.
 
 ## Lancer
 
