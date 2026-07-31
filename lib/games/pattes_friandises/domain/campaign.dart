@@ -1,64 +1,6 @@
 import '../../../shared/park_catalog.dart';
+import '../../../shared/animal_catalog.dart';
 import 'models.dart';
-
-const _animalPools = <LevelBiome, List<AnimalKind>>{
-  LevelBiome.savanna: [
-    AnimalKind.suricate,
-    AnimalKind.lion,
-    AnimalKind.girafe,
-    AnimalKind.zebre,
-    AnimalKind.guepard,
-    AnimalKind.addax,
-  ],
-  LevelBiome.tropical: [
-    AnimalKind.atele,
-    AnimalKind.gibbon,
-    AnimalKind.paresseux,
-    AnimalKind.tamarin,
-    AnimalKind.lemurien,
-    AnimalKind.saimiri,
-  ],
-  LevelBiome.riverside: [
-    AnimalKind.loutre,
-    AnimalKind.hippopotame,
-    AnimalKind.capybara,
-    AnimalKind.vison,
-    AnimalKind.tortue,
-    AnimalKind.tapir,
-  ],
-  LevelBiome.woodland: [
-    AnimalKind.tigre,
-    AnimalKind.pandaRoux,
-    AnimalKind.loup,
-    AnimalKind.ours,
-    AnimalKind.glouton,
-    AnimalKind.cerfSika,
-  ],
-  LevelBiome.steppe: [
-    AnimalKind.kulan,
-    AnimalKind.renne,
-    AnimalKind.addax,
-    AnimalKind.oryx,
-    AnimalKind.gazelle,
-    AnimalKind.cerfCochon,
-  ],
-  LevelBiome.mountain: [
-    AnimalKind.goral,
-    AnimalKind.tahr,
-    AnimalKind.markhor,
-    AnimalKind.panthereNeiges,
-    AnimalKind.alpaga,
-    AnimalKind.urial,
-  ],
-  LevelBiome.tundra: [
-    AnimalKind.renne,
-    AnimalKind.panthereAmour,
-    AnimalKind.loup,
-    AnimalKind.ours,
-    AnimalKind.panthereNeiges,
-    AnimalKind.glouton,
-  ],
-};
 
 List<Match3LevelDefinition> buildMatch3Campaign(List<ParkStage> stages) => [
   for (final stage in stages) _buildLevel(stage),
@@ -67,7 +9,7 @@ List<Match3LevelDefinition> buildMatch3Campaign(List<ParkStage> stages) => [
 Match3LevelDefinition _buildLevel(ParkStage stage) {
   final chapter = (stage.number - 1) ~/ 5;
   final slot = (stage.number - 1) % 5;
-  final animals = _animalPools[stage.biome]!.take(stage.number < 16 ? 5 : 6);
+  final animals = animalsByBiome[stage.biome]!.take(stage.number < 16 ? 5 : 6);
   final inactiveCells = stage.number >= 36 && stage.number <= 40
       ? _inactivePattern(slot)
       : const <Match3Position>{};

@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 
 import '../games/pattes_friandises/data/match3_progress_store.dart';
 import '../games/pattes_friandises/presentation/match3_game_flow.dart';
+import '../games/mahjong_animaux/data/mahjong_progress_store.dart';
+import '../games/mahjong_animaux/presentation/mahjong_game_flow.dart';
 import '../games/refuge/data/progress_store.dart';
 import '../games/refuge/domain/levels.dart';
 import '../games/refuge/presentation/game_app.dart';
@@ -19,12 +21,14 @@ class PapatteParcApp extends StatelessWidget {
   const PapatteParcApp({
     required this.refugeStore,
     required this.match3Store,
+    required this.mahjongStore,
     required this.settings,
     super.key,
   });
 
   final ProgressStore refugeStore;
   final Match3ProgressStore match3Store;
+  final MahjongProgressStore mahjongStore;
   final SettingsStore settings;
 
   @override
@@ -35,6 +39,7 @@ class PapatteParcApp extends StatelessWidget {
     home: _AppFlow(
       refugeStore: refugeStore,
       match3Store: match3Store,
+      mahjongStore: mahjongStore,
       settings: settings,
     ),
   );
@@ -44,11 +49,13 @@ class _AppFlow extends StatefulWidget {
   const _AppFlow({
     required this.refugeStore,
     required this.match3Store,
+    required this.mahjongStore,
     required this.settings,
   });
 
   final ProgressStore refugeStore;
   final Match3ProgressStore match3Store;
+  final MahjongProgressStore mahjongStore;
   final SettingsStore settings;
 
   @override
@@ -70,9 +77,16 @@ class _AppFlowState extends State<_AppFlow> {
       settings: widget.settings,
       onExit: _showMenu,
     ),
+    GameId.mahjongAnimaux => MahjongGameFlow(
+      stages: levels,
+      progress: widget.mahjongStore,
+      settings: widget.settings,
+      onExit: _showMenu,
+    ),
     null => MainMenuScreen(
       refugeStore: widget.refugeStore,
       match3Store: widget.match3Store,
+      mahjongStore: widget.mahjongStore,
       musicEnabled: widget.settings.musicEnabled,
       effectsEnabled: widget.settings.effectsEnabled,
       onSelect: (game) => setState(() => _selectedGame = game),
