@@ -6,6 +6,7 @@ import '../domain/models.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
+import '../../../shared/park_journey_map.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
@@ -656,7 +657,7 @@ class _LevelMarker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final level = levels[index];
-    final position = _levelPositions[index];
+    final position = parkLevelPositions[index];
     final completed = level.number < unlockedLevel;
     final available = level.number == unlockedLevel;
     final color = completed
@@ -936,51 +937,3 @@ class _Metric extends StatelessWidget {
     ],
   );
 }
-
-const _levelPositions = [
-  Offset(.625, .590),
-  Offset(.647, .616),
-  Offset(.612, .718),
-  Offset(.777, .682),
-  Offset(.827, .680),
-  Offset(.753, .610),
-  Offset(.727, .639),
-  Offset(.708, .646),
-  Offset(.711, .544),
-  Offset(.659, .522),
-  Offset(.641, .567),
-  Offset(.582, .476),
-  Offset(.534, .446),
-  Offset(.548, .393),
-  Offset(.542, .325),
-  Offset(.593, .336),
-  Offset(.614, .219),
-  Offset(.500, .299),
-  Offset(.422, .333),
-  Offset(.393, .291),
-  Offset(.423, .296),
-  Offset(.393, .238),
-  Offset(.467, .189),
-  Offset(.425, .155),
-  Offset(.346, .208),
-  Offset(.358, .125),
-  Offset(.314, .227),
-  Offset(.187, .144),
-  Offset(.123, .068),
-  Offset(.182, .187),
-  Offset(.227, .287),
-  Offset(.321, .280),
-  Offset(.326, .318),
-  Offset(.369, .336),
-  Offset(.398, .333),
-  Offset(.347, .408),
-  Offset(.358, .457),
-  Offset(.467, .420),
-  Offset(.550, .525),
-  Offset(.393, .514),
-  Offset(.288, .435),
-  Offset(.363, .571),
-  Offset(.513, .586),
-  Offset(.550, .571),
-  Offset(.775, .854),
-];

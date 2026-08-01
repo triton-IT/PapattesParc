@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../../shared/animal_catalog.dart';
+import '../../../shared/animal_background.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
@@ -53,43 +54,47 @@ class SolitaireGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xffd8e8cf),
-    body: SafeArea(
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              _Toolbar(
-                session: session,
-                onBack: onBack,
-                onUndo: onUndo,
-                onHint: onHint,
-                onNewGame: onNewGame,
-              ),
-              Expanded(
-                child: _Board(
+    body: AnimalBackground(
+      asset: backAnimal.backgroundAsset,
+      scrim: const Color(0x5518382f),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                _Toolbar(
                   session: session,
-                  backAnimal: backAnimal,
-                  selected: selected,
-                  hint: hint,
-                  onDraw: onDraw,
-                  onCardTap: onCardTap,
-                  onDoubleTap: onDoubleTap,
-                  onMove: onMove,
+                  onBack: onBack,
+                  onUndo: onUndo,
+                  onHint: onHint,
+                  onNewGame: onNewGame,
+                ),
+                Expanded(
+                  child: _Board(
+                    session: session,
+                    backAnimal: backAnimal,
+                    selected: selected,
+                    hint: hint,
+                    onDraw: onDraw,
+                    onCardTap: onCardTap,
+                    onDoubleTap: onDoubleTap,
+                    onMove: onMove,
+                  ),
+                ),
+              ],
+            ),
+            if (finished)
+              Positioned.fill(
+                child: _ResultOverlay(
+                  session: session,
+                  newRecord: newRecord,
+                  onReplay: onReplay,
+                  onConfigure: onConfigure,
+                  onExit: onExit,
                 ),
               ),
-            ],
-          ),
-          if (finished)
-            Positioned.fill(
-              child: _ResultOverlay(
-                session: session,
-                newRecord: newRecord,
-                onReplay: onReplay,
-                onConfigure: onConfigure,
-                onExit: onExit,
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
     ),
   );

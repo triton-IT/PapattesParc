@@ -280,6 +280,12 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
       ),
       _MahjongScreen.playing => MahjongScreen(
         session: _session!,
+        backgroundAsset:
+            (_level?.stage ??
+                    widget.stages.firstWhere(
+                      (stage) => stage.biome == _freeConfig!.biome,
+                    ))
+                .artAsset!,
         title: _freeConfig == null
             ? 'Niveau ${_level!.number} · ${_level!.layout.name}'
             : '${_session!.layout.name} · ${_session!.layout.difficulty.label}',

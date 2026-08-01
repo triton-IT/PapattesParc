@@ -82,6 +82,54 @@ extension AnimalKindLabel on AnimalKind {
   String get asset =>
       'assets/match3/animals/${name.replaceAll('Roux', '_roux').replaceAll('Sika', '_sika').replaceAll('Cochon', '_cochon').replaceAll('Neiges', '_neiges').replaceAll('Amour', '_amour')}.png'
           .toLowerCase();
+
+  String get backgroundAsset => switch (this) {
+    AnimalKind.suricate =>
+      'assets/level_art/level-01-suricates-porcs-epics.png',
+    AnimalKind.lion => 'assets/level_art/level-02-lions-afrique.png',
+    AnimalKind.girafe ||
+    AnimalKind.zebre ||
+    AnimalKind.addax ||
+    AnimalKind.gazelle =>
+      'assets/level_art/level-03-girafes-gazelles-addax.png',
+    AnimalKind.oryx => 'assets/level_art/level-05-oryx-cobes-zebres-addax.png',
+    AnimalKind.atele => 'assets/level_art/level-06-ateles-varies.png',
+    AnimalKind.gibbon => 'assets/level_art/level-09-gibbons-loutres-asie.png',
+    AnimalKind.paresseux =>
+      'assets/level_art/level-10-tamarins-tatous-paresseux.png',
+    AnimalKind.tamarin =>
+      'assets/level_art/level-13-tamarins-tete-doree-goeldi.png',
+    AnimalKind.lemurien => 'assets/level_art/level-38-lemuriens.png',
+    AnimalKind.saimiri => 'assets/level_art/level-44-saimiris-pudus.png',
+    AnimalKind.loutre => 'assets/level_art/level-09-gibbons-loutres-asie.png',
+    AnimalKind.hippopotame =>
+      'assets/level_art/level-12-hippopotames-pygmees-tortues-sillonnees.png',
+    AnimalKind.capybara || AnimalKind.tapir =>
+      'assets/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers.png',
+    AnimalKind.vison => 'assets/level_art/level-34-visons-europe.png',
+    AnimalKind.tortue =>
+      'assets/level_art/level-04-tortue-etoilee-madagascar.png',
+    AnimalKind.tigre => 'assets/level_art/level-15-tigres.png',
+    AnimalKind.pandaRoux => 'assets/level_art/level-25-pandas-roux.png',
+    AnimalKind.loup => 'assets/level_art/level-26-loups-canada.png',
+    AnimalKind.ours => 'assets/level_art/level-27-ours-bruns.png',
+    AnimalKind.glouton => 'assets/level_art/level-20-gloutons.png',
+    AnimalKind.cerfSika => 'assets/level_art/level-17-cerfs-sikas.png',
+    AnimalKind.kulan => 'assets/level_art/level-23-kulans-grande-steppe.png',
+    AnimalKind.renne => 'assets/level_art/level-29-rennes-toundra.png',
+    AnimalKind.cerfCochon => 'assets/level_art/level-36-cerfs-cochons.png',
+    AnimalKind.goral => 'assets/level_art/level-21-gorals-chine.png',
+    AnimalKind.tahr =>
+      'assets/level_art/level-24-cerfs-thorold-tahrs-himalaya.png',
+    AnimalKind.markhor => 'assets/level_art/level-33-takins-markhors.png',
+    AnimalKind.panthereNeiges =>
+      'assets/level_art/level-41-pantheres-neiges.png',
+    AnimalKind.alpaga => 'assets/level_art/level-45-alpagas.png',
+    AnimalKind.urial => 'assets/level_art/level-31-urials-turs-caucase.png',
+    AnimalKind.panthereAmour =>
+      'assets/level_art/level-28-pantheres-amour-automne.png',
+    AnimalKind.guepard => 'assets/level_art/level-42-guepards-plaine.png',
+  };
 }
 
 const animalsByBiome = <LevelBiome, List<AnimalKind>>{

@@ -31,7 +31,7 @@ void main() {
     await _pumpRoot(tester, refugeStore, const Size(1366, 768));
 
     expect(find.text('Balises du refuge'), findsOneWidget);
-    expect(find.text('Pattes & Friandises'), findsOneWidget);
+    expect(find.text('Align’Animaux'), findsOneWidget);
     await tester.tap(find.byKey(const Key('game-pattes-friandises')));
     await tester.pump();
 
@@ -470,7 +470,7 @@ void main() {
       expect(find.byKey(const Key('start-mission')), findsOneWidget);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
-      expect(find.text('Pattes & Friandises'), findsOneWidget);
+      expect(find.text('Align’Animaux'), findsOneWidget);
     },
   );
 
@@ -772,6 +772,7 @@ Future<void> _pumpMahjong(
       theme: buildAppTheme(),
       home: MahjongScreen(
         session: session,
+        backgroundAsset: 'assets/level_art/level-01-suricates-porcs-epics.png',
         title: 'Grand plateau',
         isFreeGame: false,
         hintedIds: const {},

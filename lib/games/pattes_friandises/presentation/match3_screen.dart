@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../shared/app_theme.dart';
+import '../../../shared/animal_background.dart';
 import '../../../shared/animal_colors.dart';
 import '../../../shared/game_help.dart';
 import '../domain/match3_session.dart';
@@ -39,82 +40,87 @@ class Match3Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xfffff4dc),
-    body: SafeArea(
-      child: Stack(
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final wide =
-                  constraints.maxWidth >= 900 &&
-                  constraints.maxWidth > constraints.maxHeight;
-              final board = Match3Board(
-                session: session,
-                displayed: displayed,
-                clearing: clearing,
-                inputEnabled: inputEnabled,
-                selected: selected,
-                onSelect: onSelect,
-                onSwap: onSwap,
-              );
-              final panel = _MissionPanel(
-                session: session,
-                displayed: displayed,
-              );
-              if (wide) {
-                return Row(
+    body: AnimalBackground(
+      asset: session.level.stage.artAsset!,
+      child: SafeArea(
+        child: Stack(
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final wide =
+                    constraints.maxWidth >= 900 &&
+                    constraints.maxWidth > constraints.maxHeight;
+                final board = Match3Board(
+                  session: session,
+                  displayed: displayed,
+                  clearing: clearing,
+                  inputEnabled: inputEnabled,
+                  selected: selected,
+                  onSelect: onSelect,
+                  onSwap: onSwap,
+                );
+                final panel = _MissionPanel(
+                  session: session,
+                  displayed: displayed,
+                );
+                if (wide) {
+                  return Row(
+                    children: [
+                      Expanded(child: board),
+                      SizedBox(width: 330, child: panel),
+                    ],
+                  );
+                }
+                return Column(
                   children: [
+                    _CompactHeader(session: session, onLevels: onLevels),
                     Expanded(child: board),
-                    SizedBox(width: 330, child: panel),
+                    panel,
                   ],
                 );
-              }
-              return Column(
-                children: [
-                  _CompactHeader(session: session, onLevels: onLevels),
-                  Expanded(child: board),
-                  panel,
-                ],
-              );
-            },
-          ),
-          Positioned(
-            left: 12,
-            top: 12,
-            child: IconButton.filledTonal(
-              key: const Key('match3-back-to-levels'),
-              tooltip: 'Retour aux niveaux',
-              onPressed: onLevels,
-              icon: const Icon(Icons.arrow_back_rounded),
+              },
             ),
-          ),
-          const Positioned(
-            right: 12,
-            top: 12,
-            child: GameHelpButton(kind: GameHelpKind.match3),
-          ),
-          if (!inputEnabled)
             Positioned(
-              top: 64,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Chip(
-                  key: const Key('match3-resolving'),
-                  avatar: const Icon(Icons.auto_awesome_rounded, size: 18),
-                  label: Text(cascade > 1 ? 'CASCADE ×$cascade' : 'ALIGNEMENT'),
+              left: 12,
+              top: 12,
+              child: IconButton.filledTonal(
+                key: const Key('match3-back-to-levels'),
+                tooltip: 'Retour aux niveaux',
+                onPressed: onLevels,
+                icon: const Icon(Icons.arrow_back_rounded),
+              ),
+            ),
+            const Positioned(
+              right: 12,
+              top: 12,
+              child: GameHelpButton(kind: GameHelpKind.match3),
+            ),
+            if (!inputEnabled)
+              Positioned(
+                top: 64,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Chip(
+                    key: const Key('match3-resolving'),
+                    avatar: const Icon(Icons.auto_awesome_rounded, size: 18),
+                    label: Text(
+                      cascade > 1 ? 'CASCADE ×$cascade' : 'ALIGNEMENT',
+                    ),
+                  ),
                 ),
               ),
-            ),
-          if (showResult ?? session.status != Match3Status.playing)
-            Positioned.fill(
-              child: _ResultOverlay(
-                session: session,
-                onLevels: onLevels,
-                onRetry: onRetry,
-                onNext: onNext,
+            if (showResult ?? session.status != Match3Status.playing)
+              Positioned.fill(
+                child: _ResultOverlay(
+                  session: session,
+                  onLevels: onLevels,
+                  onRetry: onRetry,
+                  onNext: onNext,
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     ),
   );
@@ -147,6 +153,17 @@ class Match3Board extends StatefulWidget {
 class _Match3BoardState extends State<Match3Board> {
   Match3Position? _dragPosition;
   Offset _dragDelta = Offset.zero;
+  Map<Match3Position, Offset> _dropOffsets = const {};
+
+  @override
+  void didUpdateWidget(Match3Board oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final previous = oldWidget.displayed;
+    final current = widget.displayed;
+    _dropOffsets = previous == null || current == null || previous == current
+        ? const {}
+        : _drops(previous, current, oldWidget.clearing);
+  }
 
   @override
   Widget build(BuildContext context) => Center(
@@ -185,35 +202,46 @@ class _Match3BoardState extends State<Match3Board> {
                 final snapshot =
                     widget.displayed?.cell(position) ??
                     widget.session.cell(position);
-                return GestureDetector(
-                  onTap: widget.inputEnabled && snapshot.isActive
-                      ? () => widget.onSelect(position)
-                      : null,
-                  onPanStart: widget.inputEnabled && snapshot.isActive
-                      ? (_) {
-                          _dragPosition = position;
-                          _dragDelta = Offset.zero;
-                        }
-                      : null,
-                  onPanUpdate: widget.inputEnabled && snapshot.isActive
-                      ? (details) => _dragDelta += details.delta
-                      : null,
-                  onPanEnd: widget.inputEnabled && snapshot.isActive
-                      ? (_) => _finishDrag()
-                      : null,
-                  child: AnimatedOpacity(
-                    opacity: widget.clearing.contains(position) ? 0 : 1,
-                    duration: const Duration(milliseconds: 220),
-                    child: AnimatedScale(
-                      scale: widget.clearing.contains(position) ? .3 : 1,
+                return TweenAnimationBuilder<Offset>(
+                  key: ValueKey((widget.displayed, position)),
+                  tween: Tween(
+                    begin: _dropOffsets[position] ?? Offset.zero,
+                    end: Offset.zero,
+                  ),
+                  duration: const Duration(milliseconds: 420),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, offset, child) =>
+                      FractionalTranslation(translation: offset, child: child),
+                  child: GestureDetector(
+                    onTap: widget.inputEnabled && snapshot.isActive
+                        ? () => widget.onSelect(position)
+                        : null,
+                    onPanStart: widget.inputEnabled && snapshot.isActive
+                        ? (_) {
+                            _dragPosition = position;
+                            _dragDelta = Offset.zero;
+                          }
+                        : null,
+                    onPanUpdate: widget.inputEnabled && snapshot.isActive
+                        ? (details) => _dragDelta += details.delta
+                        : null,
+                    onPanEnd: widget.inputEnabled && snapshot.isActive
+                        ? (_) => _finishDrag()
+                        : null,
+                    child: AnimatedOpacity(
+                      opacity: widget.clearing.contains(position) ? 0 : 1,
                       duration: const Duration(milliseconds: 220),
-                      child: _Match3Cell(
-                        position: position,
-                        snapshot: snapshot,
-                        haloColor: snapshot.tile?.isBasket == false
-                            ? animalHaloColor(snapshot.tile!.animal)
-                            : const Color(0xfffffdf5),
-                        selected: widget.selected == position,
+                      child: AnimatedScale(
+                        scale: widget.clearing.contains(position) ? .3 : 1,
+                        duration: const Duration(milliseconds: 220),
+                        child: _Match3Cell(
+                          position: position,
+                          snapshot: snapshot,
+                          haloColor: snapshot.tile?.isBasket == false
+                              ? animalHaloColor(snapshot.tile!.animal)
+                              : const Color(0xfffffdf5),
+                          selected: widget.selected == position,
+                        ),
                       ),
                     ),
                   ),
@@ -225,6 +253,39 @@ class _Match3BoardState extends State<Match3Board> {
       ),
     ),
   );
+
+  Map<Match3Position, Offset> _drops(
+    Match3BoardSnapshot previous,
+    Match3BoardSnapshot current,
+    Set<Match3Position> cleared,
+  ) {
+    final drops = <Match3Position, Offset>{};
+    for (var x = 0; x < Match3Session.size; x++) {
+      final origins = <int>[
+        for (var y = Match3Session.size - 1; y >= 0; y--)
+          if (previous.cell(Match3Position(x, y)).tile != null &&
+              !cleared.contains(Match3Position(x, y)))
+            y,
+      ];
+      final destinations = <int>[
+        for (var y = Match3Session.size - 1; y >= 0; y--)
+          if (current.cell(Match3Position(x, y)).tile != null) y,
+      ];
+      for (var i = 0; i < destinations.length; i++) {
+        final destination = destinations[i];
+        final origin = i < origins.length
+            ? origins[i]
+            : -1 - i + origins.length;
+        if (origin != destination) {
+          drops[Match3Position(x, destination)] = Offset(
+            0,
+            (origin - destination).toDouble(),
+          );
+        }
+      }
+    }
+    return drops;
+  }
 
   void _finishDrag() {
     final start = _dragPosition;

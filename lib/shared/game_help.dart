@@ -49,7 +49,7 @@ class GameHelpButton extends StatelessWidget {
 
   String get _title => switch (kind) {
     GameHelpKind.refuge => 'Balises du refuge',
-    GameHelpKind.match3 => 'Pattes & Friandises',
+    GameHelpKind.match3 => 'Align’Animaux',
     GameHelpKind.mahjong => 'Mahjong des animaux',
     GameHelpKind.solitaire => 'Solitaire des animaux',
   };

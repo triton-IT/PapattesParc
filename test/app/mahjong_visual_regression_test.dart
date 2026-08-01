@@ -141,6 +141,7 @@ MahjongScreen _screen(
   required bool finished,
 }) => MahjongScreen(
   session: session,
+  backgroundAsset: 'assets/level_art/level-01-suricates-porcs-epics.png',
   title: title,
   isFreeGame: false,
   hintedIds: const {},

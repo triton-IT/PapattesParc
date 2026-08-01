@@ -3,7 +3,7 @@
 Application Flutter multijeux autour du parcours animalier :
 
 - **Balises du refuge**, jeu de déduction en 45 missions ;
-- **Pattes & Friandises**, match-3 original en 45 niveaux ;
+- **Align’Animaux**, match-3 original en 45 niveaux ;
 - **Mahjong des animaux**, jeu de paires en 45 niveaux ;
 - **Solitaire des animaux**, Klondike en pioche 1 ou 3 cartes.
 
