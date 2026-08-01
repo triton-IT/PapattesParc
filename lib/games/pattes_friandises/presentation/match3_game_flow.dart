@@ -127,7 +127,7 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
         _displayed = step.result;
         _clearing = const {};
       });
-      await Future<void>.delayed(const Duration(milliseconds: 180));
+      await Future<void>.delayed(const Duration(milliseconds: 440));
       if (!mounted) return;
     }
     setState(() {

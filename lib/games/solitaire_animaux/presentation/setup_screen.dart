@@ -4,6 +4,7 @@ import '../../../shared/animal_catalog.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
+import '../../../shared/animal_background.dart';
 import '../data/solitaire_progress_store.dart';
 import '../domain/models.dart';
 import 'card_view.dart';
@@ -39,98 +40,102 @@ class SolitaireSetupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xfffff4dc),
-    body: SafeArea(
-      child: Column(
-        children: [
-          _Header(
-            musicEnabled: musicEnabled,
-            effectsEnabled: effectsEnabled,
-            onToggleMusic: onToggleMusic,
-            onToggleEffects: onToggleEffects,
-            onExit: onExit,
-          ),
-          Expanded(
-            child: CustomScrollView(
-              key: const Key('solitaire-setup'),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 940),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
-                        child: _Configuration(
-                          progress: progress,
-                          mode: mode,
-                          animal: animal,
-                          onModeChanged: onModeChanged,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 940),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        child: Text(
-                          'Choisis l’animal du verso',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
-                  sliver: SliverLayoutBuilder(
-                    builder: (context, constraints) {
-                      final width = constraints.crossAxisExtent.clamp(0, 940);
-                      final margin = (constraints.crossAxisExtent - width) / 2;
-                      return SliverPadding(
-                        padding: EdgeInsets.symmetric(horizontal: margin),
-                        sliver: SliverGrid(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final value = AnimalKind.values[index];
-                            return _AnimalChoice(
-                              animal: value,
-                              selected: value == animal,
-                              onTap: () => onAnimalChanged(value),
-                            );
-                          }, childCount: AnimalKind.values.length),
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 135,
-                                mainAxisExtent: 116,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                              ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+    body: AnimalBackground(
+      asset: animal.backgroundAsset,
+      child: SafeArea(
+        child: Column(
+          children: [
+            _Header(
+              musicEnabled: musicEnabled,
+              effectsEnabled: effectsEnabled,
+              onToggleMusic: onToggleMusic,
+              onToggleEffects: onToggleEffects,
+              onExit: onExit,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
-              child: FilledButton.icon(
-                key: const Key('solitaire-start'),
-                onPressed: onStart,
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: const Text('COMMENCER'),
+            Expanded(
+              child: CustomScrollView(
+                key: const Key('solitaire-setup'),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 940),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
+                          child: _Configuration(
+                            progress: progress,
+                            mode: mode,
+                            animal: animal,
+                            onModeChanged: onModeChanged,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 940),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: Text(
+                            'Choisis l’animal du verso',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
+                    sliver: SliverLayoutBuilder(
+                      builder: (context, constraints) {
+                        final width = constraints.crossAxisExtent.clamp(0, 940);
+                        final margin =
+                            (constraints.crossAxisExtent - width) / 2;
+                        return SliverPadding(
+                          padding: EdgeInsets.symmetric(horizontal: margin),
+                          sliver: SliverGrid(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final value = AnimalKind.values[index];
+                              return _AnimalChoice(
+                                animal: value,
+                                selected: value == animal,
+                                onTap: () => onAnimalChanged(value),
+                              );
+                            }, childCount: AnimalKind.values.length),
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 135,
+                                  mainAxisExtent: 116,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 460),
+                child: FilledButton.icon(
+                  key: const Key('solitaire-start'),
+                  onPressed: onStart,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: const Text('COMMENCER'),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );

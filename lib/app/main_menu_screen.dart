@@ -79,7 +79,7 @@ class MainMenuScreen extends StatelessWidget {
                       ),
                       _GameCard(
                         key: const Key('game-pattes-friandises'),
-                        title: 'Pattes & Friandises',
+                        title: 'Align’Animaux',
                         description:
                             'Aligne les animaux, prépare les paniers et nettoie les habitats.',
                         progress:
