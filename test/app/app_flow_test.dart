@@ -5,7 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:papatte_parc/app/game_app.dart';
 import 'package:papatte_parc/games/pattes_friandises/data/match3_progress_store.dart';
+import 'package:papatte_parc/games/pattes_friandises/domain/match3_session.dart';
+import 'package:papatte_parc/games/pattes_friandises/domain/models.dart';
 import 'package:papatte_parc/games/mahjong_animaux/data/mahjong_progress_store.dart';
+import 'package:papatte_parc/games/mahjong_animaux/domain/campaign.dart';
+import 'package:papatte_parc/games/mahjong_animaux/domain/mahjong_session.dart';
+import 'package:papatte_parc/games/mahjong_animaux/presentation/mahjong_screen.dart';
 import 'package:papatte_parc/games/refuge/data/progress_store.dart';
 import 'package:papatte_parc/games/refuge/domain/board_generator.dart';
 import 'package:papatte_parc/games/refuge/domain/custom_game.dart';
@@ -14,6 +19,7 @@ import 'package:papatte_parc/games/refuge/domain/levels.dart';
 import 'package:papatte_parc/games/refuge/domain/models.dart';
 import 'package:papatte_parc/games/refuge/presentation/game_screen.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
+import 'package:papatte_parc/shared/animal_colors.dart';
 import 'package:papatte_parc/shared/settings_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -370,6 +376,191 @@ void main() {
     expect(find.text('Revoir cette grille'), findsOneWidget);
     expect(find.text('Retour à l’accueil'), findsOneWidget);
   });
+
+  testWidgets(
+    'le retour Android conserve ou abandonne la partie à la demande',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final store = await ProgressStore.load();
+      await _pumpApp(tester, store, const Size(360, 800));
+      await tester.tap(find.byKey(const Key('start-mission')));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('cell-3-3')));
+      await tester.pump();
+      for (
+        var attempt = 0;
+        attempt < 100 &&
+            find.byKey(const Key('generation-overlay')).evaluate().isNotEmpty;
+        attempt++
+      ) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 50)),
+        );
+        await tester.pump();
+      }
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Abandonner la partie en cours ?'), findsOneWidget);
+      await tester.tap(find.text('Continuer'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('cell-3-3')), findsOneWidget);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Quitter'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('start-mission')), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Pattes & Friandises'), findsOneWidget);
+    },
+  );
+
+  testWidgets('le retour est bloqué pendant une opération en cours', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = await ProgressStore.load();
+    await _pumpApp(tester, store, const Size(360, 800));
+    await tester.tap(find.byKey(const Key('start-mission')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('cell-3-3')));
+    await tester.pump();
+    expect(find.byKey(const Key('generation-overlay')), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(find.text('Le refuge est en cours de préparation.'), findsOneWidget);
+    expect(find.byKey(const Key('generation-overlay')), findsOneWidget);
+
+    await _pumpRoot(tester, store, const Size(360, 800));
+    await tester.tap(find.byKey(const Key('game-pattes-friandises')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('match3-level-1')));
+    await tester.pump();
+    for (
+      var y = 0;
+      y < Match3Session.size &&
+          find.byKey(const Key('match3-resolving')).evaluate().isEmpty;
+      y++
+    ) {
+      for (
+        var x = 0;
+        x < Match3Session.size &&
+            find.byKey(const Key('match3-resolving')).evaluate().isEmpty;
+        x++
+      ) {
+        for (final target in [
+          if (x + 1 < Match3Session.size) Match3Position(x + 1, y),
+          if (y + 1 < Match3Session.size) Match3Position(x, y + 1),
+        ]) {
+          await tester.tap(find.byKey(Key('match3-cell-$x-$y')));
+          await tester.tap(
+            find.byKey(Key('match3-cell-${target.x}-${target.y}')),
+          );
+          await tester.pump();
+          if (find.byKey(const Key('match3-resolving')).evaluate().isNotEmpty) {
+            break;
+          }
+        }
+      }
+    }
+    expect(find.byKey(const Key('match3-resolving')), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(find.text('Le coup est en cours de résolution.'), findsOneWidget);
+    expect(find.byKey(const Key('match3-resolving')), findsOneWidget);
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('les grands plateaux sont visibles et permettent le zoom', (
+    tester,
+  ) async {
+    final refugeLevel = createCustomLevel(
+      levels.first,
+      const BoardConfig(25, 20, 40),
+    );
+    final refugeSession = GameSession(refugeLevel.config);
+    await _pumpPlayingGame(
+      tester,
+      refugeLevel,
+      refugeSession,
+      const Size(360, 800),
+    );
+    _expectInside(
+      tester,
+      const Key('refuge-board-viewer'),
+      const Key('cell-0-0'),
+    );
+    _expectInside(
+      tester,
+      const Key('refuge-board-viewer'),
+      const Key('cell-24-19'),
+    );
+    final refugeViewer = find.byKey(const Key('refuge-board-viewer'));
+    final refugeInteractive = tester.widget<InteractiveViewer>(refugeViewer);
+    expect(
+      refugeInteractive.maxScale,
+      greaterThan(refugeInteractive.transformationController!.value.storage[0]),
+    );
+
+    final level = buildMahjongCampaign(levels).reduce(
+      (first, second) =>
+          first.layout.tileCount > second.layout.tileCount ? first : second,
+    );
+    final mahjongSession = MahjongSession(
+      layout: level.layout,
+      biome: level.stage.biome,
+      seed: 41,
+    );
+    await _pumpMahjong(tester, mahjongSession, const Size(360, 800));
+    final board = find.byKey(const Key('mahjong-board'));
+    final firstTile = mahjongSession.tiles.first.tile;
+    final tileDecoration =
+        tester
+                .widget<AnimatedContainer>(
+                  find.byKey(Key('mahjong-tile-${firstTile.id}')),
+                )
+                .decoration
+            as BoxDecoration;
+    expect(tileDecoration.color, animalHaloColor(firstTile.animal));
+    for (final snapshot in mahjongSession.tiles) {
+      _expectInside(
+        tester,
+        const Key('mahjong-board'),
+        Key('mahjong-tile-${snapshot.tile.id}'),
+      );
+    }
+    final mahjongInteractive = tester.widget<InteractiveViewer>(board);
+    expect(
+      mahjongInteractive.maxScale,
+      greaterThan(
+        mahjongInteractive.transformationController!.value.storage[0],
+      ),
+    );
+  });
+
+  testWidgets('les aides et les repères animaux sont accessibles', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = await ProgressStore.load();
+    await _pumpRoot(tester, store, const Size(360, 800));
+    await tester.tap(find.byKey(const Key('game-pattes-friandises')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('help-match3')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('help-content-match3')), findsOneWidget);
+    await tester.tap(find.text('J’AI COMPRIS'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('match3-level-1')));
+    await tester.pump();
+    expect(
+      find.byKey(const Key('match3-goal-animal-suricate')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('help-match3')), findsOneWidget);
+  });
 }
 
 const _referenceSizes = [
@@ -477,6 +668,85 @@ Future<void> _pumpGame(
     ),
   );
   await tester.pump();
+}
+
+Future<void> _pumpPlayingGame(
+  WidgetTester tester,
+  LevelDefinition level,
+  GameSession session,
+  Size size,
+) async {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = size;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: buildAppTheme(),
+      home: GameScreen(
+        level: level,
+        session: session,
+        generating: false,
+        finished: false,
+        newRecord: false,
+        onHome: () {},
+        onReveal: (_) {},
+        onFlag: (_) {},
+        onReplaySame: () {},
+        onReplayNew: () {},
+        onNext: () {},
+      ),
+    ),
+  );
+  await tester.pump();
+}
+
+Future<void> _pumpMahjong(
+  WidgetTester tester,
+  MahjongSession session,
+  Size size,
+) async {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = size;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: buildAppTheme(),
+      home: MahjongScreen(
+        session: session,
+        title: 'Grand plateau',
+        isFreeGame: false,
+        hintedIds: const {},
+        finished: false,
+        newRecord: false,
+        onSelect: (_) {},
+        onBlocked: () {},
+        onHint: () {},
+        onShuffle: () {},
+        onBack: () {},
+        onReplaySame: () {},
+        onReplayNew: () {},
+        onLevels: () {},
+        onConfigure: null,
+        onNext: null,
+      ),
+    ),
+  );
+  await tester.pump();
+}
+
+void _expectInside(WidgetTester tester, Key parentKey, Key childKey) {
+  final parent = tester.getRect(find.byKey(parentKey));
+  final child = tester.getRect(find.byKey(childKey));
+  expect(
+    parent.inflate(1).contains(child.topLeft),
+    isTrue,
+    reason: '$childKey',
+  );
+  expect(
+    parent.inflate(1).contains(child.bottomRight),
+    isTrue,
+    reason: '$childKey',
+  );
 }
 
 Finder _cell(CellPosition position) =>

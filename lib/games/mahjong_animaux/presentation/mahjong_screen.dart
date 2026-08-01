@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../../shared/animal_catalog.dart';
+import '../../../shared/animal_colors.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
+import '../../../shared/game_help.dart';
 import '../domain/mahjong_session.dart';
 import '../domain/models.dart';
 
@@ -113,6 +117,11 @@ class MahjongScreen extends StatelessWidget {
               icon: const Icon(Icons.arrow_back_rounded),
             ),
           ),
+          const Positioned(
+            right: 12,
+            top: 12,
+            child: GameHelpButton(kind: GameHelpKind.mahjong),
+          ),
           if (finished)
             Positioned.fill(
               child: _ResultOverlay(
@@ -132,7 +141,7 @@ class MahjongScreen extends StatelessWidget {
   );
 }
 
-class MahjongBoard extends StatelessWidget {
+class MahjongBoard extends StatefulWidget {
   const MahjongBoard({
     required this.session,
     required this.hintedIds,
@@ -147,9 +156,24 @@ class MahjongBoard extends StatelessWidget {
   final VoidCallback onBlocked;
 
   @override
+  State<MahjongBoard> createState() => _MahjongBoardState();
+}
+
+class _MahjongBoardState extends State<MahjongBoard> {
+  final TransformationController _controller = TransformationController();
+  MahjongSession? _session;
+  Size? _viewport;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final snapshots =
-        session.tiles.where((snapshot) => snapshot.isPresent).toList()
+        widget.session.tiles.where((snapshot) => snapshot.isPresent).toList()
           ..sort((first, second) {
             final layer = first.tile.position.layer.compareTo(
               second.tile.position.layer,
@@ -157,13 +181,13 @@ class MahjongBoard extends StatelessWidget {
             return layer != 0 ? layer : first.tile.id.compareTo(second.tile.id);
           });
     final maxX =
-        session.layout.positions.fold(
+        widget.session.layout.positions.fold(
           0,
           (value, position) => position.x > value ? position.x : value,
         ) +
         2;
     final maxY =
-        session.layout.positions.fold(
+        widget.session.layout.positions.fold(
           0,
           (value, position) => position.y > value ? position.y : value,
         ) +
@@ -172,43 +196,51 @@ class MahjongBoard extends StatelessWidget {
     final height = maxY * 34.0 + 24;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final canvasWidth = width < constraints.maxWidth
-            ? constraints.maxWidth
-            : width;
-        final canvasHeight = height < constraints.maxHeight
-            ? constraints.maxHeight
-            : height;
-        final originX = (canvasWidth - width) / 2;
-        final originY = (canvasHeight - height) / 2;
+        final viewport = Size(constraints.maxWidth, constraints.maxHeight);
+        final fitScale = min(
+          1.0,
+          min(viewport.width / width, viewport.height / height),
+        );
+        if (_session != widget.session || _viewport != viewport) {
+          _session = widget.session;
+          _viewport = viewport;
+          _controller.value = Matrix4.diagonal3Values(fitScale, fitScale, 1)
+            ..setTranslationRaw(
+              (viewport.width - width * fitScale) / 2,
+              (viewport.height - height * fitScale) / 2,
+              0,
+            );
+        }
         return InteractiveViewer(
           key: const Key('mahjong-board'),
+          transformationController: _controller,
           constrained: false,
-          minScale: .45,
-          maxScale: 2.4,
+          minScale: fitScale,
+          maxScale: max(1, min(2.4, fitScale * 5)),
           boundaryMargin: const EdgeInsets.all(80),
           child: SizedBox(
-            width: canvasWidth,
-            height: canvasHeight,
+            width: width,
+            height: height,
             child: Stack(
               children: [
                 for (final snapshot in snapshots)
                   Positioned(
                     left:
-                        originX +
+                        12 +
                         snapshot.tile.position.x * 28.0 +
                         snapshot.tile.position.layer * 4,
                     top:
-                        originY +
+                        12 +
                         snapshot.tile.position.y * 34.0 -
                         snapshot.tile.position.layer * 4 +
-                        12,
+                        0,
                     child: _MahjongTileView(
                       snapshot: snapshot,
-                      selected: session.selectedId == snapshot.tile.id,
-                      hinted: hintedIds.contains(snapshot.tile.id),
+                      selected: widget.session.selectedId == snapshot.tile.id,
+                      hinted: widget.hintedIds.contains(snapshot.tile.id),
                       onTap: snapshot.isFree
-                          ? () => onSelect(snapshot.tile.id)
-                          : onBlocked,
+                          ? () => widget.onSelect(snapshot.tile.id)
+                          : widget.onBlocked,
                     ),
                   ),
               ],
@@ -246,7 +278,7 @@ class _MahjongTileView extends StatelessWidget {
       width: 56,
       height: 68,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: animalHaloColor(snapshot.tile.animal),
         borderRadius: BorderRadius.circular(9),
         border: Border.all(
           color: selected
@@ -277,7 +309,7 @@ class _MahjongTileView extends StatelessWidget {
                 snapshot.tile.animal.asset,
                 fit: BoxFit.contain,
                 errorBuilder: (_, _, _) => CircleAvatar(
-                  backgroundColor: AppColors.sun,
+                  backgroundColor: animalHaloColor(snapshot.tile.animal),
                   child: Text(snapshot.tile.animal.label.characters.first),
                 ),
               ),

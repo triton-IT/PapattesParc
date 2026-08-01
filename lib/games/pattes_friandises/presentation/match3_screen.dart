@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../../../shared/app_theme.dart';
+import '../../../shared/animal_colors.dart';
+import '../../../shared/game_help.dart';
 import '../domain/match3_session.dart';
 import '../domain/models.dart';
 
 class Match3Screen extends StatelessWidget {
   const Match3Screen({
     required this.session,
+    this.displayed,
+    this.clearing = const {},
+    this.cascade = 0,
+    this.inputEnabled = true,
+    this.showResult,
     required this.selected,
     required this.onSelect,
     required this.onSwap,
@@ -17,6 +24,11 @@ class Match3Screen extends StatelessWidget {
   });
 
   final Match3Session session;
+  final Match3BoardSnapshot? displayed;
+  final Set<Match3Position> clearing;
+  final int cascade;
+  final bool inputEnabled;
+  final bool? showResult;
   final Match3Position? selected;
   final ValueChanged<Match3Position> onSelect;
   final void Function(Match3Position, Match3Position) onSwap;
@@ -37,11 +49,17 @@ class Match3Screen extends StatelessWidget {
                   constraints.maxWidth > constraints.maxHeight;
               final board = Match3Board(
                 session: session,
+                displayed: displayed,
+                clearing: clearing,
+                inputEnabled: inputEnabled,
                 selected: selected,
                 onSelect: onSelect,
                 onSwap: onSwap,
               );
-              final panel = _MissionPanel(session: session);
+              final panel = _MissionPanel(
+                session: session,
+                displayed: displayed,
+              );
               if (wide) {
                 return Row(
                   children: [
@@ -69,7 +87,25 @@ class Match3Screen extends StatelessWidget {
               icon: const Icon(Icons.arrow_back_rounded),
             ),
           ),
-          if (session.status != Match3Status.playing)
+          const Positioned(
+            right: 12,
+            top: 12,
+            child: GameHelpButton(kind: GameHelpKind.match3),
+          ),
+          if (!inputEnabled)
+            Positioned(
+              top: 64,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Chip(
+                  key: const Key('match3-resolving'),
+                  avatar: const Icon(Icons.auto_awesome_rounded, size: 18),
+                  label: Text(cascade > 1 ? 'CASCADE ×$cascade' : 'ALIGNEMENT'),
+                ),
+              ),
+            ),
+          if (showResult ?? session.status != Match3Status.playing)
             Positioned.fill(
               child: _ResultOverlay(
                 session: session,
@@ -87,6 +123,9 @@ class Match3Screen extends StatelessWidget {
 class Match3Board extends StatefulWidget {
   const Match3Board({
     required this.session,
+    required this.displayed,
+    required this.clearing,
+    required this.inputEnabled,
     required this.selected,
     required this.onSelect,
     required this.onSwap,
@@ -94,6 +133,9 @@ class Match3Board extends StatefulWidget {
   });
 
   final Match3Session session;
+  final Match3BoardSnapshot? displayed;
+  final Set<Match3Position> clearing;
+  final bool inputEnabled;
   final Match3Position? selected;
   final ValueChanged<Match3Position> onSelect;
   final void Function(Match3Position, Match3Position) onSwap;
@@ -140,25 +182,40 @@ class _Match3BoardState extends State<Match3Board> {
                   index % Match3Session.size,
                   index ~/ Match3Session.size,
                 );
-                final snapshot = widget.session.cell(position);
+                final snapshot =
+                    widget.displayed?.cell(position) ??
+                    widget.session.cell(position);
                 return GestureDetector(
-                  onTap: snapshot.isActive
+                  onTap: widget.inputEnabled && snapshot.isActive
                       ? () => widget.onSelect(position)
                       : null,
-                  onPanStart: snapshot.isActive
+                  onPanStart: widget.inputEnabled && snapshot.isActive
                       ? (_) {
                           _dragPosition = position;
                           _dragDelta = Offset.zero;
                         }
                       : null,
-                  onPanUpdate: snapshot.isActive
+                  onPanUpdate: widget.inputEnabled && snapshot.isActive
                       ? (details) => _dragDelta += details.delta
                       : null,
-                  onPanEnd: snapshot.isActive ? (_) => _finishDrag() : null,
-                  child: _Match3Cell(
-                    position: position,
-                    snapshot: snapshot,
-                    selected: widget.selected == position,
+                  onPanEnd: widget.inputEnabled && snapshot.isActive
+                      ? (_) => _finishDrag()
+                      : null,
+                  child: AnimatedOpacity(
+                    opacity: widget.clearing.contains(position) ? 0 : 1,
+                    duration: const Duration(milliseconds: 220),
+                    child: AnimatedScale(
+                      scale: widget.clearing.contains(position) ? .3 : 1,
+                      duration: const Duration(milliseconds: 220),
+                      child: _Match3Cell(
+                        position: position,
+                        snapshot: snapshot,
+                        haloColor: snapshot.tile?.isBasket == false
+                            ? animalHaloColor(snapshot.tile!.animal)
+                            : const Color(0xfffffdf5),
+                        selected: widget.selected == position,
+                      ),
+                    ),
                   ),
                 );
               },
@@ -191,11 +248,13 @@ class _Match3Cell extends StatelessWidget {
   const _Match3Cell({
     required this.position,
     required this.snapshot,
+    required this.haloColor,
     required this.selected,
   });
 
   final Match3Position position;
   final Match3CellSnapshot snapshot;
+  final Color haloColor;
   final bool selected;
 
   @override
@@ -214,7 +273,9 @@ class _Match3Cell extends StatelessWidget {
         key: Key('match3-cell-${position.x}-${position.y}'),
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
-          color: _cellColor(snapshot.blocker),
+          color: snapshot.blocker == null
+              ? haloColor
+              : _cellColor(snapshot.blocker),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: selected
@@ -238,7 +299,7 @@ class _Match3Cell extends StatelessWidget {
                         tile.animal.asset,
                         fit: BoxFit.contain,
                         errorBuilder: (_, _, _) => CircleAvatar(
-                          backgroundColor: _animalColor(tile.animal),
+                          backgroundColor: haloColor,
                           child: Text(
                             tile.animal.label.characters.first,
                             style: const TextStyle(
@@ -285,9 +346,6 @@ class _Match3Cell extends StatelessWidget {
     BlockerKind.ice => const Color(0xffbde8ef),
     null => const Color(0xfffffdf5),
   };
-
-  Color _animalColor(AnimalKind animal) =>
-      Colors.primaries[animal.index % Colors.primaries.length].shade400;
 
   IconData _specialIcon(SpecialKind special) => switch (special) {
     SpecialKind.horizontalBinoculars => Icons.swap_horiz_rounded,
@@ -364,9 +422,10 @@ class _CompactHeader extends StatelessWidget {
 }
 
 class _MissionPanel extends StatelessWidget {
-  const _MissionPanel({required this.session});
+  const _MissionPanel({required this.session, required this.displayed});
 
   final Match3Session session;
+  final Match3BoardSnapshot? displayed;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
@@ -401,7 +460,7 @@ class _MissionPanel extends StatelessWidget {
               ),
               _Metric(
                 icon: Icons.stars_rounded,
-                label: '${session.score} points',
+                label: '${displayed?.score ?? session.score} points',
               ),
             ],
           ),
@@ -411,7 +470,10 @@ class _MissionPanel extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 7),
               child: _GoalLine(
                 goal: session.level.goals[i],
-                progress: session.goalProgress(i),
+                progress: displayed?.goalProgress[i] ?? session.goalProgress(i),
+                color: session.level.goals[i].animal == null
+                    ? AppColors.primary
+                    : animalHaloColor(session.level.goals[i].animal!),
               ),
             ),
         ],
@@ -447,15 +509,30 @@ class _Metric extends StatelessWidget {
 }
 
 class _GoalLine extends StatelessWidget {
-  const _GoalLine({required this.goal, required this.progress});
+  const _GoalLine({
+    required this.goal,
+    required this.progress,
+    required this.color,
+  });
 
   final Match3Goal goal;
   final int progress;
+  final Color color;
 
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Icon(_icon, color: AppColors.primary, size: 20),
+      if (goal.kind == Match3GoalKind.collectAnimal)
+        Container(
+          key: Key('match3-goal-animal-${goal.animal!.name}'),
+          width: 28,
+          height: 28,
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          child: Image.asset(goal.animal!.asset),
+        )
+      else
+        Icon(_icon, color: AppColors.primary, size: 20),
       const SizedBox(width: 8),
       Expanded(
         child: Text(

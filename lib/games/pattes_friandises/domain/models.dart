@@ -107,9 +107,45 @@ class Match3CellSnapshot {
   final bool isActive;
 }
 
+class Match3BoardSnapshot {
+  const Match3BoardSnapshot({
+    required this.cells,
+    required this.goalProgress,
+    required this.score,
+    required this.status,
+  });
+
+  final List<Match3CellSnapshot> cells;
+  final List<int> goalProgress;
+  final int score;
+  final Match3Status status;
+
+  Match3CellSnapshot cell(Match3Position position) =>
+      cells[position.y * 8 + position.x];
+}
+
+class Match3ResolutionStep {
+  const Match3ResolutionStep({
+    required this.cascade,
+    required this.cleared,
+    required this.result,
+  });
+
+  final int cascade;
+  final Set<Match3Position> cleared;
+  final Match3BoardSnapshot result;
+}
+
 class Match3MoveResult {
-  const Match3MoveResult({required this.changed, required this.reshuffled});
+  const Match3MoveResult({
+    required this.changed,
+    required this.reshuffled,
+    this.initial,
+    this.steps = const [],
+  });
 
   final bool changed;
   final bool reshuffled;
+  final Match3BoardSnapshot? initial;
+  final List<Match3ResolutionStep> steps;
 }

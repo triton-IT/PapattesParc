@@ -256,43 +256,58 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
   }
 
   @override
-  Widget build(BuildContext context) => switch (_screen) {
-    _MahjongScreen.levels => MahjongLevelSelectScreen(
-      levels: _levels,
-      store: widget.progress,
-      musicEnabled: _musicEnabled,
-      effectsEnabled: _effectsEnabled,
-      onBack: widget.onExit,
-      onPlay: _startLevel,
-      onCustom: () => setState(() => _screen = _MahjongScreen.custom),
-      onToggleMusic: _toggleMusic,
-      onToggleEffects: _toggleEffects,
-    ),
-    _MahjongScreen.custom => MahjongCustomGameScreen(
-      onBack: _showLevels,
-      onStart: _startFree,
-    ),
-    _MahjongScreen.playing => MahjongScreen(
-      session: _session!,
-      title: _freeConfig == null
-          ? 'Niveau ${_level!.number} · ${_level!.layout.name}'
-          : '${_session!.layout.name} · ${_session!.layout.difficulty.label}',
-      isFreeGame: _freeConfig != null,
-      hintedIds: _hintedIds,
-      finished: _finished,
-      newRecord: _newRecord,
-      onSelect: _select,
-      onBlocked: _blockedMessage,
-      onHint: _hint,
-      onShuffle: _shuffle,
-      onBack: () => unawaited(_requestBack()),
-      onReplaySame: _replaySame,
-      onReplayNew: _replayNew,
-      onLevels: _showLevels,
-      onConfigure: _freeConfig == null ? null : _showCustom,
-      onNext: _freeConfig == null && _level!.number < _levels.length
-          ? _nextLevel
-          : null,
-    ),
-  };
+  Widget build(BuildContext context) => _handleBack(
+    switch (_screen) {
+      _MahjongScreen.levels => widget.onExit,
+      _MahjongScreen.custom => _showLevels,
+      _MahjongScreen.playing => () => unawaited(_requestBack()),
+    },
+    switch (_screen) {
+      _MahjongScreen.levels => MahjongLevelSelectScreen(
+        levels: _levels,
+        store: widget.progress,
+        musicEnabled: _musicEnabled,
+        effectsEnabled: _effectsEnabled,
+        onBack: widget.onExit,
+        onPlay: _startLevel,
+        onCustom: () => setState(() => _screen = _MahjongScreen.custom),
+        onToggleMusic: _toggleMusic,
+        onToggleEffects: _toggleEffects,
+      ),
+      _MahjongScreen.custom => MahjongCustomGameScreen(
+        onBack: _showLevels,
+        onStart: _startFree,
+      ),
+      _MahjongScreen.playing => MahjongScreen(
+        session: _session!,
+        title: _freeConfig == null
+            ? 'Niveau ${_level!.number} · ${_level!.layout.name}'
+            : '${_session!.layout.name} · ${_session!.layout.difficulty.label}',
+        isFreeGame: _freeConfig != null,
+        hintedIds: _hintedIds,
+        finished: _finished,
+        newRecord: _newRecord,
+        onSelect: _select,
+        onBlocked: _blockedMessage,
+        onHint: _hint,
+        onShuffle: _shuffle,
+        onBack: () => unawaited(_requestBack()),
+        onReplaySame: _replaySame,
+        onReplayNew: _replayNew,
+        onLevels: _showLevels,
+        onConfigure: _freeConfig == null ? null : _showCustom,
+        onNext: _freeConfig == null && _level!.number < _levels.length
+            ? _nextLevel
+            : null,
+      ),
+    },
+  );
+
+  Widget _handleBack(VoidCallback onBack, Widget child) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, _) {
+      if (!didPop) onBack();
+    },
+    child: child,
+  );
 }

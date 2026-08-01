@@ -72,15 +72,24 @@ class Match3Session {
     }
 
     movesLeft--;
-    if (combinesSpecials) {
-      _resolveSpecialCombination(firstIndex, secondIndex);
-    } else {
-      _resolve(matches, secondIndex);
-    }
+    final initial = _snapshot();
+    final steps = combinesSpecials
+        ? _resolveSpecialCombination(firstIndex, secondIndex)
+        : _resolve(matches, secondIndex);
     _finishTurn();
     final reshuffled = status == Match3Status.playing && !_hasAvailableMove();
     if (reshuffled) _reshuffle();
-    return Match3MoveResult(changed: true, reshuffled: reshuffled);
+    steps[steps.length - 1] = Match3ResolutionStep(
+      cascade: steps.last.cascade,
+      cleared: steps.last.cleared,
+      result: _snapshot(),
+    );
+    return Match3MoveResult(
+      changed: true,
+      reshuffled: reshuffled,
+      initial: initial,
+      steps: List.unmodifiable(steps),
+    );
   }
 
   void _buildBoard() {
@@ -131,7 +140,8 @@ class Match3Session {
     }
   }
 
-  void _resolve(Set<int> matches, int preferred) {
+  List<Match3ResolutionStep> _resolve(Set<int> matches, int preferred) {
+    final steps = <Match3ResolutionStep>[];
     var cascade = 1;
     var current = matches;
     var specialPreference = preferred;
@@ -142,6 +152,7 @@ class Match3Session {
           entry.key: _tiles[entry.key]!.animal,
       };
       final clear = _expandSpecials(current);
+      final clearedIndexes = <int>{};
       var clearedAnimals = 0;
       for (final index in clear) {
         final tile = _tiles[index];
@@ -150,6 +161,7 @@ class Match3Session {
         if (_blockers[index] == BlockerKind.vines) continue;
         _collectAnimal(tile.animal);
         _tiles[index] = null;
+        clearedIndexes.add(index);
         clearedAnimals++;
       }
       _damageAdjacentVines(clear);
@@ -166,13 +178,24 @@ class Match3Session {
       _applyGravity();
       _deliverBaskets();
       _fillEmptyCells();
+      steps.add(
+        Match3ResolutionStep(
+          cascade: cascade,
+          cleared: {
+            for (final index in clearedIndexes)
+              Match3Position(index % size, index ~/ size),
+          },
+          result: _snapshot(),
+        ),
+      );
       current = _findMatches();
       specialPreference = -1;
       cascade++;
     }
+    return steps;
   }
 
-  void _resolveSpecialCombination(int first, int second) {
+  List<Match3ResolutionStep> _resolveSpecialCombination(int first, int second) {
     final firstTile = _tiles[first]!;
     final secondTile = _tiles[second]!;
     final clear = <int>{};
@@ -191,7 +214,7 @@ class Match3Session {
     }
     _tiles[first] = Match3Tile(animal: firstTile.animal);
     _tiles[second] = Match3Tile(animal: secondTile.animal);
-    _resolve(clear, -1);
+    return _resolve(clear, -1);
   }
 
   Set<int> _expandSpecials(Set<int> initial) {
@@ -498,4 +521,19 @@ class Match3Session {
     _tiles[first] = _tiles[second];
     _tiles[second] = tile;
   }
+
+  Match3BoardSnapshot _snapshot() => Match3BoardSnapshot(
+    cells: List.unmodifiable([
+      for (var index = 0; index < _tiles.length; index++)
+        Match3CellSnapshot(
+          tile: _tiles[index],
+          blocker: _blockers[index],
+          blockerLayers: _blockerLayers[index],
+          isActive: !_inactive.contains(index),
+        ),
+    ]),
+    goalProgress: List.unmodifiable(_goalProgress),
+    score: score,
+    status: status,
+  );
 }

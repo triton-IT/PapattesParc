@@ -41,6 +41,10 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
   Match3LevelDefinition? _level;
   Match3Session? _session;
   Match3Position? _selected;
+  Match3BoardSnapshot? _displayed;
+  Set<Match3Position> _clearing = const {};
+  int _cascade = 0;
+  bool _resolving = false;
   bool _hasMoved = false;
   int _nonce = 0;
 
@@ -70,13 +74,17 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
       DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919,
     );
     _selected = null;
+    _displayed = null;
+    _clearing = const {};
+    _cascade = 0;
+    _resolving = false;
     _hasMoved = false;
     unawaited(_audio.playLevel(level.stage.temperament));
     setState(() => _screen = _Match3Screen.playing);
   }
 
   void _select(Match3Position position) {
-    if (_session!.status != Match3Status.playing) return;
+    if (_resolving || _session!.status != Match3Status.playing) return;
     final selected = _selected;
     if (selected == null) {
       setState(() => _selected = position);
@@ -88,13 +96,14 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
     }
     if ((selected.x - position.x).abs() + (selected.y - position.y).abs() ==
         1) {
-      _swap(selected, position);
+      unawaited(_swap(selected, position));
       return;
     }
     setState(() => _selected = position);
   }
 
-  void _swap(Match3Position first, Match3Position second) {
+  Future<void> _swap(Match3Position first, Match3Position second) async {
+    if (_resolving) return;
     final result = _session!.swap(first, second);
     _selected = null;
     if (!result.changed) {
@@ -104,7 +113,28 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
       return;
     }
     _hasMoved = true;
+    _resolving = true;
+    _displayed = result.initial;
     unawaited(_audio.playEffect(SoundEffect.reveal));
+    for (final step in result.steps) {
+      setState(() {
+        _clearing = step.cleared;
+        _cascade = step.cascade;
+      });
+      await Future<void>.delayed(const Duration(milliseconds: 220));
+      if (!mounted) return;
+      setState(() {
+        _displayed = step.result;
+        _clearing = const {};
+      });
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted) return;
+    }
+    setState(() {
+      _displayed = null;
+      _cascade = 0;
+      _resolving = false;
+    });
     if (result.reshuffled) _toast('Plus de combinaison : plateau mélangé.');
     if (_session!.status != Match3Status.playing) {
       unawaited(_finishLevel());
@@ -125,6 +155,10 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
   }
 
   Future<void> _requestLevels() async {
+    if (_resolving) {
+      _toast('Le coup est en cours de résolution.');
+      return;
+    }
     if (_session?.status == Match3Status.playing && _hasMoved) {
       final leave = await showDialog<bool>(
         context: context,
@@ -154,6 +188,10 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
       _screen = _Match3Screen.levels;
       _session = null;
       _selected = null;
+      _displayed = null;
+      _clearing = const {};
+      _cascade = 0;
+      _resolving = false;
     });
   }
 
@@ -182,27 +220,46 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
   @override
   Widget build(BuildContext context) {
     if (_screen == _Match3Screen.levels) {
-      return Match3LevelSelectScreen(
-        levels: _levels,
-        store: widget.progress,
-        musicEnabled: _musicEnabled,
-        effectsEnabled: _effectsEnabled,
-        onBack: widget.onExit,
-        onPlay: _start,
-        onToggleMusic: _toggleMusic,
-        onToggleEffects: _toggleEffects,
+      return _handleBack(
+        widget.onExit,
+        Match3LevelSelectScreen(
+          levels: _levels,
+          store: widget.progress,
+          musicEnabled: _musicEnabled,
+          effectsEnabled: _effectsEnabled,
+          onBack: widget.onExit,
+          onPlay: _start,
+          onToggleMusic: _toggleMusic,
+          onToggleEffects: _toggleEffects,
+        ),
       );
     }
-    return Match3Screen(
-      session: _session!,
-      selected: _selected,
-      onSelect: _select,
-      onSwap: _swap,
-      onLevels: () => unawaited(_requestLevels()),
-      onRetry: () => _start(_level!),
-      onNext: _level!.number < _levels.length
-          ? () => _start(_levels[_level!.number])
-          : null,
+    return _handleBack(
+      () => unawaited(_requestLevels()),
+      Match3Screen(
+        session: _session!,
+        displayed: _displayed,
+        clearing: _clearing,
+        cascade: _cascade,
+        inputEnabled: !_resolving,
+        showResult: !_resolving && _session!.status != Match3Status.playing,
+        selected: _selected,
+        onSelect: _select,
+        onSwap: (first, second) => unawaited(_swap(first, second)),
+        onLevels: () => unawaited(_requestLevels()),
+        onRetry: () => _start(_level!),
+        onNext: _level!.number < _levels.length
+            ? () => _start(_levels[_level!.number])
+            : null,
+      ),
     );
   }
+
+  Widget _handleBack(VoidCallback onBack, Widget child) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, _) {
+      if (!didPop) onBack();
+    },
+    child: child,
+  );
 }

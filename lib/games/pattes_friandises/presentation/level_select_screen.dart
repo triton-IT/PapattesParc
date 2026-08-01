@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../shared/app_theme.dart';
 import '../../../shared/park_catalog.dart';
+import '../../../shared/game_help.dart';
 import '../data/match3_progress_store.dart';
 import '../domain/models.dart';
 
@@ -138,6 +139,7 @@ class _Header extends StatelessWidget {
             musicEnabled ? Icons.music_note_rounded : Icons.music_off_rounded,
           ),
         ),
+        const GameHelpButton(kind: GameHelpKind.match3),
         IconButton(
           key: const Key('match3-toggle-effects'),
           tooltip: effectsEnabled
@@ -231,8 +233,14 @@ class _LevelCard extends StatelessWidget {
                             : AppColors.muted.withValues(alpha: .28),
                       ),
                     const Spacer(),
+                    const Icon(
+                      Icons.touch_app_rounded,
+                      size: 14,
+                      color: AppColors.muted,
+                    ),
+                    const SizedBox(width: 3),
                     Text(
-                      '${level.moves} coups',
+                      '${level.moves}',
                       style: const TextStyle(
                         color: AppColors.muted,
                         fontSize: 12,

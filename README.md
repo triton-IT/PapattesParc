@@ -21,3 +21,6 @@ flutter test
 flutter analyze
 flutter build windows
 ```
+
+Les tests fonctionnels s’exécutent sur toutes les plateformes. Les références
+visuelles pixel à pixel sont vérifiées et régénérées uniquement sous Windows.

@@ -269,54 +269,79 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   @override
   Widget build(BuildContext context) {
     if (_screen == _Screen.home) {
-      return HomeScreen(
-        levelIndex: _selectedLevelIndex,
-        store: widget.store,
-        onSelectLevel: (index) => setState(() => _selectedLevelIndex = index),
-        onPlayLevel: _startLevel,
-        onCreateCustom: () => setState(() => _screen = _Screen.custom),
-        musicEnabled: _musicEnabled,
-        onToggleMusic: _toggleMusic,
-        effectsEnabled: _effectsEnabled,
-        onToggleEffects: _toggleEffects,
-        onButtonClick: _playClick,
-        onGames: widget.onExit,
-        onQuit: !kIsWeb && defaultTargetPlatform == TargetPlatform.windows
-            ? _quit
-            : null,
+      return _handleBack(
+        widget.onExit,
+        HomeScreen(
+          levelIndex: _selectedLevelIndex,
+          store: widget.store,
+          onSelectLevel: (index) => setState(() => _selectedLevelIndex = index),
+          onPlayLevel: _startLevel,
+          onCreateCustom: () => setState(() => _screen = _Screen.custom),
+          musicEnabled: _musicEnabled,
+          onToggleMusic: _toggleMusic,
+          effectsEnabled: _effectsEnabled,
+          onToggleEffects: _toggleEffects,
+          onButtonClick: _playClick,
+          onGames: widget.onExit,
+          onQuit: !kIsWeb && defaultTargetPlatform == TargetPlatform.windows
+              ? _quit
+              : null,
+        ),
       );
     }
     if (_screen == _Screen.custom) {
-      return CustomGameScreen(
-        onBack: _showHome,
-        onStart: _startCustomLevel,
-        onButtonClick: _playClick,
+      return _handleBack(
+        _showHome,
+        CustomGameScreen(
+          onBack: _showHome,
+          onStart: _startCustomLevel,
+          onButtonClick: _playClick,
+        ),
       );
     }
-    return GameScreen(
-      level: _level!,
-      session: _session!,
-      generating: _screen == _Screen.generating,
-      finished: _screen == _Screen.finished,
-      newRecord: _newRecord,
-      onHome: () {
-        _playClick();
-        unawaited(_requestHome());
-      },
-      onReveal: _reveal,
-      onFlag: _toggleFlag,
-      onReplaySame: () {
-        _playClick();
-        _replaySameBoard();
-      },
-      onReplayNew: () {
-        _playClick();
-        _replayNewBoard();
-      },
-      onNext: () {
-        _playClick();
-        _startNextLevel();
-      },
+    return _handleBack(
+      _requestGameBack,
+      GameScreen(
+        level: _level!,
+        session: _session!,
+        generating: _screen == _Screen.generating,
+        finished: _screen == _Screen.finished,
+        newRecord: _newRecord,
+        onHome: () {
+          _playClick();
+          unawaited(_requestHome());
+        },
+        onReveal: _reveal,
+        onFlag: _toggleFlag,
+        onReplaySame: () {
+          _playClick();
+          _replaySameBoard();
+        },
+        onReplayNew: () {
+          _playClick();
+          _replayNewBoard();
+        },
+        onNext: () {
+          _playClick();
+          _startNextLevel();
+        },
+      ),
     );
   }
+
+  void _requestGameBack() {
+    if (_screen == _Screen.generating) {
+      _toast('Le refuge est en cours de préparation.');
+      return;
+    }
+    unawaited(_requestHome());
+  }
+
+  Widget _handleBack(VoidCallback onBack, Widget child) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, _) {
+      if (!didPop) onBack();
+    },
+    child: child,
+  );
 }

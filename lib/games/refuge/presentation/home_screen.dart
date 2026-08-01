@@ -5,6 +5,7 @@ import '../domain/levels.dart';
 import '../domain/models.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
+import '../../../shared/game_help.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
@@ -85,6 +86,11 @@ class HomeScreen extends StatelessWidget {
                     child: Stack(
                       children: [
                         Positioned.fill(child: map),
+                        const Positioned(
+                          top: 8,
+                          left: 12,
+                          child: GameHelpButton(kind: GameHelpKind.refuge),
+                        ),
                         const Positioned(top: 8, right: 12, child: _MapLabel()),
                         Positioned(
                           right: 12,
@@ -103,6 +109,11 @@ class HomeScreen extends StatelessWidget {
                 Positioned.fill(child: map),
                 const Positioned.fill(child: _MapVignette()),
                 Positioned(left: 0, right: 0, top: 0, child: header),
+                const Positioned(
+                  top: 88,
+                  left: 28,
+                  child: GameHelpButton(kind: GameHelpKind.refuge),
+                ),
                 const Positioned(top: 88, right: 28, child: _MapLabel()),
                 Positioned(right: 28, bottom: 28, child: customGameButton),
                 Positioned(
