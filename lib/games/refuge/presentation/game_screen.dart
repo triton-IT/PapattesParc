@@ -10,6 +10,7 @@ import '../domain/levels.dart';
 import '../domain/models.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
+import '../../../shared/game_help.dart';
 
 class GameScreen extends StatelessWidget {
   const GameScreen({
@@ -231,6 +232,8 @@ class _WideHeader extends StatelessWidget {
           text: formatDuration(session.elapsed),
         ),
         const SizedBox(width: 12),
+        const GameHelpButton(kind: GameHelpKind.refuge, color: Colors.white),
+        const SizedBox(width: 4),
         const Flexible(
           child: _Instruction(
             text: 'Toucher : observer · Appui long : baliser',
@@ -303,6 +306,10 @@ class _CompactHeader extends StatelessWidget {
             _HeaderMetric(
               icon: Icons.timer_rounded,
               text: formatDuration(session.elapsed),
+            ),
+            const GameHelpButton(
+              kind: GameHelpKind.refuge,
+              color: Colors.white,
             ),
           ],
         ),
@@ -510,7 +517,7 @@ class _BoardLabel extends StatelessWidget {
   );
 }
 
-class _BoardGrid extends StatelessWidget {
+class _BoardGrid extends StatefulWidget {
   const _BoardGrid({
     required this.level,
     required this.session,
@@ -524,38 +531,57 @@ class _BoardGrid extends StatelessWidget {
   final ValueChanged<CellPosition> onFlag;
 
   @override
+  State<_BoardGrid> createState() => _BoardGridState();
+}
+
+class _BoardGridState extends State<_BoardGrid> {
+  static const _cellSize = 72.0;
+
+  final TransformationController _controller = TransformationController();
+  GameSession? _session;
+  Size? _viewport;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final config = session.config;
-      final fittedWidth =
-          (constraints.maxWidth -
-              BoardView.padding * 2 -
-              (config.width - 1) * BoardView.spacing) /
-          config.width;
-      final fittedHeight =
-          (constraints.maxHeight -
-              BoardView.padding * 2 -
-              (config.height - 1) * BoardView.spacing) /
-          config.height;
-      final cellSize = min(fittedWidth, fittedHeight).clamp(48.0, 112.0);
+      final config = widget.session.config;
       final boardWidth =
-          config.width * cellSize + (config.width - 1) * BoardView.spacing;
+          config.width * _cellSize + (config.width - 1) * BoardView.spacing;
       final boardHeight =
-          config.height * cellSize + (config.height - 1) * BoardView.spacing;
+          config.height * _cellSize + (config.height - 1) * BoardView.spacing;
+      final contentWidth = boardWidth + BoardView.padding * 2;
+      final contentHeight = boardHeight + BoardView.padding * 2;
+      final viewport = Size(constraints.maxWidth, constraints.maxHeight);
+      final fitScale = min(
+        1.0,
+        min(viewport.width / contentWidth, viewport.height / contentHeight),
+      );
+      if (_session != widget.session || _viewport != viewport) {
+        _session = widget.session;
+        _viewport = viewport;
+        _controller.value = Matrix4.diagonal3Values(fitScale, fitScale, 1)
+          ..setTranslationRaw(
+            (viewport.width - contentWidth * fitScale) / 2,
+            (viewport.height - contentHeight * fitScale) / 2,
+            0,
+          );
+      }
       return InteractiveViewer(
+        key: const Key('refuge-board-viewer'),
+        transformationController: _controller,
         constrained: false,
-        minScale: 1,
-        maxScale: 1,
-        panEnabled:
-            boardWidth > constraints.maxWidth ||
-            boardHeight > constraints.maxHeight,
+        minScale: fitScale,
+        maxScale: max(1, min(2.4, fitScale * 5)),
         boundaryMargin: const EdgeInsets.all(BoardView.padding),
         child: SizedBox(
-          width: max(boardWidth + BoardView.padding * 2, constraints.maxWidth),
-          height: max(
-            boardHeight + BoardView.padding * 2,
-            constraints.maxHeight,
-          ),
+          width: contentWidth,
+          height: contentHeight,
           child: Center(
             child: SizedBox(
               width: boardWidth,
@@ -570,12 +596,12 @@ class _BoardGrid extends StatelessWidget {
                           if (x > 0) const SizedBox(width: BoardView.spacing),
                           _Cell(
                             key: Key('cell-$x-$y'),
-                            size: cellSize,
-                            coveredColor: biomeCoveredColor(level.biome),
-                            animalAsset: level.animalMarkerAsset,
-                            snapshot: session.cell(CellPosition(x, y)),
-                            onReveal: () => onReveal(CellPosition(x, y)),
-                            onFlag: () => onFlag(CellPosition(x, y)),
+                            size: _cellSize,
+                            coveredColor: biomeCoveredColor(widget.level.biome),
+                            animalAsset: widget.level.animalMarkerAsset,
+                            snapshot: widget.session.cell(CellPosition(x, y)),
+                            onReveal: () => widget.onReveal(CellPosition(x, y)),
+                            onFlag: () => widget.onFlag(CellPosition(x, y)),
                           ),
                         ],
                       ],

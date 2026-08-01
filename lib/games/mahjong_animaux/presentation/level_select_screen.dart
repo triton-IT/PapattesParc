@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../shared/app_theme.dart';
+import '../../../shared/game_help.dart';
 import '../data/mahjong_progress_store.dart';
 import '../domain/models.dart';
 
@@ -81,6 +82,7 @@ class MahjongLevelSelectScreen extends StatelessWidget {
                         : Icons.music_off_rounded,
                   ),
                 ),
+                const GameHelpButton(kind: GameHelpKind.mahjong),
                 IconButton(
                   tooltip: effectsEnabled
                       ? 'Couper les effets sonores'

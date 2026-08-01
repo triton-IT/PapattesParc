@@ -58,6 +58,41 @@ void main() {
     expect(session.score, greaterThan(0));
   });
 
+  test('les cascades exposent chaque progression avant le total final', () {
+    Match3Session? cascadeSession;
+    Match3MoveResult? cascadeResult;
+    for (var seed = 1; seed <= 300 && cascadeResult == null; seed++) {
+      final session = Match3Session(buildMatch3Campaign(levels).first, seed);
+      for (var y = 0; y < Match3Session.size && cascadeResult == null; y++) {
+        for (var x = 0; x < Match3Session.size && cascadeResult == null; x++) {
+          for (final target in [
+            if (x + 1 < Match3Session.size) Match3Position(x + 1, y),
+            if (y + 1 < Match3Session.size) Match3Position(x, y + 1),
+          ]) {
+            final result = session.swap(Match3Position(x, y), target);
+            if (result.steps.length > 1) {
+              cascadeSession = session;
+              cascadeResult = result;
+              break;
+            }
+            if (result.changed) break;
+          }
+        }
+      }
+    }
+
+    expect(cascadeResult, isNotNull);
+    expect(cascadeResult!.steps.first.cascade, 1);
+    expect(cascadeResult.steps.last.cascade, cascadeResult.steps.length);
+    expect(cascadeResult.steps.last.result.score, cascadeSession!.score);
+    for (var goal = 0; goal < cascadeSession.level.goals.length; goal++) {
+      expect(
+        cascadeResult.steps.last.result.goalProgress[goal],
+        cascadeSession.goalProgress(goal),
+      );
+    }
+  });
+
   test(
     'la progression match-3 reste séparée et conserve le meilleur score',
     () async {
