@@ -19,6 +19,7 @@ import 'package:papatte_parc/games/refuge/domain/models.dart';
 import 'package:papatte_parc/games/refuge/presentation/custom_game_screen.dart';
 import 'package:papatte_parc/games/refuge/presentation/game_screen.dart';
 import 'package:papatte_parc/games/refuge/presentation/home_screen.dart';
+import 'package:papatte_parc/games/solitaire_animaux/data/solitaire_progress_store.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,6 +38,7 @@ void main() {
     final store = await ProgressStore.load();
     final match3Store = await Match3ProgressStore.load();
     final mahjongStore = await MahjongProgressStore.load();
+    final solitaireStore = await SolitaireProgressStore.load();
     final level = levels.first;
     final match3Levels = buildMatch3Campaign(levels);
     for (final size in _sizes) {
@@ -47,6 +49,7 @@ void main() {
           refugeStore: store,
           match3Store: match3Store,
           mahjongStore: mahjongStore,
+          solitaireStore: solitaireStore,
           musicEnabled: true,
           effectsEnabled: true,
           onSelect: (_) {},

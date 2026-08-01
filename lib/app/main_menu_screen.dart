@@ -4,15 +4,19 @@ import 'package:flutter/material.dart';
 import '../games/pattes_friandises/data/match3_progress_store.dart';
 import '../games/mahjong_animaux/data/mahjong_progress_store.dart';
 import '../games/refuge/data/progress_store.dart';
+import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
+import '../games/solitaire_animaux/domain/models.dart';
 import '../shared/app_theme.dart';
+import '../shared/formatters.dart';
 
-enum GameId { refuge, pattesFriandises, mahjongAnimaux }
+enum GameId { refuge, pattesFriandises, mahjongAnimaux, solitaireAnimaux }
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({
     required this.refugeStore,
     required this.match3Store,
     required this.mahjongStore,
+    required this.solitaireStore,
     required this.musicEnabled,
     required this.effectsEnabled,
     required this.onSelect,
@@ -25,6 +29,7 @@ class MainMenuScreen extends StatelessWidget {
   final ProgressStore refugeStore;
   final Match3ProgressStore match3Store;
   final MahjongProgressStore mahjongStore;
+  final SolitaireProgressStore solitaireStore;
   final bool musicEnabled;
   final bool effectsEnabled;
   final ValueChanged<GameId> onSelect;
@@ -98,10 +103,21 @@ class MainMenuScreen extends StatelessWidget {
                         color: AppColors.success,
                         onPlay: () => onSelect(GameId.mahjongAnimaux),
                       ),
+                      _GameCard(
+                        key: const Key('game-solitaire-animaux'),
+                        title: 'Solitaire des animaux',
+                        description:
+                            'Range les cartes et révèle les animaux du parc.',
+                        progress: _solitaireProgress(solitaireStore),
+                        artAsset: 'assets/solitaire/solitaire-cover.png',
+                        icon: Icons.style_rounded,
+                        color: AppColors.primary,
+                        onPlay: () => onSelect(GameId.solitaireAnimaux),
+                      ),
                     ];
                     return Center(
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 1060),
+                        constraints: const BoxConstraints(maxWidth: 1240),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
                           child: wide
@@ -277,7 +293,7 @@ class _GameCard extends StatelessWidget {
                 const SizedBox(height: 7),
                 Text(
                   title,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: Colors.white,
@@ -295,31 +311,30 @@ class _GameCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        progress,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                        ),
+                Text(
+                  progress,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton.icon(
+                    onPressed: onPlay,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: color,
+                      minimumSize: const Size(48, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    FilledButton.icon(
-                      onPressed: onPlay,
-                      style: FilledButton.styleFrom(
-                        backgroundColor: color,
-                        minimumSize: const Size(48, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      icon: const Icon(Icons.play_arrow_rounded),
-                      label: const Text('JOUER'),
-                    ),
-                  ],
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Text('JOUER'),
+                  ),
                 ),
               ],
             ),
@@ -328,4 +343,15 @@ class _GameCard extends StatelessWidget {
       ),
     ),
   );
+}
+
+String _solitaireProgress(SolitaireProgressStore store) {
+  String line(SolitaireMode mode) {
+    final time = store.bestTime(mode);
+    return '${mode == SolitaireMode.drawOne ? '1 carte' : '3 cartes'} : '
+        '${store.wins(mode)} victoire(s) · '
+        '${time == null ? '—' : formatDuration(time)}';
+  }
+
+  return '${line(SolitaireMode.drawOne)}\n${line(SolitaireMode.drawThree)}';
 }
