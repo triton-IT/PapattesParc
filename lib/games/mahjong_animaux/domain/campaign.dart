@@ -71,35 +71,37 @@ MahjongLayoutDefinition _buildLayout(int index, MahjongDifficulty difficulty) {
 }
 
 List<MahjongPosition> _positions(int total, int layers, int variant) {
-  final counts = List.filled(layers, (total ~/ layers) ~/ 2 * 2);
-  var assigned = counts.fold(0, (sum, count) => sum + count);
-  for (var layer = 0; assigned < total; layer = (layer + 1) % layers) {
-    counts[layer] += 2;
-    assigned += 2;
-  }
-  final positions = <MahjongPosition>[];
-  for (var layer = 0; layer < layers; layer++) {
-    var remaining = counts[layer];
-    var row = 0;
-    final columns = 4 + ((variant + layer) % 3) * 2;
-    while (remaining > 0) {
-      final rowLength = remaining < columns ? remaining : columns;
-      final centered = columns - rowLength;
-      for (var column = 0; column < rowLength; column++) {
+  if (layers == 1) return _groundPositions(total, 4 + variant % 3 * 2);
+
+  final upperCount = [
+    for (var size = layers; size >= 2; size--) size * size,
+  ].fold(0, (sum, count) => sum + count);
+  final groundCount = total - upperCount;
+  final desiredColumns = 4 + variant % 3 * 2;
+  final columns = desiredColumns.clamp(layers + 1, groundCount ~/ (layers + 1));
+  final positions = _groundPositions(groundCount, columns);
+  final coreStart = (columns - layers - 1) ~/ 2;
+  for (var layer = 1; layer < layers; layer++) {
+    final size = layers + 1 - layer;
+    for (var row = 0; row < size; row++) {
+      for (var column = 0; column < size; column++) {
         positions.add(
           MahjongPosition(
-            centered + column * 2 + layer % 2,
-            row * 2 + layer % 2,
+            (coreStart + column) * 2 + layer,
+            row * 2 + layer,
             layer,
           ),
         );
       }
-      remaining -= rowLength;
-      row++;
     }
   }
   return positions;
 }
+
+List<MahjongPosition> _groundPositions(int count, int columns) => [
+  for (var index = 0; index < count; index++)
+    MahjongPosition((index % columns) * 2, (index ~/ columns) * 2, 0),
+];
 
 extension LevelBiomeLabel on LevelBiome {
   String get label => switch (this) {
