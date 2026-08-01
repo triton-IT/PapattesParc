@@ -15,6 +15,22 @@ void main() {
     expect(campaign, hasLength(45));
     for (final level in campaign) {
       expect(level.layout.tileCount.isEven, isTrue);
+      for (final position in level.layout.positions.where(
+        (position) => position.layer > 0,
+      )) {
+        final supports = level.layout.positions.where(
+          (candidate) =>
+              candidate.layer == position.layer - 1 &&
+              (candidate.x - position.x).abs() < 2 &&
+              (candidate.y - position.y).abs() < 2,
+        );
+        expect(
+          supports,
+          hasLength(4),
+          reason:
+              'tuile sans support au niveau ${level.number}, couche ${position.layer}',
+        );
+      }
       final first = MahjongSession(
         layout: level.layout,
         biome: level.stage.biome,

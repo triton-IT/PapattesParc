@@ -57,19 +57,36 @@ void main() {
         matchesGoldenFile('../goldens/mahjong-custom-${_name(size)}.png'),
       );
 
+      final layeredLevel = campaign[17];
       final session = MahjongSession(
-        layout: campaign.first.layout,
-        biome: campaign.first.stage.biome,
+        layout: layeredLevel.layout,
+        biome: layeredLevel.stage.biome,
         seed: 41,
       );
-      await _pump(tester, size, _screen(session, finished: false));
+      await _pump(
+        tester,
+        size,
+        _screen(
+          session,
+          title: 'Niveau 18 · ${layeredLevel.layout.name}',
+          finished: false,
+        ),
+      );
       await expectLater(
         find.byType(Scaffold),
         matchesGoldenFile('../goldens/mahjong-mission-${_name(size)}.png'),
       );
 
       _finish(session);
-      await _pump(tester, size, _screen(session, finished: true));
+      await _pump(
+        tester,
+        size,
+        _screen(
+          session,
+          title: 'Niveau 18 · ${layeredLevel.layout.name}',
+          finished: true,
+        ),
+      );
       await expectLater(
         find.byType(Scaffold),
         matchesGoldenFile('../goldens/mahjong-result-${_name(size)}.png'),
@@ -116,24 +133,27 @@ void _finish(MahjongSession session) {
   }
 }
 
-MahjongScreen _screen(MahjongSession session, {required bool finished}) =>
-    MahjongScreen(
-      session: session,
-      title: 'Niveau 1 · Empreinte',
-      isFreeGame: false,
-      hintedIds: const {},
-      finished: finished,
-      newRecord: finished,
-      onSelect: (_) {},
-      onBlocked: () {},
-      onHint: () {},
-      onShuffle: () {},
-      onBack: () {},
-      onReplaySame: () {},
-      onReplayNew: () {},
-      onLevels: () {},
-      onConfigure: null,
-      onNext: () {},
-    );
+MahjongScreen _screen(
+  MahjongSession session, {
+  required String title,
+  required bool finished,
+}) => MahjongScreen(
+  session: session,
+  title: title,
+  isFreeGame: false,
+  hintedIds: const {},
+  finished: finished,
+  newRecord: finished,
+  onSelect: (_) {},
+  onBlocked: () {},
+  onHint: () {},
+  onShuffle: () {},
+  onBack: () {},
+  onReplaySame: () {},
+  onReplayNew: () {},
+  onLevels: () {},
+  onConfigure: null,
+  onNext: () {},
+);
 
 String _name(Size size) => '${size.width.toInt()}x${size.height.toInt()}';

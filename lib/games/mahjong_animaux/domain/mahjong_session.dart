@@ -184,7 +184,7 @@ class MahjongSession {
   List<({int first, int second})>? _removalOrder(List<bool> source) {
     final present = List<bool>.from(source);
     final order = <({int first, int second})>[];
-    bool search() {
+    while (present.where((value) => value).isNotEmpty) {
       final free =
           [
             for (var id = 0; id < present.length; id++)
@@ -195,22 +195,14 @@ class MahjongSession {
             ).layer.compareTo(_tilesOrPosition(first).layer);
             return layer != 0 ? layer : first.compareTo(second);
           });
-      if (free.isEmpty) return true;
-      if (free.length < 2) return false;
+      if (free.length < 2) return null;
       final first = free.first;
-      for (final second in free.skip(1).toList().reversed) {
-        present[first] = false;
-        present[second] = false;
-        order.add((first: first, second: second));
-        if (search()) return true;
-        order.removeLast();
-        present[first] = true;
-        present[second] = true;
-      }
-      return false;
+      final second = free.last;
+      present[first] = false;
+      present[second] = false;
+      order.add((first: first, second: second));
     }
-
-    return search() ? order : null;
+    return order;
   }
 
   MahjongPosition _tilesOrPosition(int id) =>
