@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum GameHelpKind { refuge, match3, mahjong }
+enum GameHelpKind { refuge, match3, mahjong, solitaire }
 
 class GameHelpButton extends StatelessWidget {
   const GameHelpButton({required this.kind, this.color, super.key});
@@ -51,6 +51,7 @@ class GameHelpButton extends StatelessWidget {
     GameHelpKind.refuge => 'Balises du refuge',
     GameHelpKind.match3 => 'Pattes & Friandises',
     GameHelpKind.mahjong => 'Mahjong des animaux',
+    GameHelpKind.solitaire => 'Solitaire des animaux',
   };
 
   List<String> get _items => switch (kind) {
@@ -68,6 +69,11 @@ class GameHelpButton extends StatelessWidget {
       'Sélectionne deux animaux identiques pour retirer leur paire.',
       'Une tuile est libre si aucune tuile ne la recouvre et si au moins un de ses côtés est dégagé.',
       'Utilise un indice ou un mélange si tu bloques. Pince pour zoomer et déplace le plateau pour explorer les grandes dispositions.',
+    ],
+    GameHelpKind.solitaire => const [
+      'Construis les quatre fondations de l’as au roi, une enseigne par pile.',
+      'Sur le tableau, pose les cartes en ordre décroissant en alternant les couleurs. Seul un roi peut ouvrir une colonne vide.',
+      'Touche deux emplacements ou fais glisser une carte. Un double toucher l’envoie vers sa fondation. Annulation et indice restent disponibles.',
     ],
   };
 }

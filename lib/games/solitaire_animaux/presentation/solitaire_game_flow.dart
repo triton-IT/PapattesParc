@@ -1,0 +1,382 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import '../../../shared/animal_catalog.dart';
+import '../../../shared/game_audio.dart';
+import '../../../shared/park_catalog.dart';
+import '../../../shared/settings_store.dart';
+import '../data/solitaire_progress_store.dart';
+import '../domain/models.dart';
+import '../domain/solitaire_session.dart';
+import 'game_screen.dart';
+import 'setup_screen.dart';
+
+enum _SolitaireScreen { setup, playing }
+
+class SolitaireGameFlow extends StatefulWidget {
+  const SolitaireGameFlow({
+    required this.progress,
+    required this.settings,
+    required this.onExit,
+    super.key,
+  });
+
+  final SolitaireProgressStore progress;
+  final SettingsStore settings;
+  final VoidCallback onExit;
+
+  @override
+  State<SolitaireGameFlow> createState() => _SolitaireGameFlowState();
+}
+
+class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
+  _SolitaireScreen _screen = _SolitaireScreen.setup;
+  late SolitaireMode _mode;
+  late AnimalKind _animal;
+  late bool _musicEnabled;
+  late bool _effectsEnabled;
+  late final GameAudio _audio;
+  SolitaireSession? _session;
+  CardLocation? _selected;
+  SolitaireHint? _hint;
+  Timer? _ticker;
+  Timer? _hintTimer;
+  bool _finished = false;
+  bool _autoFinishing = false;
+  bool _newRecord = false;
+  int _nonce = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _mode = widget.progress.mode;
+    _animal = widget.progress.backAnimal;
+    _musicEnabled = widget.settings.musicEnabled;
+    _effectsEnabled = widget.settings.effectsEnabled;
+    _audio = GameAudio(
+      musicEnabled: _musicEnabled,
+      effectsEnabled: _effectsEnabled,
+    );
+    unawaited(_audio.initialize());
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_autoFinishing || _session?.status != SolitaireStatus.playing) return;
+      setState(() => _session!.tick(const Duration(seconds: 1)));
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    _hintTimer?.cancel();
+    unawaited(_audio.dispose());
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => switch (_screen) {
+    _SolitaireScreen.setup => _handleBack(
+      widget.onExit,
+      SolitaireSetupScreen(
+        progress: widget.progress,
+        mode: _mode,
+        animal: _animal,
+        musicEnabled: _musicEnabled,
+        effectsEnabled: _effectsEnabled,
+        onModeChanged: _setMode,
+        onAnimalChanged: _setAnimal,
+        onToggleMusic: () => unawaited(_toggleMusic()),
+        onToggleEffects: () => unawaited(_toggleEffects()),
+        onStart: _startGame,
+        onExit: widget.onExit,
+      ),
+    ),
+    _SolitaireScreen.playing => _handleBack(
+      () => unawaited(_requestBack()),
+      AbsorbPointer(
+        absorbing: _autoFinishing,
+        child: SolitaireGameScreen(
+          session: _session!,
+          backAnimal: _animal,
+          selected: _selected,
+          hint: _hint,
+          finished: _finished,
+          newRecord: _newRecord,
+          onDraw: _draw,
+          onCardTap: _tapCard,
+          onDoubleTap: _autoFoundation,
+          onMove: _move,
+          onUndo: _undo,
+          onHint: _showHint,
+          onBack: () => unawaited(_requestBack()),
+          onNewGame: () => unawaited(_requestNewGame()),
+          onReplay: _startGame,
+          onConfigure: _showSetup,
+          onExit: widget.onExit,
+        ),
+      ),
+    ),
+  };
+
+  void _setMode(SolitaireMode value) {
+    setState(() => _mode = value);
+    unawaited(widget.progress.setMode(value));
+  }
+
+  void _setAnimal(AnimalKind value) {
+    setState(() => _animal = value);
+    unawaited(widget.progress.setBackAnimal(value));
+    unawaited(_audio.playEffect(SoundEffect.click));
+  }
+
+  void _startGame() {
+    unawaited(widget.progress.setMode(_mode));
+    unawaited(widget.progress.setBackAnimal(_animal));
+    _session = SolitaireSession(mode: _mode, seed: _newSeed());
+    _selected = null;
+    _hint = null;
+    _finished = false;
+    _autoFinishing = false;
+    _newRecord = false;
+    unawaited(_audio.playLevel(AnimalTemperament.peaceful));
+    setState(() => _screen = _SolitaireScreen.playing);
+  }
+
+  int _newSeed() => DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919;
+
+  void _draw() {
+    if (!_session!.draw()) return;
+    _clearSelection();
+    unawaited(_audio.playEffect(SoundEffect.reveal));
+    setState(() {});
+  }
+
+  void _tapCard(CardLocation location) {
+    final current = _selected;
+    if (current != null) {
+      if (current == location) {
+        setState(_clearSelection);
+        return;
+      }
+      final target = switch (location.area) {
+        CardArea.tableau => CardLocation.tableau(location.pile, -1),
+        CardArea.foundation => location,
+        _ => null,
+      };
+      if (target != null) {
+        final move = SolitaireMove(current, target);
+        if (_session!.canMove(move)) {
+          _move(move);
+          return;
+        }
+      }
+    }
+    if (_isSource(location)) {
+      setState(() {
+        _selected = location;
+        _hint = null;
+      });
+      unawaited(_audio.playEffect(SoundEffect.click));
+      return;
+    }
+    _blocked('Cette carte ne peut pas être déplacée ici.');
+  }
+
+  bool _isSource(CardLocation location) => switch (location.area) {
+    CardArea.waste => _session!.waste.isNotEmpty,
+    CardArea.foundation => _session!.foundations[location.pile].isNotEmpty,
+    CardArea.tableau =>
+      location.card >= 0 &&
+          _session!.tableau[location.pile][location.card].faceUp,
+    CardArea.stock => false,
+  };
+
+  void _autoFoundation(CardLocation source) {
+    if (!_session!.moveToFoundation(source)) {
+      _blocked(
+        'La fondation attend une carte plus petite de la même enseigne.',
+      );
+      return;
+    }
+    _afterMove();
+  }
+
+  void _move(SolitaireMove move) {
+    if (!_session!.move(move)) {
+      _blocked(
+        'Alterne les couleurs en ordre décroissant. Seul un roi ouvre une colonne.',
+      );
+      return;
+    }
+    _afterMove();
+  }
+
+  void _afterMove() {
+    _clearSelection();
+    unawaited(_audio.playEffect(SoundEffect.click));
+    if (_session!.status == SolitaireStatus.won) {
+      unawaited(_finish());
+      setState(() {});
+      return;
+    }
+    setState(() {});
+    unawaited(_startAutoFinish());
+  }
+
+  Future<void> _startAutoFinish() async {
+    final session = _session!;
+    if (!session.prepareAutoFinish()) return;
+    setState(() => _autoFinishing = true);
+    _toast('Finition automatique…');
+    while (mounted && identical(_session, session) && _autoFinishing) {
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted || !identical(_session, session) || !_autoFinishing) return;
+      if (!session.autoFinishStep()) break;
+      setState(() {});
+    }
+    if (!mounted || !identical(_session, session)) return;
+    _autoFinishing = false;
+    if (session.status == SolitaireStatus.won) await _finish();
+  }
+
+  void _undo() {
+    if (!_session!.undo()) return;
+    _clearSelection();
+    unawaited(_audio.playEffect(SoundEffect.click));
+    setState(() {});
+  }
+
+  void _showHint() {
+    final value = _session!.hint();
+    if (value == null) {
+      unawaited(_showBlockedGame());
+      return;
+    }
+    _hintTimer?.cancel();
+    setState(() => _hint = value);
+    _toast(value.message);
+    _hintTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _hint = null);
+    });
+  }
+
+  Future<void> _finish() async {
+    if (_finished) return;
+    _newRecord = await widget.progress.complete(_mode, _session!.elapsed);
+    unawaited(_audio.playEffect(SoundEffect.win));
+    if (mounted) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      setState(() => _finished = true);
+    }
+  }
+
+  Future<void> _requestBack() async {
+    if (_autoFinishing) return;
+    if (_session!.hasMoved && !_finished && !await _confirmAbandon()) return;
+    _showSetup();
+  }
+
+  Future<void> _requestNewGame() async {
+    if (_autoFinishing) return;
+    if (_session!.hasMoved && !_finished && !await _confirmAbandon()) return;
+    _startGame();
+  }
+
+  Future<bool> _confirmAbandon() async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Abandonner cette partie ?'),
+          content: const Text('La progression de cette donne sera perdue.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Continuer'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Abandonner'),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+
+  Future<void> _showBlockedGame() => showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Aucun mouvement utile'),
+      content: const Text(
+        'Cette donne est bloquée. Annule un coup ou commence une nouvelle donne.',
+      ),
+      actions: [
+        if (_session!.canUndo)
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _undo();
+            },
+            child: const Text('Annuler un coup'),
+          ),
+        FilledButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _startGame();
+          },
+          child: const Text('Nouvelle donne'),
+        ),
+      ],
+    ),
+  );
+
+  void _showSetup() {
+    unawaited(_audio.playHome());
+    setState(() {
+      _screen = _SolitaireScreen.setup;
+      _session = null;
+      _autoFinishing = false;
+      _clearSelection();
+    });
+  }
+
+  void _clearSelection() {
+    _selected = null;
+    _hint = null;
+    _hintTimer?.cancel();
+  }
+
+  void _blocked(String message) {
+    unawaited(_audio.playEffect(SoundEffect.blocked));
+    _toast(message);
+  }
+
+  void _toast(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+      );
+  }
+
+  Future<void> _toggleMusic() async {
+    final value = !_musicEnabled;
+    setState(() => _musicEnabled = value);
+    await widget.settings.setMusicEnabled(value);
+    await _audio.setMusicEnabled(value);
+  }
+
+  Future<void> _toggleEffects() async {
+    final value = !_effectsEnabled;
+    setState(() => _effectsEnabled = value);
+    await widget.settings.setEffectsEnabled(value);
+    _audio.setEffectsEnabled(value);
+  }
+
+  Widget _handleBack(VoidCallback onBack, Widget child) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, _) {
+      if (!didPop) onBack();
+    },
+    child: child,
+  );
+}

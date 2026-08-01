@@ -11,6 +11,8 @@ import '../games/mahjong_animaux/presentation/mahjong_game_flow.dart';
 import '../games/refuge/data/progress_store.dart';
 import '../games/refuge/domain/levels.dart';
 import '../games/refuge/presentation/game_app.dart';
+import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
+import '../games/solitaire_animaux/presentation/solitaire_game_flow.dart';
 import '../shared/app_theme.dart';
 import '../shared/settings_store.dart';
 import 'main_menu_screen.dart';
@@ -22,6 +24,7 @@ class PapatteParcApp extends StatelessWidget {
     required this.refugeStore,
     required this.match3Store,
     required this.mahjongStore,
+    required this.solitaireStore,
     required this.settings,
     super.key,
   });
@@ -29,6 +32,7 @@ class PapatteParcApp extends StatelessWidget {
   final ProgressStore refugeStore;
   final Match3ProgressStore match3Store;
   final MahjongProgressStore mahjongStore;
+  final SolitaireProgressStore solitaireStore;
   final SettingsStore settings;
 
   @override
@@ -40,6 +44,7 @@ class PapatteParcApp extends StatelessWidget {
       refugeStore: refugeStore,
       match3Store: match3Store,
       mahjongStore: mahjongStore,
+      solitaireStore: solitaireStore,
       settings: settings,
     ),
   );
@@ -50,12 +55,14 @@ class _AppFlow extends StatefulWidget {
     required this.refugeStore,
     required this.match3Store,
     required this.mahjongStore,
+    required this.solitaireStore,
     required this.settings,
   });
 
   final ProgressStore refugeStore;
   final Match3ProgressStore match3Store;
   final MahjongProgressStore mahjongStore;
+  final SolitaireProgressStore solitaireStore;
   final SettingsStore settings;
 
   @override
@@ -83,10 +90,16 @@ class _AppFlowState extends State<_AppFlow> {
       settings: widget.settings,
       onExit: _showMenu,
     ),
+    GameId.solitaireAnimaux => SolitaireGameFlow(
+      progress: widget.solitaireStore,
+      settings: widget.settings,
+      onExit: _showMenu,
+    ),
     null => MainMenuScreen(
       refugeStore: widget.refugeStore,
       match3Store: widget.match3Store,
       mahjongStore: widget.mahjongStore,
+      solitaireStore: widget.solitaireStore,
       musicEnabled: widget.settings.musicEnabled,
       effectsEnabled: widget.settings.effectsEnabled,
       onSelect: (game) => setState(() => _selectedGame = game),

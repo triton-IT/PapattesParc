@@ -27,6 +27,7 @@ flutter:
     - assets/match3/
     - assets/match3/animals/
     - assets/mahjong/
+    - assets/solitaire/
   fonts:
     - family: Nunito
       fonts:

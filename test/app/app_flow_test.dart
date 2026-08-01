@@ -18,13 +18,14 @@ import 'package:papatte_parc/games/refuge/domain/game_session.dart';
 import 'package:papatte_parc/games/refuge/domain/levels.dart';
 import 'package:papatte_parc/games/refuge/domain/models.dart';
 import 'package:papatte_parc/games/refuge/presentation/game_screen.dart';
+import 'package:papatte_parc/games/solitaire_animaux/data/solitaire_progress_store.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
 import 'package:papatte_parc/shared/animal_colors.dart';
 import 'package:papatte_parc/shared/settings_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('le menu principal ouvre les trois jeux', (tester) async {
+  testWidgets('le menu principal ouvre les quatre jeux', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final refugeStore = await ProgressStore.load();
     await _pumpRoot(tester, refugeStore, const Size(1366, 768));
@@ -50,6 +51,62 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('mahjong-board')), findsOneWidget);
   });
+
+  testWidgets(
+    'le solitaire mémorise sa configuration et lance les deux modes',
+    (tester) async {
+      for (final size in _referenceSizes) {
+        SharedPreferences.setMockInitialValues({});
+        final store = await ProgressStore.load();
+        await _pumpRoot(tester, store, size);
+
+        if (find
+            .byKey(const Key('game-solitaire-animaux'))
+            .evaluate()
+            .isEmpty) {
+          await tester.scrollUntilVisible(
+            find.byKey(const Key('game-solitaire-animaux')),
+            400,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.drag(find.byType(ListView).first, const Offset(0, -180));
+          await tester.pump();
+        }
+        await tester.tap(find.byKey(const Key('game-solitaire-animaux')));
+        await tester.pump();
+        expect(find.byKey(const Key('solitaire-setup')), findsOneWidget);
+        expect(
+          find.byKey(const Key('solitaire-animal-suricate')),
+          findsOneWidget,
+        );
+
+        await tester.tap(find.text('Pioche 3 cartes').first);
+        await tester.pump();
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('solitaire-animal-panthereNeiges')),
+          400,
+          scrollable: find.byType(Scrollable).last,
+        );
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -140));
+        await tester.pump();
+        await tester.tap(
+          find.byKey(const Key('solitaire-animal-panthereNeiges')),
+        );
+        await tester.pump();
+        await tester.tap(find.byKey(const Key('solitaire-start')));
+        await tester.pump();
+
+        expect(find.byKey(const Key('solitaire-board')), findsOneWidget);
+        expect(find.byKey(const Key('solitaire-stock')), findsOneWidget);
+        expect(find.byKey(const Key('solitaire-tableau-6')), findsOneWidget);
+        expect(tester.takeException(), isNull, reason: '$size');
+
+        final solitaireStore = await SolitaireProgressStore.load();
+        expect(solitaireStore.mode.name, 'drawThree');
+        expect(solitaireStore.backAnimal.name, 'panthereNeiges');
+      }
+    },
+  );
 
   testWidgets('le bouton quitter est réservé à Windows', (tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -584,6 +641,7 @@ Future<void> _pumpApp(
       refugeStore: store,
       match3Store: await Match3ProgressStore.load(),
       mahjongStore: await MahjongProgressStore.load(),
+      solitaireStore: await SolitaireProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
@@ -606,6 +664,7 @@ Future<void> _pumpRoot(
       refugeStore: store,
       match3Store: await Match3ProgressStore.load(),
       mahjongStore: await MahjongProgressStore.load(),
+      solitaireStore: await SolitaireProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
