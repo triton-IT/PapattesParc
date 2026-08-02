@@ -1,3 +1,5 @@
+import '../../../shared/park_catalog.dart';
+
 enum SolitaireMode {
   drawOne(1, 'Pioche 1 carte'),
   drawThree(3, 'Pioche 3 cartes');
@@ -6,6 +8,28 @@ enum SolitaireMode {
 
   final int drawCount;
   final String label;
+}
+
+class SolitaireLevelDefinition {
+  const SolitaireLevelDefinition({
+    required this.stage,
+    required this.mode,
+    required this.seed,
+    required this.targetRedeals,
+  });
+
+  final ParkStage stage;
+  final SolitaireMode mode;
+  final int seed;
+  final int targetRedeals;
+
+  int get number => stage.number;
+}
+
+int solitaireFootprints(SolitaireLevelDefinition level, int redeals) {
+  if (redeals <= level.targetRedeals) return 3;
+  if (redeals == level.targetRedeals + 1) return 2;
+  return 1;
 }
 
 enum CardSuit { hearts, diamonds, clubs, spades }

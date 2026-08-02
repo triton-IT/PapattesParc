@@ -17,6 +17,38 @@ enum BlockerKind { leaves, mud, vines, ice }
 
 enum Match3GoalKind { collectAnimal, clearBlockers, deliverBaskets }
 
+enum Match3Difficulty { easy, medium, hard }
+
+extension Match3DifficultyLabel on Match3Difficulty {
+  String get label => switch (this) {
+    Match3Difficulty.easy => 'Facile',
+    Match3Difficulty.medium => 'Moyen',
+    Match3Difficulty.hard => 'Difficile',
+  };
+}
+
+enum Match3FreeGoal { collectAnimal, clearBlockers, deliverBaskets }
+
+extension Match3FreeGoalLabel on Match3FreeGoal {
+  String get label => switch (this) {
+    Match3FreeGoal.collectAnimal => 'Rassembler des animaux',
+    Match3FreeGoal.clearBlockers => 'Nettoyer un habitat',
+    Match3FreeGoal.deliverBaskets => 'Livrer des paniers',
+  };
+}
+
+class Match3FreeGameConfig {
+  const Match3FreeGameConfig({
+    required this.goal,
+    required this.difficulty,
+    required this.biome,
+  });
+
+  final Match3FreeGoal goal;
+  final Match3Difficulty difficulty;
+  final LevelBiome biome;
+}
+
 class Match3Position {
   const Match3Position(this.x, this.y);
 

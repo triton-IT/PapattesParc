@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:papatte_parc/app/main_menu_screen.dart';
 import 'package:papatte_parc/games/pattes_friandises/data/match3_progress_store.dart';
-import 'package:papatte_parc/games/mahjong_animaux/data/mahjong_progress_store.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/campaign.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/match3_session.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/models.dart';
@@ -19,7 +17,11 @@ import 'package:papatte_parc/games/refuge/domain/models.dart';
 import 'package:papatte_parc/games/refuge/presentation/custom_game_screen.dart';
 import 'package:papatte_parc/games/refuge/presentation/game_screen.dart';
 import 'package:papatte_parc/games/refuge/presentation/home_screen.dart';
-import 'package:papatte_parc/games/solitaire_animaux/data/solitaire_progress_store.dart';
+import 'package:papatte_parc/games/sudoku_animaux/data/sudoku_progress_store.dart';
+import 'package:papatte_parc/games/sudoku_animaux/domain/campaign.dart';
+import 'package:papatte_parc/games/sudoku_animaux/domain/sudoku_session.dart';
+import 'package:papatte_parc/games/sudoku_animaux/presentation/level_select_screen.dart';
+import 'package:papatte_parc/games/sudoku_animaux/presentation/sudoku_screen.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,32 +39,11 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = await ProgressStore.load();
     final match3Store = await Match3ProgressStore.load();
-    final mahjongStore = await MahjongProgressStore.load();
-    final solitaireStore = await SolitaireProgressStore.load();
+    final sudokuStore = await SudokuProgressStore.load();
     final level = levels.first;
     final match3Levels = buildMatch3Campaign(levels);
+    final sudokuLevels = buildSudokuCampaign(levels);
     for (final size in _sizes) {
-      await _pump(
-        tester,
-        size,
-        MainMenuScreen(
-          refugeStore: store,
-          match3Store: match3Store,
-          mahjongStore: mahjongStore,
-          solitaireStore: solitaireStore,
-          musicEnabled: true,
-          effectsEnabled: true,
-          onSelect: (_) {},
-          onToggleMusic: () {},
-          onToggleEffects: () {},
-          onQuit: null,
-        ),
-      );
-      await expectLater(
-        find.byType(Scaffold),
-        matchesGoldenFile('../goldens/menu-${_name(size)}.png'),
-      );
-
       await _pump(
         tester,
         size,
@@ -151,8 +132,10 @@ void main() {
           effectsEnabled: true,
           onBack: () {},
           onPlay: (_) {},
+          onCustom: () {},
           onToggleMusic: () {},
           onToggleEffects: () {},
+          onQuit: () {},
         ),
       );
       await expectLater(
@@ -197,6 +180,90 @@ void main() {
         find.byType(Scaffold),
         matchesGoldenFile('../goldens/match3-result-${_name(size)}.png'),
       );
+
+      await _pump(
+        tester,
+        size,
+        SudokuLevelSelectScreen(
+          levels: sudokuLevels,
+          store: sudokuStore,
+          musicEnabled: true,
+          effectsEnabled: true,
+          onBack: () {},
+          onPlay: (_) {},
+          onCustom: () {},
+          onToggleMusic: () {},
+          onToggleEffects: () {},
+          onQuit: () {},
+        ),
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('../goldens/sudoku-levels-${_name(size)}.png'),
+      );
+
+      final sudokuSession = SudokuSession(sudokuLevels[30]);
+      final selected = sudokuSession.entries.indexOf(null);
+      sudokuSession.toggleNote(
+        selected,
+        sudokuSession.level.solution[selected],
+      );
+      await _pump(
+        tester,
+        size,
+        SudokuScreen(
+          session: sudokuSession,
+          selectedIndex: selected,
+          noteMode: true,
+          wrongIndex: null,
+          finished: false,
+          newRecord: false,
+          onSelectCell: (_) {},
+          onSelectAnimal: (_) {},
+          onToggleNotes: () {},
+          onClear: () {},
+          onHint: () {},
+          onBack: () {},
+          onReplay: () {},
+          onLevels: () {},
+          onNext: () {},
+        ),
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('../goldens/sudoku-mission-${_name(size)}.png'),
+      );
+
+      for (var index = 0; index < sudokuSession.entries.length; index++) {
+        if (sudokuSession.entries[index] == null) {
+          sudokuSession.place(index, sudokuSession.level.solution[index]);
+        }
+      }
+      await _pump(
+        tester,
+        size,
+        SudokuScreen(
+          session: sudokuSession,
+          selectedIndex: null,
+          noteMode: false,
+          wrongIndex: null,
+          finished: true,
+          newRecord: true,
+          onSelectCell: (_) {},
+          onSelectAnimal: (_) {},
+          onToggleNotes: () {},
+          onClear: () {},
+          onHint: () {},
+          onBack: () {},
+          onReplay: () {},
+          onLevels: () {},
+          onNext: () {},
+        ),
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('../goldens/sudoku-result-${_name(size)}.png'),
+      );
     }
   }, skip: !Platform.isWindows);
 }
@@ -233,6 +300,7 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
     'assets/match3/animals/girafe.png',
     'assets/match3/animals/zebre.png',
     'assets/match3/animals/guepard.png',
+    for (final animal in AnimalKind.values) animal.asset,
   ]) {
     await tester.runAsync(
       () => precacheImage(

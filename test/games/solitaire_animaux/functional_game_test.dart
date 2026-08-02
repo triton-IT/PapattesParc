@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:papatte_parc/games/refuge/domain/levels.dart' as park;
 import 'package:papatte_parc/games/solitaire_animaux/data/solitaire_progress_store.dart';
+import 'package:papatte_parc/games/solitaire_animaux/domain/campaign.dart';
 import 'package:papatte_parc/games/solitaire_animaux/domain/models.dart';
 import 'package:papatte_parc/games/solitaire_animaux/domain/solitaire_session.dart';
 import 'package:papatte_parc/games/solitaire_animaux/presentation/game_screen.dart';
@@ -8,7 +10,58 @@ import 'package:papatte_parc/shared/animal_catalog.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../tool/check_solitaire_greedy.dart';
+
 void main() {
+  test('les 45 missions sont déterministes et réalisables', () {
+    final campaign = buildSolitaireCampaign(park.levels);
+    final rebuilt = buildSolitaireCampaign(park.levels);
+    expect(campaign, hasLength(45));
+    expect(
+      campaign.map((level) => level.number),
+      orderedEquals([for (var level = 1; level <= 45; level++) level]),
+    );
+    expect(campaign.map((level) => level.seed).toSet(), hasLength(45));
+    expect(
+      campaign.take(15).every((level) => level.mode == SolitaireMode.drawOne),
+      isTrue,
+    );
+    expect(
+      campaign
+          .skip(15)
+          .take(15)
+          .every((level) => level.mode == SolitaireMode.drawThree),
+      isTrue,
+    );
+    for (var index = 30; index < 45; index++) {
+      expect(
+        campaign[index].mode,
+        campaign[index].number.isOdd
+            ? SolitaireMode.drawOne
+            : SolitaireMode.drawThree,
+      );
+    }
+    for (var index = 0; index < campaign.length; index++) {
+      final level = campaign[index];
+      expect(rebuilt[index].seed, level.seed);
+      expect(rebuilt[index].targetRedeals, level.targetRedeals);
+      final solution = solveSolitaireDeal(level.mode, level.seed);
+      expect(solution, isNotNull, reason: 'niveau ${level.number}');
+      expect(
+        solution!.redealCount,
+        lessThanOrEqualTo(level.targetRedeals),
+        reason: 'niveau ${level.number}',
+      );
+    }
+  });
+
+  test('les empreintes dépendent uniquement des recyclages', () {
+    final level = buildSolitaireCampaign(park.levels).first;
+    expect(solitaireFootprints(level, level.targetRedeals), 3);
+    expect(solitaireFootprints(level, level.targetRedeals + 1), 2);
+    expect(solitaireFootprints(level, level.targetRedeals + 2), 1);
+  });
+
   test(
     'la donne contient les 52 cartes une seule fois dans les deux modes',
     () {
@@ -50,6 +103,9 @@ void main() {
       expect(session.draw(), isTrue);
       expect(session.waste, isEmpty);
       expect(session.stock.last.id, firstDrawn);
+      expect(session.redealCount, 1);
+      expect(session.undo(), isTrue);
+      expect(session.redealCount, 1);
     }
   });
 
@@ -175,6 +231,9 @@ void main() {
         home: SolitaireGameScreen(
           session: session,
           backAnimal: AnimalKind.suricate,
+          backgroundAsset: AnimalKind.suricate.backgroundAsset,
+          level: null,
+          footprints: 0,
           selected: null,
           hint: session.hint(),
           finished: false,
@@ -189,7 +248,8 @@ void main() {
           onNewGame: () {},
           onReplay: () {},
           onConfigure: () {},
-          onExit: () {},
+          onLevels: () {},
+          onNext: null,
         ),
       ),
     );
@@ -208,6 +268,91 @@ void main() {
 
     expect(borderColor(45), AppColors.success);
     expect(borderColor(44), AppColors.sun);
+  });
+
+  testWidgets('le résultat de campagne propose les actions du parcours', (
+    tester,
+  ) async {
+    final campaign = buildSolitaireCampaign(park.levels);
+    final level = campaign.first;
+    final session = SolitaireSession(mode: level.mode, seed: level.seed)
+      ..redealCount = level.targetRedeals
+      ..tick(const Duration(minutes: 3));
+    var replayed = false;
+    var openedLevels = false;
+    var openedNext = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildAppTheme(),
+        home: SolitaireGameScreen(
+          session: session,
+          backAnimal: AnimalKind.suricate,
+          backgroundAsset: level.stage.artAsset!,
+          level: level,
+          footprints: 3,
+          selected: null,
+          hint: null,
+          finished: true,
+          newRecord: true,
+          onDraw: () {},
+          onCardTap: (_) {},
+          onDoubleTap: (_) {},
+          onMove: (_) {},
+          onUndo: () {},
+          onHint: () {},
+          onBack: () {},
+          onNewGame: () {},
+          onReplay: () => replayed = true,
+          onConfigure: null,
+          onLevels: () => openedLevels = true,
+          onNext: () => openedNext = true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('NIVEAU 1 RÉUSSI !'), findsOneWidget);
+    expect(
+      find.textContaining('objectif ${level.targetRedeals}'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const Key('solitaire-replay')));
+    await tester.tap(find.byKey(const Key('solitaire-next-level')));
+    await tester.tap(find.byKey(const Key('solitaire-result-levels')));
+    expect(replayed, isTrue);
+    expect(openedNext, isTrue);
+    expect(openedLevels, isTrue);
+
+    final last = campaign.last;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildAppTheme(),
+        home: SolitaireGameScreen(
+          session: SolitaireSession(mode: last.mode, seed: last.seed),
+          backAnimal: AnimalKind.suricate,
+          backgroundAsset: last.stage.artAsset!,
+          level: last,
+          footprints: 1,
+          selected: null,
+          hint: null,
+          finished: true,
+          newRecord: false,
+          onDraw: () {},
+          onCardTap: (_) {},
+          onDoubleTap: (_) {},
+          onMove: (_) {},
+          onUndo: () {},
+          onHint: () {},
+          onBack: () {},
+          onNewGame: () {},
+          onReplay: () {},
+          onConfigure: null,
+          onLevels: () {},
+          onNext: null,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('solitaire-next-level')), findsNothing);
   });
 
   test('les préférences et records restent séparés par mode', () async {
@@ -236,6 +381,29 @@ void main() {
     expect(store.bestTime(SolitaireMode.drawOne), const Duration(minutes: 4));
     expect(store.bestTime(SolitaireMode.drawThree), const Duration(minutes: 8));
   });
+
+  test(
+    'la campagne conserve ses records séparément de la partie libre',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = await SolitaireProgressStore.load();
+      await store.complete(SolitaireMode.drawOne, const Duration(minutes: 4));
+      expect(
+        await store.completeLevel(1, const Duration(minutes: 6), 2),
+        isTrue,
+      );
+      expect(
+        await store.completeLevel(1, const Duration(minutes: 7), 3),
+        isFalse,
+      );
+      expect(store.unlockedLevel, 2);
+      expect(store.levelBestTime(1), const Duration(minutes: 6));
+      expect(store.levelFootprints(1), 3);
+      expect(store.totalFootprints, 3);
+      expect(store.wins(SolitaireMode.drawOne), 1);
+      expect(store.bestTime(SolitaireMode.drawOne), const Duration(minutes: 4));
+    },
+  );
 }
 
 SolitaireSession _foundationHintSession() {

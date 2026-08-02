@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
 
 import '../../../shared/animal_catalog.dart';
 import '../domain/models.dart';
@@ -26,6 +27,25 @@ class SolitaireProgressStore {
   int wins(SolitaireMode mode) =>
       _preferences.getInt('solitaire:wins:${mode.name}') ?? 0;
 
+  int get unlockedLevel =>
+      (_preferences.getInt('solitaire:unlockedLevel') ?? 1).clamp(1, 45);
+
+  Duration? levelBestTime(int level) {
+    final milliseconds = _preferences.getInt('solitaire:bestTime:$level');
+    return milliseconds == null ? null : Duration(milliseconds: milliseconds);
+  }
+
+  int levelFootprints(int level) =>
+      _preferences.getInt('solitaire:footprints:$level') ?? 0;
+
+  int get totalFootprints {
+    var total = 0;
+    for (var level = 1; level <= 45; level++) {
+      total += levelFootprints(level);
+    }
+    return total;
+  }
+
   Duration? bestTime(SolitaireMode mode) {
     final milliseconds = _preferences.getInt('solitaire:bestTime:${mode.name}');
     return milliseconds == null ? null : Duration(milliseconds: milliseconds);
@@ -46,5 +66,27 @@ class SolitaireProgressStore {
       elapsed.inMilliseconds,
     );
     return true;
+  }
+
+  Future<bool> completeLevel(
+    int level,
+    Duration elapsed,
+    int footprints,
+  ) async {
+    final current = levelBestTime(level);
+    final newRecord = current == null || elapsed < current;
+    if (newRecord) {
+      await _preferences.setInt(
+        'solitaire:bestTime:$level',
+        elapsed.inMilliseconds,
+      );
+    }
+    if (footprints > levelFootprints(level)) {
+      await _preferences.setInt('solitaire:footprints:$level', footprints);
+    }
+    if (level < 45 && unlockedLevel <= level) {
+      await _preferences.setInt('solitaire:unlockedLevel', min(45, level + 1));
+    }
+    return newRecord;
   }
 }

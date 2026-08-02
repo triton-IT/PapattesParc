@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../shared/animal_catalog.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
+import '../../../shared/free_game_theme.dart';
 import '../../../shared/game_help.dart';
-import '../../../shared/animal_background.dart';
 import '../data/solitaire_progress_store.dart';
 import '../domain/models.dart';
 import 'card_view.dart';
@@ -38,160 +38,89 @@ class SolitaireSetupScreen extends StatelessWidget {
   final VoidCallback onExit;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xfffff4dc),
-    body: AnimalBackground(
-      asset: animal.backgroundAsset,
-      child: SafeArea(
-        child: Column(
-          children: [
-            _Header(
-              musicEnabled: musicEnabled,
-              effectsEnabled: effectsEnabled,
-              onToggleMusic: onToggleMusic,
-              onToggleEffects: onToggleEffects,
-              onExit: onExit,
-            ),
-            Expanded(
-              child: CustomScrollView(
-                key: const Key('solitaire-setup'),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 940),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
-                          child: _Configuration(
-                            progress: progress,
-                            mode: mode,
-                            animal: animal,
-                            onModeChanged: onModeChanged,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 940),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 18),
-                          child: Text(
-                            'Choisis l’animal du verso',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
-                    sliver: SliverLayoutBuilder(
-                      builder: (context, constraints) {
-                        final width = constraints.crossAxisExtent.clamp(0, 940);
-                        final margin =
-                            (constraints.crossAxisExtent - width) / 2;
-                        return SliverPadding(
-                          padding: EdgeInsets.symmetric(horizontal: margin),
-                          sliver: SliverGrid(
-                            delegate: SliverChildBuilderDelegate((
-                              context,
-                              index,
-                            ) {
-                              final value = AnimalKind.values[index];
-                              return _AnimalChoice(
-                                animal: value,
-                                selected: value == animal,
-                                onTap: () => onAnimalChanged(value),
-                              );
-                            }, childCount: AnimalKind.values.length),
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 135,
-                                  mainAxisExtent: 116,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
-                child: FilledButton.icon(
-                  key: const Key('solitaire-start'),
-                  onPressed: onStart,
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('COMMENCER'),
+  Widget build(BuildContext context) => FreeGameScaffold(
+    backgroundAsset: animal.backgroundAsset,
+    title: 'Prépare ton solitaire',
+    subtitle: 'Choisis le mode de pioche et l’animal du verso.',
+    backKey: const Key('solitaire-exit'),
+    onBack: onExit,
+    maxContentWidth: 940,
+    child: Column(
+      key: const Key('solitaire-setup'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                tooltip: musicEnabled
+                    ? 'Couper la musique'
+                    : 'Activer la musique',
+                onPressed: onToggleMusic,
+                icon: Icon(
+                  musicEnabled
+                      ? Icons.music_note_rounded
+                      : Icons.music_off_rounded,
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-class _Header extends StatelessWidget {
-  const _Header({
-    required this.musicEnabled,
-    required this.effectsEnabled,
-    required this.onToggleMusic,
-    required this.onToggleEffects,
-    required this.onExit,
-  });
-
-  final bool musicEnabled;
-  final bool effectsEnabled;
-  final VoidCallback onToggleMusic;
-  final VoidCallback onToggleEffects;
-  final VoidCallback onExit;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(10, 8, 10, 2),
-    child: Row(
-      children: [
-        IconButton(
-          key: const Key('solitaire-exit'),
-          tooltip: 'Choisir un jeu',
-          onPressed: onExit,
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text(
-            'Solitaire des animaux',
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.headlineMedium,
+              IconButton(
+                tooltip: effectsEnabled
+                    ? 'Couper les effets sonores'
+                    : 'Activer les effets sonores',
+                onPressed: onToggleEffects,
+                icon: Icon(
+                  effectsEnabled
+                      ? Icons.volume_up_rounded
+                      : Icons.volume_off_rounded,
+                ),
+              ),
+              const GameHelpButton(kind: GameHelpKind.solitaire),
+            ],
           ),
         ),
-        IconButton(
-          tooltip: musicEnabled ? 'Couper la musique' : 'Activer la musique',
-          onPressed: onToggleMusic,
-          icon: Icon(
-            musicEnabled ? Icons.music_note_rounded : Icons.music_off_rounded,
-          ),
+        _Configuration(
+          progress: progress,
+          mode: mode,
+          animal: animal,
+          onModeChanged: onModeChanged,
         ),
-        IconButton(
-          tooltip: effectsEnabled
-              ? 'Couper les effets sonores'
-              : 'Activer les effets sonores',
-          onPressed: onToggleEffects,
-          icon: Icon(
-            effectsEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-          ),
+        const SizedBox(height: 22),
+        Text(
+          'Choisis l’animal du verso',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
-        const GameHelpButton(kind: GameHelpKind.solitaire),
+        const SizedBox(height: 12),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: AnimalKind.values.length,
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 135,
+            mainAxisExtent: 116,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemBuilder: (context, index) {
+            final value = AnimalKind.values[index];
+            return _AnimalChoice(
+              animal: value,
+              selected: value == animal,
+              onTap: () => onAnimalChanged(value),
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+        FilledButton.icon(
+          key: const Key('solitaire-start'),
+          onPressed: onStart,
+          style: FilledButton.styleFrom(backgroundColor: AppColors.success),
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: const Text('COMMENCER'),
+        ),
       ],
     ),
   );
@@ -211,66 +140,82 @@ class _Configuration extends StatelessWidget {
   final ValueChanged<SolitaireMode> onModeChanged;
 
   @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final preview = SizedBox(
-            width: 86,
-            height: 121,
-            child: CardBack(animal: animal),
-          );
-          final choices = Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'MODE DE PIOCHE',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              const SizedBox(height: 8),
-              SegmentedButton<SolitaireMode>(
-                key: const Key('solitaire-mode'),
-                segments: [
-                  for (final value in SolitaireMode.values)
-                    ButtonSegment(value: value, label: Text(value.label)),
-                ],
-                selected: {mode},
-                onSelectionChanged: (values) => onModeChanged(values.single),
-              ),
-              const SizedBox(height: 12),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxWidth < 560;
+      final preview = SizedBox(
+        width: 86,
+        height: 121,
+        child: CardBack(animal: animal),
+      );
+      final choices = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'MODE DE PIOCHE',
+            style: const TextStyle(
+              color: Color(0xffb9d8c9),
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: .8,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SegmentedButton<SolitaireMode>(
+            key: const Key('solitaire-mode'),
+            segments: [
               for (final value in SolitaireMode.values)
-                Text(
-                  '${value == SolitaireMode.drawOne ? '1 carte' : '3 cartes'} · '
-                  '${progress.wins(value)} victoire(s) · '
-                  '${progress.bestTime(value) == null ? 'aucun record' : 'record ${formatDuration(progress.bestTime(value)!)}'}',
-                  style: const TextStyle(
-                    color: AppColors.muted,
-                    fontWeight: FontWeight.w800,
+                ButtonSegment(
+                  value: value,
+                  label: Text(
+                    compact
+                        ? '${value.drawCount} carte${value.drawCount > 1 ? 's' : ''}'
+                        : value.label,
                   ),
                 ),
             ],
-          );
-          if (constraints.maxWidth < 560) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                preview,
-                const SizedBox(width: 14),
-                Expanded(child: choices),
-              ],
-            );
-          }
-          return Row(
-            children: [
-              preview,
-              const SizedBox(width: 22),
-              Expanded(child: choices),
-            ],
-          );
-        },
-      ),
-    ),
+            selected: {mode},
+            style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected)
+                    ? AppColors.deep
+                    : Colors.white,
+              ),
+              backgroundColor: WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected)
+                    ? AppColors.sun
+                    : Colors.transparent,
+              ),
+              side: const WidgetStatePropertyAll(
+                BorderSide(color: Colors.white70),
+              ),
+            ),
+            onSelectionChanged: (values) => onModeChanged(values.single),
+          ),
+          const SizedBox(height: 12),
+          for (final value in SolitaireMode.values)
+            Text(
+              '${value == SolitaireMode.drawOne ? '1 carte' : '3 cartes'} · '
+              '${progress.wins(value)} victoire(s) · '
+              '${progress.bestTime(value) == null ? 'aucun record' : 'record ${formatDuration(progress.bestTime(value)!)}'}',
+              style: const TextStyle(
+                color: Color(0xffe3eee8),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+        ],
+      );
+      if (compact) {
+        return Column(children: [preview, const SizedBox(height: 14), choices]);
+      }
+      return Row(
+        children: [
+          preview,
+          const SizedBox(width: 22),
+          Expanded(child: choices),
+        ],
+      );
+    },
   );
 }
 

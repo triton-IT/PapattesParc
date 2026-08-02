@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../shared/app_theme.dart';
+import '../../../shared/campaign_level_select_screen.dart';
 import '../../../shared/game_help.dart';
-import '../../../shared/park_journey_map.dart';
 import '../data/mahjong_progress_store.dart';
 import '../domain/models.dart';
 
@@ -17,6 +16,7 @@ class MahjongLevelSelectScreen extends StatelessWidget {
     required this.onCustom,
     required this.onToggleMusic,
     required this.onToggleEffects,
+    this.onQuit,
     super.key,
   });
 
@@ -29,103 +29,49 @@ class MahjongLevelSelectScreen extends StatelessWidget {
   final VoidCallback onCustom;
   final VoidCallback onToggleMusic;
   final VoidCallback onToggleEffects;
+  final VoidCallback? onQuit;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xfffff4dc),
-    body: SafeArea(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-            child: Row(
-              children: [
-                IconButton(
-                  key: const Key('mahjong-back-to-games'),
-                  tooltip: 'Choisir un jeu',
-                  onPressed: onBack,
-                  icon: const Icon(Icons.arrow_back_rounded),
-                ),
-                const CircleAvatar(
-                  backgroundColor: AppColors.sun,
-                  foregroundColor: AppColors.deep,
-                  child: Icon(Icons.view_module_rounded),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'MAHJONG DES ANIMAUX',
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Text(
-                        '${store.unlockedLevel} / 45 niveaux · ${store.totalFootprints} / 135 empreintes',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.muted,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  tooltip: musicEnabled
-                      ? 'Couper la musique'
-                      : 'Activer la musique',
-                  onPressed: onToggleMusic,
-                  icon: Icon(
-                    musicEnabled
-                        ? Icons.music_note_rounded
-                        : Icons.music_off_rounded,
-                  ),
-                ),
-                const GameHelpButton(kind: GameHelpKind.mahjong),
-                IconButton(
-                  tooltip: effectsEnabled
-                      ? 'Couper les effets sonores'
-                      : 'Activer les effets sonores',
-                  onPressed: onToggleEffects,
-                  icon: Icon(
-                    effectsEnabled
-                        ? Icons.volume_up_rounded
-                        : Icons.volume_off_rounded,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: ParkJourneyMap(
-                    key: const Key('mahjong-level-grid'),
-                    itemCount: levels.length,
-                    unlockedLevel: store.unlockedLevel,
-                    keyPrefix: 'mahjong',
-                    labelBuilder: (index) => levels[index].layout.name,
-                    onSelect: (index) => onPlay(levels[index]),
-                  ),
-                ),
-                Positioned(
-                  right: 16,
-                  bottom: 16,
-                  child: FilledButton.icon(
-                    key: const Key('mahjong-open-custom'),
-                    onPressed: onCustom,
-                    icon: const Icon(Icons.tune_rounded),
-                    label: const Text('PARTIE LIBRE'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final mission = levels[store.unlockedLevel - 1];
+    return CampaignLevelSelectScreen(
+      title: 'MAHJONG DES ANIMAUX',
+      tagline: 'Observe · Libère · Réunis',
+      icon: Icons.view_module_rounded,
+      helpKind: GameHelpKind.mahjong,
+      keyPrefix: 'mahjong',
+      itemCount: levels.length,
+      unlockedLevel: store.unlockedLevel,
+      progressLabel: 'DUOS RÉUNIS',
+      missionTitle: mission.stage.title,
+      missionSubtitle: mission.stage.species,
+      missionArtAsset: mission.stage.artAsset!,
+      missionStats: [
+        CampaignMissionStat(
+          Icons.view_module_rounded,
+          '${mission.layout.tileCount}',
+          'tuiles',
+        ),
+        CampaignMissionStat(
+          Icons.pets_rounded,
+          '${mission.layout.speciesCount}',
+          'espèces',
+        ),
+        CampaignMissionStat(
+          Icons.workspace_premium_rounded,
+          '${store.totalFootprints} / 135',
+          'empreintes',
+        ),
+      ],
+      labelBuilder: (index) => levels[index].layout.name,
+      musicEnabled: musicEnabled,
+      effectsEnabled: effectsEnabled,
+      onBack: onBack,
+      onPlay: (index) => onPlay(levels[index]),
+      onCustom: onCustom,
+      onToggleMusic: onToggleMusic,
+      onToggleEffects: onToggleEffects,
+      onQuit: onQuit,
+    );
+  }
 }

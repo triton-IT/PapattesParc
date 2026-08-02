@@ -102,15 +102,3 @@ List<MahjongPosition> _groundPositions(int count, int columns) => [
   for (var index = 0; index < count; index++)
     MahjongPosition((index % columns) * 2, (index ~/ columns) * 2, 0),
 ];
-
-extension LevelBiomeLabel on LevelBiome {
-  String get label => switch (this) {
-    LevelBiome.savanna => 'Savane',
-    LevelBiome.tropical => 'Forêt tropicale',
-    LevelBiome.riverside => 'Bord de rivière',
-    LevelBiome.woodland => 'Sous-bois',
-    LevelBiome.steppe => 'Steppe',
-    LevelBiome.mountain => 'Montagne',
-    LevelBiome.tundra => 'Toundra',
-  };
-}

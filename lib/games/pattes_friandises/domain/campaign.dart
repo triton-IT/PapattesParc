@@ -6,6 +6,63 @@ List<Match3LevelDefinition> buildMatch3Campaign(List<ParkStage> stages) => [
   for (final stage in stages) _buildLevel(stage),
 ];
 
+Match3LevelDefinition buildFreeMatch3Level(
+  ParkStage stage,
+  Match3FreeGameConfig config,
+) {
+  final difficulty = config.difficulty.index;
+  final animals = animalsByBiome[config.biome]!
+      .take(difficulty == 0 ? 5 : 6)
+      .toList();
+  final moves = [35, 28, 23][difficulty];
+  final targets = [15, 22, 30];
+  var blockers = const <BlockerPlacement>[];
+  var baskets = const <int>[];
+  final goals = switch (config.goal) {
+    Match3FreeGoal.collectAnimal => [
+      Match3Goal(
+        Match3GoalKind.collectAnimal,
+        targets[difficulty],
+        animals.first,
+      ),
+    ],
+    Match3FreeGoal.clearBlockers => () {
+      final layers = difficulty == 2 ? 2 : 1;
+      blockers = _place(
+        _pattern([8, 12, 16][difficulty]),
+        [BlockerKind.leaves, BlockerKind.mud, BlockerKind.ice][difficulty],
+        layers,
+      );
+      return [
+        Match3Goal(
+          Match3GoalKind.clearBlockers,
+          blockers.fold(0, (total, item) => total + item.layers),
+        ),
+      ];
+    }(),
+    Match3FreeGoal.deliverBaskets => () {
+      baskets = switch (difficulty) {
+        0 => const [1, 6],
+        1 => const [1, 4, 6],
+        _ => const [0, 2, 5, 7],
+      };
+      return [Match3Goal(Match3GoalKind.deliverBaskets, baskets.length)];
+    }(),
+  };
+  final baseline = goals.fold(0, (total, goal) => total + goal.target * 180);
+  return Match3LevelDefinition(
+    stage: stage,
+    animals: animals,
+    moves: moves,
+    goals: goals,
+    blockers: blockers,
+    inactiveCells: const {},
+    basketColumns: baskets,
+    twoFootprints: baseline,
+    threeFootprints: (baseline * 1.55).round(),
+  );
+}
+
 Match3LevelDefinition _buildLevel(ParkStage stage) {
   final chapter = (stage.number - 1) ~/ 5;
   final slot = (stage.number - 1) % 5;

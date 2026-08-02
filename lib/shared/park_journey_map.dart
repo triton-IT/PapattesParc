@@ -2,6 +2,82 @@ import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
 
+class ParkJourneyProgress extends StatelessWidget {
+  const ParkJourneyProgress({
+    required this.currentLevel,
+    required this.itemCount,
+    super.key,
+  });
+
+  final int currentLevel;
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 500;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: .92),
+        borderRadius: BorderRadius.circular(99),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x24245b4a),
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 9 : 13,
+          vertical: 11,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.verified_rounded,
+              color: AppColors.success,
+              size: 20,
+            ),
+            SizedBox(width: compact ? 4 : 7),
+            Text(
+              compact ? '$currentLevel/$itemCount' : '$currentLevel / $itemCount',
+              style: const TextStyle(
+                color: AppColors.deep,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ParkJourneyLegend extends StatelessWidget {
+  const ParkJourneyLegend({super.key});
+
+  @override
+  Widget build(BuildContext context) => const IgnorePointer(
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.touch_app_rounded, color: AppColors.primary, size: 18),
+        SizedBox(width: 7),
+        Text(
+          'Clique sur un point de la carte',
+          style: TextStyle(
+            color: AppColors.primary,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class ParkJourneyMap extends StatelessWidget {
   const ParkJourneyMap({
     required this.itemCount,

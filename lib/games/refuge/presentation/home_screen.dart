@@ -92,7 +92,11 @@ class HomeScreen extends StatelessWidget {
                           left: 12,
                           child: GameHelpButton(kind: GameHelpKind.refuge),
                         ),
-                        const Positioned(top: 8, right: 12, child: _MapLabel()),
+                        const Positioned(
+                          top: 8,
+                          right: 12,
+                          child: ParkJourneyLegend(),
+                        ),
                         Positioned(
                           right: 12,
                           bottom: 12,
@@ -115,7 +119,11 @@ class HomeScreen extends StatelessWidget {
                   left: 28,
                   child: GameHelpButton(kind: GameHelpKind.refuge),
                 ),
-                const Positioned(top: 88, right: 28, child: _MapLabel()),
+                const Positioned(
+                  top: 88,
+                  right: 28,
+                  child: ParkJourneyLegend(),
+                ),
                 Positioned(right: 28, bottom: 28, child: customGameButton),
                 Positioned(
                   left: 0,
@@ -230,7 +238,7 @@ class _ParkHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'PAPATTE PARC',
+                  'BALISES DU REFUGE',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -275,44 +283,10 @@ class _ParkHeader extends StatelessWidget {
             ),
           ),
           SizedBox(width: compact ? 5 : 8),
-          DecoratedBox(
+          ParkJourneyProgress(
             key: const Key('journey-progress'),
-            decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: .92),
-              borderRadius: BorderRadius.circular(99),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x24245b4a),
-                  blurRadius: 12,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: compact ? 9 : 13,
-                vertical: 11,
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.verified_rounded,
-                    color: AppColors.success,
-                    size: 20,
-                  ),
-                  SizedBox(width: compact ? 4 : 7),
-                  Text(
-                    compact
-                        ? '$unlockedLevel/${levels.length}'
-                        : '$unlockedLevel / ${levels.length}',
-                    style: const TextStyle(
-                      color: AppColors.deep,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            currentLevel: unlockedLevel,
+            itemCount: levels.length,
           ),
           if (onQuit != null) ...[
             SizedBox(width: compact ? 5 : 8),
@@ -520,29 +494,6 @@ class _MapSection extends StatelessWidget {
     selectedIndex: selectedIndex,
     unlockedLevel: unlockedLevel,
     onSelect: onSelect,
-  );
-}
-
-class _MapLabel extends StatelessWidget {
-  const _MapLabel();
-
-  @override
-  Widget build(BuildContext context) => const IgnorePointer(
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.touch_app_rounded, color: AppColors.primary, size: 18),
-        SizedBox(width: 7),
-        Text(
-          'Clique sur un point de la carte',
-          style: TextStyle(
-            color: AppColors.primary,
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    ),
   );
 }
 

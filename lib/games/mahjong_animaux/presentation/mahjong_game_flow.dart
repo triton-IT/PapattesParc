@@ -21,6 +21,7 @@ class MahjongGameFlow extends StatefulWidget {
     required this.progress,
     required this.settings,
     required this.onExit,
+    this.onQuit,
     super.key,
   });
 
@@ -28,6 +29,7 @@ class MahjongGameFlow extends StatefulWidget {
   final MahjongProgressStore progress;
   final SettingsStore settings;
   final VoidCallback onExit;
+  final VoidCallback? onQuit;
 
   @override
   State<MahjongGameFlow> createState() => _MahjongGameFlowState();
@@ -273,8 +275,10 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
         onCustom: () => setState(() => _screen = _MahjongScreen.custom),
         onToggleMusic: _toggleMusic,
         onToggleEffects: _toggleEffects,
+        onQuit: widget.onQuit,
       ),
       _MahjongScreen.custom => MahjongCustomGameScreen(
+        stages: widget.stages,
         onBack: _showLevels,
         onStart: _startFree,
       ),

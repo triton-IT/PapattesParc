@@ -21,6 +21,9 @@ class Match3Screen extends StatelessWidget {
     required this.onLevels,
     required this.onRetry,
     required this.onNext,
+    this.isFreeGame = false,
+    this.onConfigure,
+    this.onBack,
     super.key,
   });
 
@@ -36,6 +39,9 @@ class Match3Screen extends StatelessWidget {
   final VoidCallback onLevels;
   final VoidCallback onRetry;
   final VoidCallback? onNext;
+  final bool isFreeGame;
+  final VoidCallback? onConfigure;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -73,7 +79,10 @@ class Match3Screen extends StatelessWidget {
                 }
                 return Column(
                   children: [
-                    _CompactHeader(session: session, onLevels: onLevels),
+                    _CompactHeader(
+                      session: session,
+                      onLevels: onBack ?? onLevels,
+                    ),
                     Expanded(child: board),
                     panel,
                   ],
@@ -86,7 +95,7 @@ class Match3Screen extends StatelessWidget {
               child: IconButton.filledTonal(
                 key: const Key('match3-back-to-levels'),
                 tooltip: 'Retour aux niveaux',
-                onPressed: onLevels,
+                onPressed: onBack ?? onLevels,
                 icon: const Icon(Icons.arrow_back_rounded),
               ),
             ),
@@ -117,6 +126,8 @@ class Match3Screen extends StatelessWidget {
                   onLevels: onLevels,
                   onRetry: onRetry,
                   onNext: onNext,
+                  isFreeGame: isFreeGame,
+                  onConfigure: onConfigure,
                 ),
               ),
           ],
@@ -531,6 +542,9 @@ class _MissionPanel extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 7),
               child: _GoalLine(
                 goal: session.level.goals[i],
+                blockerKinds: session.level.blockers
+                    .map((blocker) => blocker.kind)
+                    .toSet(),
                 progress: displayed?.goalProgress[i] ?? session.goalProgress(i),
                 color: session.level.goals[i].animal == null
                     ? AppColors.primary
@@ -572,11 +586,13 @@ class _Metric extends StatelessWidget {
 class _GoalLine extends StatelessWidget {
   const _GoalLine({
     required this.goal,
+    required this.blockerKinds,
     required this.progress,
     required this.color,
   });
 
   final Match3Goal goal;
+  final Set<BlockerKind> blockerKinds;
   final int progress;
   final Color color;
 
@@ -598,7 +614,7 @@ class _GoalLine extends StatelessWidget {
       Expanded(
         child: Text(
           _label,
-          maxLines: 1,
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
@@ -621,8 +637,18 @@ class _GoalLine extends StatelessWidget {
 
   String get _label => switch (goal.kind) {
     Match3GoalKind.collectAnimal => goal.animal!.label,
-    Match3GoalKind.clearBlockers => 'Nettoyer le terrain',
+    Match3GoalKind.clearBlockers =>
+      blockerKinds.map((kind) => kind.goalLabel).join(' · '),
     Match3GoalKind.deliverBaskets => 'Livrer les paniers',
+  };
+}
+
+extension on BlockerKind {
+  String get goalLabel => switch (this) {
+    BlockerKind.leaves => 'Balayer les feuilles',
+    BlockerKind.mud => 'Nettoyer la boue',
+    BlockerKind.vines => 'Couper les lianes',
+    BlockerKind.ice => 'Briser la glace',
   };
 }
 
@@ -632,12 +658,16 @@ class _ResultOverlay extends StatelessWidget {
     required this.onLevels,
     required this.onRetry,
     required this.onNext,
+    required this.isFreeGame,
+    required this.onConfigure,
   });
 
   final Match3Session session;
   final VoidCallback onLevels;
   final VoidCallback onRetry;
   final VoidCallback? onNext;
+  final bool isFreeGame;
+  final VoidCallback? onConfigure;
 
   @override
   Widget build(BuildContext context) {
@@ -670,7 +700,9 @@ class _ResultOverlay extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     won
-                        ? '${session.score} points · ${session.footprintsForScore()} empreinte(s)'
+                        ? isFreeGame
+                              ? '${session.score} points'
+                              : '${session.score} points · ${session.footprintsForScore()} empreinte(s)'
                         : 'Les paniers peuvent être préparés autrement. Réessaie sans limite.',
                     textAlign: TextAlign.center,
                   ),
@@ -688,6 +720,13 @@ class _ResultOverlay extends StatelessWidget {
                     icon: const Icon(Icons.refresh_rounded),
                     label: const Text('REJOUER'),
                   ),
+                  if (onConfigure != null)
+                    TextButton.icon(
+                      key: const Key('match3-configure'),
+                      onPressed: onConfigure,
+                      icon: const Icon(Icons.tune_rounded),
+                      label: const Text('MODIFIER LES RÉGLAGES'),
+                    ),
                   TextButton.icon(
                     onPressed: onLevels,
                     icon: const Icon(Icons.map_rounded),

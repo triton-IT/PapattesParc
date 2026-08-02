@@ -42,6 +42,7 @@ void main() {
           onCustom: () {},
           onToggleMusic: () {},
           onToggleEffects: () {},
+          onQuit: () {},
         ),
       );
       await expectLater(
@@ -52,7 +53,7 @@ void main() {
       await _pump(
         tester,
         size,
-        MahjongCustomGameScreen(onBack: () {}, onStart: (_) {}),
+        MahjongCustomGameScreen(stages: levels, onBack: () {}, onStart: (_) {}),
       );
       await expectLater(
         find.byType(Scaffold),
@@ -105,6 +106,8 @@ const _sizes = [
 ];
 
 Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
+  await tester.pumpWidget(const SizedBox.shrink());
+  await tester.pump();
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
   addTearDown(tester.view.reset);
