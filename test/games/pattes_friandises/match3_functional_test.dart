@@ -1,9 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:papatte_parc/games/pattes_friandises/data/match3_progress_store.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/campaign.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/match3_session.dart';
 import 'package:papatte_parc/games/pattes_friandises/domain/models.dart';
+import 'package:papatte_parc/games/pattes_friandises/presentation/match3_screen.dart';
 import 'package:papatte_parc/games/refuge/domain/levels.dart';
+import 'package:papatte_parc/shared/app_theme.dart';
+import 'package:papatte_parc/shared/park_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -34,6 +38,103 @@ void main() {
 
     expect(result.changed, isFalse);
     expect(session.movesLeft, moves);
+  });
+
+  test(
+    'les feuilles bloquent leur case et partent par un alignement voisin',
+    () {
+      final level = buildMatch3Campaign(levels)[7];
+      final leaf = level.blockers.first.position;
+      final neighbour = Match3Position(leaf.x - 1, leaf.y);
+      final blockedSession = Match3Session(level, 1);
+
+      expect(blockedSession.canMove(leaf), isFalse);
+      expect(blockedSession.swap(leaf, neighbour).changed, isFalse);
+
+      Match3MoveResult? clearingMove;
+      Match3Session? clearingSession;
+      for (var seed = 1; seed <= 100 && clearingMove == null; seed++) {
+        for (var y = 0; y < Match3Session.size && clearingMove == null; y++) {
+          for (var x = 0; x < Match3Session.size && clearingMove == null; x++) {
+            for (final target in [
+              if (x + 1 < Match3Session.size) Match3Position(x + 1, y),
+              if (y + 1 < Match3Session.size) Match3Position(x, y + 1),
+            ]) {
+              final session = Match3Session(level, seed);
+              final result = session.swap(Match3Position(x, y), target);
+              if (result.changed && session.goalProgress(0) > 0) {
+                clearingSession = session;
+                clearingMove = result;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      expect(clearingMove, isNotNull);
+      expect(clearingSession!.goalProgress(0), greaterThan(0));
+    },
+  );
+
+  testWidgets('chaque objectif nomme les obstacles à retirer', (tester) async {
+    tester.view.physicalSize = const Size(1366, 768);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final campaign = buildMatch3Campaign(levels);
+    const labels = {
+      8: 'Balayer les feuilles',
+      13: 'Nettoyer la boue',
+      18: 'Couper les lianes',
+      23: 'Briser la glace',
+      33: 'Nettoyer la boue · Briser la glace',
+      38: 'Balayer les feuilles · Couper les lianes',
+      43: 'Briser la glace · Couper les lianes',
+    };
+
+    for (final entry in labels.entries) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildAppTheme(),
+          home: Match3Screen(
+            session: Match3Session(campaign[entry.key - 1], 1),
+            selected: null,
+            onSelect: (_) {},
+            onSwap: (_, _) {},
+            onLevels: () {},
+            onRetry: () {},
+            onNext: null,
+          ),
+        ),
+      );
+      expect(find.text(entry.value), findsOneWidget);
+    }
+  });
+
+  test('tous les paramètres libres créent un plateau jouable', () {
+    var seed = 1;
+    for (final biome in LevelBiome.values) {
+      final stage = levels.firstWhere((level) => level.biome == biome);
+      for (final goal in Match3FreeGoal.values) {
+        var previousMoves = 100;
+        for (final difficulty in Match3Difficulty.values) {
+          final config = Match3FreeGameConfig(
+            goal: goal,
+            difficulty: difficulty,
+            biome: biome,
+          );
+          final level = buildFreeMatch3Level(stage, config);
+          final session = Match3Session(level, seed++);
+          expect(level.stage.biome, biome);
+          expect(level.goals.single.kind.index, goal.index);
+          expect(level.moves, lessThan(previousMoves));
+          expect(session.hasMatches, isFalse);
+          expect(session.hasAvailableMove, isTrue);
+          previousMoves = level.moves;
+        }
+      }
+    }
   });
 
   test('un échange valide déclenche la résolution complète', () {

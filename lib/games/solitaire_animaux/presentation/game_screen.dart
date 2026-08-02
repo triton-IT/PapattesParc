@@ -15,6 +15,9 @@ class SolitaireGameScreen extends StatelessWidget {
   const SolitaireGameScreen({
     required this.session,
     required this.backAnimal,
+    required this.backgroundAsset,
+    required this.level,
+    required this.footprints,
     required this.selected,
     required this.hint,
     required this.finished,
@@ -29,12 +32,16 @@ class SolitaireGameScreen extends StatelessWidget {
     required this.onNewGame,
     required this.onReplay,
     required this.onConfigure,
-    required this.onExit,
+    required this.onLevels,
+    required this.onNext,
     super.key,
   });
 
   final SolitaireSession session;
   final AnimalKind backAnimal;
+  final String backgroundAsset;
+  final SolitaireLevelDefinition? level;
+  final int footprints;
   final CardLocation? selected;
   final SolitaireHint? hint;
   final bool finished;
@@ -48,14 +55,15 @@ class SolitaireGameScreen extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onNewGame;
   final VoidCallback onReplay;
-  final VoidCallback onConfigure;
-  final VoidCallback onExit;
+  final VoidCallback? onConfigure;
+  final VoidCallback onLevels;
+  final VoidCallback? onNext;
 
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xffd8e8cf),
     body: AnimalBackground(
-      asset: backAnimal.backgroundAsset,
+      asset: backgroundAsset,
       scrim: const Color(0x5518382f),
       child: SafeArea(
         child: Stack(
@@ -64,6 +72,7 @@ class SolitaireGameScreen extends StatelessWidget {
               children: [
                 _Toolbar(
                   session: session,
+                  level: level,
                   onBack: onBack,
                   onUndo: onUndo,
                   onHint: onHint,
@@ -87,10 +96,13 @@ class SolitaireGameScreen extends StatelessWidget {
               Positioned.fill(
                 child: _ResultOverlay(
                   session: session,
+                  level: level,
+                  footprints: footprints,
                   newRecord: newRecord,
                   onReplay: onReplay,
                   onConfigure: onConfigure,
-                  onExit: onExit,
+                  onLevels: onLevels,
+                  onNext: onNext,
                 ),
               ),
           ],
@@ -103,6 +115,7 @@ class SolitaireGameScreen extends StatelessWidget {
 class _Toolbar extends StatelessWidget {
   const _Toolbar({
     required this.session,
+    required this.level,
     required this.onBack,
     required this.onUndo,
     required this.onHint,
@@ -110,6 +123,7 @@ class _Toolbar extends StatelessWidget {
   });
 
   final SolitaireSession session;
+  final SolitaireLevelDefinition? level;
   final VoidCallback onBack;
   final VoidCallback onUndo;
   final VoidCallback onHint;
@@ -118,6 +132,78 @@ class _Toolbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 620;
+    if (compact) {
+      return ColoredBox(
+        color: const Color(0xfffff4dc),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  _ToolbarButton(
+                    key: const Key('solitaire-back'),
+                    tooltip: 'Retour',
+                    onPressed: onBack,
+                    icon: Icons.arrow_back_rounded,
+                  ),
+                  Expanded(
+                    child: Text(
+                      level == null
+                          ? 'Libre · Pioche ${session.mode.drawCount}'
+                          : 'N${level!.number} · Pioche ${session.mode.drawCount}',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                  _ToolbarButton(
+                    key: const Key('solitaire-undo'),
+                    tooltip: 'Annuler',
+                    onPressed: session.canUndo ? onUndo : null,
+                    icon: Icons.undo_rounded,
+                  ),
+                  _ToolbarButton(
+                    key: const Key('solitaire-hint'),
+                    tooltip: 'Indice',
+                    onPressed: onHint,
+                    icon: Icons.lightbulb_outline_rounded,
+                  ),
+                  _ToolbarButton(
+                    key: const Key('solitaire-new-game'),
+                    tooltip: level == null ? 'Nouvelle donne' : 'Recommencer',
+                    onPressed: onNewGame,
+                    icon: Icons.refresh_rounded,
+                  ),
+                  const GameHelpButton(
+                    kind: GameHelpKind.solitaire,
+                    compact: true,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _Metric(Icons.timer_rounded, formatDuration(session.elapsed)),
+                  const SizedBox(width: 16),
+                  _Metric(
+                    Icons.replay_circle_filled_rounded,
+                    level == null
+                        ? '${session.redealCount}'
+                        : '${session.redealCount}/${level!.targetRedeals}',
+                    key: const Key('solitaire-redeals'),
+                  ),
+                  const SizedBox(width: 16),
+                  _Metric(Icons.flag_rounded, '${session.foundationCount}/52'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    final buttonConstraints = compact
+        ? const BoxConstraints.tightFor(width: 40, height: 40)
+        : null;
     return ColoredBox(
       color: const Color(0xfffff4dc),
       child: Padding(
@@ -128,20 +214,52 @@ class _Toolbar extends StatelessWidget {
               key: const Key('solitaire-back'),
               tooltip: 'Retour',
               onPressed: onBack,
+              padding: compact ? EdgeInsets.zero : null,
+              constraints: buttonConstraints,
               icon: const Icon(Icons.arrow_back_rounded),
             ),
             if (!compact) ...[
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  'Solitaire des animaux · ${session.mode.label}',
+                  '${level == null ? 'Partie libre' : 'Niveau ${level!.number}'} · ${session.mode.label}',
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
             ] else
-              const Spacer(),
-            _Metric(Icons.timer_rounded, formatDuration(session.elapsed)),
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    children: [
+                      _Metric(
+                        Icons.timer_rounded,
+                        formatDuration(session.elapsed),
+                      ),
+                      const SizedBox(width: 6),
+                      _Metric(
+                        Icons.replay_circle_filled_rounded,
+                        level == null
+                            ? '${session.redealCount}'
+                            : '${session.redealCount}/${level!.targetRedeals}',
+                        key: const Key('solitaire-redeals'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            if (!compact) ...[
+              _Metric(Icons.timer_rounded, formatDuration(session.elapsed)),
+              const SizedBox(width: 8),
+              _Metric(
+                Icons.replay_circle_filled_rounded,
+                level == null
+                    ? '${session.redealCount}'
+                    : '${session.redealCount}/${level!.targetRedeals}',
+                key: const Key('solitaire-redeals'),
+              ),
+            ],
             if (!compact) ...[
               const SizedBox(width: 8),
               _Metric(Icons.flag_rounded, '${session.foundationCount}/52'),
@@ -150,21 +268,27 @@ class _Toolbar extends StatelessWidget {
               key: const Key('solitaire-undo'),
               tooltip: 'Annuler',
               onPressed: session.canUndo ? onUndo : null,
+              padding: compact ? EdgeInsets.zero : null,
+              constraints: buttonConstraints,
               icon: const Icon(Icons.undo_rounded),
             ),
             IconButton(
               key: const Key('solitaire-hint'),
               tooltip: 'Indice',
               onPressed: onHint,
+              padding: compact ? EdgeInsets.zero : null,
+              constraints: buttonConstraints,
               icon: const Icon(Icons.lightbulb_outline_rounded),
             ),
             IconButton(
               key: const Key('solitaire-new-game'),
-              tooltip: 'Nouvelle donne',
+              tooltip: level == null ? 'Nouvelle donne' : 'Recommencer',
               onPressed: onNewGame,
+              padding: compact ? EdgeInsets.zero : null,
+              constraints: buttonConstraints,
               icon: const Icon(Icons.refresh_rounded),
             ),
-            const GameHelpButton(kind: GameHelpKind.solitaire),
+            GameHelpButton(kind: GameHelpKind.solitaire, compact: compact),
           ],
         ),
       ),
@@ -172,8 +296,30 @@ class _Toolbar extends StatelessWidget {
   }
 }
 
+class _ToolbarButton extends StatelessWidget {
+  const _ToolbarButton({
+    required super.key,
+    required this.tooltip,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: tooltip,
+    onPressed: onPressed,
+    padding: EdgeInsets.zero,
+    constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+    icon: Icon(icon),
+  );
+}
+
 class _Metric extends StatelessWidget {
-  const _Metric(this.icon, this.value);
+  const _Metric(this.icon, this.value, {super.key});
 
   final IconData icon;
   final String value;
@@ -574,17 +720,23 @@ class _PlayableCard extends StatelessWidget {
 class _ResultOverlay extends StatelessWidget {
   const _ResultOverlay({
     required this.session,
+    required this.level,
+    required this.footprints,
     required this.newRecord,
     required this.onReplay,
     required this.onConfigure,
-    required this.onExit,
+    required this.onLevels,
+    required this.onNext,
   });
 
   final SolitaireSession session;
+  final SolitaireLevelDefinition? level;
+  final int footprints;
   final bool newRecord;
   final VoidCallback onReplay;
-  final VoidCallback onConfigure;
-  final VoidCallback onExit;
+  final VoidCallback? onConfigure;
+  final VoidCallback onLevels;
+  final VoidCallback? onNext;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
@@ -603,13 +755,33 @@ class _ResultOverlay extends StatelessWidget {
               children: [
                 const Icon(Icons.pets_rounded, size: 54, color: AppColors.sun),
                 Text(
-                  'PATIENCE RÉUSSIE !',
+                  level == null
+                      ? 'PATIENCE RÉUSSIE !'
+                      : 'NIVEAU ${level!.number} RÉUSSI !',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),
+                if (level != null) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (var index = 0; index < 3; index++)
+                        Icon(
+                          Icons.pets_rounded,
+                          color: index < footprints
+                              ? AppColors.sun
+                              : AppColors.muted.withValues(alpha: .35),
+                          size: 28,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                ],
                 Text(
-                  '${session.mode.label} · ${formatDuration(session.elapsed)}'
+                  '${session.mode.label} · ${formatDuration(session.elapsed)}\n'
+                  '${session.redealCount} recyclage(s)'
+                  '${level == null ? '' : ' · objectif ${level!.targetRedeals}'}'
                   '${newRecord ? '\nNouveau record !' : ''}',
                   textAlign: TextAlign.center,
                 ),
@@ -618,17 +790,27 @@ class _ResultOverlay extends StatelessWidget {
                   key: const Key('solitaire-replay'),
                   onPressed: onReplay,
                   icon: const Icon(Icons.replay_rounded),
-                  label: const Text('REJOUER'),
+                  label: Text(level == null ? 'NOUVELLE DONNE' : 'REJOUER'),
                 ),
-                FilledButton.tonalIcon(
-                  onPressed: onConfigure,
-                  icon: const Icon(Icons.tune_rounded),
-                  label: const Text('MODIFIER LES RÉGLAGES'),
-                ),
+                if (onNext != null)
+                  FilledButton.tonalIcon(
+                    key: const Key('solitaire-next-level'),
+                    onPressed: onNext,
+                    icon: const Icon(Icons.arrow_forward_rounded),
+                    label: const Text('NIVEAU SUIVANT'),
+                  ),
+                if (onConfigure != null)
+                  FilledButton.tonalIcon(
+                    key: const Key('solitaire-configure'),
+                    onPressed: onConfigure,
+                    icon: const Icon(Icons.tune_rounded),
+                    label: const Text('MODIFIER LES RÉGLAGES'),
+                  ),
                 TextButton.icon(
-                  onPressed: onExit,
+                  key: const Key('solitaire-result-levels'),
+                  onPressed: onLevels,
                   icon: const Icon(Icons.grid_view_rounded),
-                  label: const Text('RETOUR AUX JEUX'),
+                  label: const Text('RETOUR AUX NIVEAUX'),
                 ),
               ],
             ),

@@ -32,6 +32,7 @@ class SolitaireSession {
   final List<_SessionSnapshot> _history = [];
   SolitaireStatus status = SolitaireStatus.playing;
   Duration elapsed = Duration.zero;
+  int redealCount = 0;
 
   bool get hasMoved => _history.isNotEmpty;
   bool get canUndo => _history.isNotEmpty;
@@ -57,6 +58,7 @@ class SolitaireSession {
     if (stock.isEmpty && waste.isEmpty) return false;
     _remember();
     if (stock.isEmpty) {
+      redealCount++;
       while (waste.isNotEmpty) {
         stock.add(waste.removeLast().withFaceUp(false));
       }
@@ -209,6 +211,7 @@ class SolitaireSession {
     }
     if (stock.isEmpty && waste.isEmpty) return false;
     if (stock.isEmpty) {
+      redealCount++;
       while (waste.isNotEmpty) {
         stock.add(waste.removeLast().withFaceUp(false));
       }
@@ -335,6 +338,7 @@ class SolitaireSession {
           '$foundationCount:${stock.map((c) => c.id).join(',')}|${waste.map((c) => c.id).join(',')}';
       if (!visited.add(signature)) return false;
       if (stock.isEmpty) {
+        redealCount++;
         while (waste.isNotEmpty) {
           stock.add(waste.removeLast().withFaceUp(false));
         }
@@ -353,6 +357,7 @@ class SolitaireSession {
       ..stock.addAll(stock)
       ..waste.addAll(waste)
       ..elapsed = elapsed
+      ..redealCount = redealCount
       ..status = status;
     for (var i = 0; i < 7; i++) {
       copy.tableau[i].addAll(tableau[i]);

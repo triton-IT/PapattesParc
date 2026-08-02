@@ -7,6 +7,7 @@ import 'games/mahjong_animaux/data/mahjong_progress_store.dart';
 import 'games/pattes_friandises/data/match3_progress_store.dart';
 import 'games/refuge/data/progress_store.dart';
 import 'games/solitaire_animaux/data/solitaire_progress_store.dart';
+import 'games/sudoku_animaux/data/sudoku_progress_store.dart';
 import 'shared/settings_store.dart';
 
 Future<void> main() async {
@@ -18,6 +19,7 @@ Future<void> main() async {
       match3Store: await Match3ProgressStore.load(),
       mahjongStore: await MahjongProgressStore.load(),
       solitaireStore: await SolitaireProgressStore.load(),
+      sudokuStore: await SudokuProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );

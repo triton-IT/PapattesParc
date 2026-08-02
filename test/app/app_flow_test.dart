@@ -19,13 +19,15 @@ import 'package:papatte_parc/games/refuge/domain/levels.dart';
 import 'package:papatte_parc/games/refuge/domain/models.dart';
 import 'package:papatte_parc/games/refuge/presentation/game_screen.dart';
 import 'package:papatte_parc/games/solitaire_animaux/data/solitaire_progress_store.dart';
+import 'package:papatte_parc/games/sudoku_animaux/data/sudoku_progress_store.dart';
+import 'package:papatte_parc/games/sudoku_animaux/domain/campaign.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
 import 'package:papatte_parc/shared/animal_colors.dart';
 import 'package:papatte_parc/shared/settings_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('le menu principal ouvre les quatre jeux', (tester) async {
+  testWidgets('le menu principal ouvre les jeux à campagne', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final refugeStore = await ProgressStore.load();
     await _pumpRoot(tester, refugeStore, const Size(1366, 768));
@@ -36,6 +38,13 @@ void main() {
     await tester.pump();
 
     expect(find.byKey(const Key('match3-level-grid')), findsOneWidget);
+    expect(find.byKey(const Key('match3-journey-progress')), findsOneWidget);
+    expect(find.byKey(const Key('match3-journey-legend')), findsOneWidget);
+    expect(find.text('Aligne · Combine · Protège'), findsOneWidget);
+    expect(find.byKey(const Key('campaign-continue')), findsOneWidget);
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      expect(find.byKey(const Key('match3-quit-app')), findsOneWidget);
+    }
     await tester.tap(find.byKey(const Key('match3-level-1')));
     await tester.pump();
 
@@ -47,9 +56,37 @@ void main() {
     await tester.tap(find.byKey(const Key('game-mahjong-animaux')));
     await tester.pump();
     expect(find.byKey(const Key('mahjong-level-grid')), findsOneWidget);
+    expect(find.byKey(const Key('mahjong-journey-progress')), findsOneWidget);
+    expect(find.byKey(const Key('mahjong-journey-legend')), findsOneWidget);
     await tester.tap(find.byKey(const Key('mahjong-level-1')));
     await tester.pump();
     expect(find.byKey(const Key('mahjong-board')), findsOneWidget);
+
+    await _pumpRoot(tester, refugeStore, const Size(1366, 768));
+    expect(find.text('Le Défi des Papattes'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('game-sudoku-animaux')));
+    await tester.pump();
+    expect(find.byKey(const Key('sudoku-level-grid')), findsOneWidget);
+    expect(find.byKey(const Key('sudoku-journey-progress')), findsOneWidget);
+    expect(find.byKey(const Key('sudoku-journey-legend')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('sudoku-level-1')));
+    await tester.pump();
+    expect(find.byKey(const Key('sudoku-board')), findsOneWidget);
+    expect(find.byKey(const Key('sudoku-animal-0')), findsOneWidget);
+
+    final level = buildSudokuCampaign(levels).first;
+    final empty = level.puzzle.indexOf(-1);
+    final wrong = (level.solution[empty] + 1) % level.size;
+    await tester.tap(find.byKey(Key('sudoku-cell-$empty')));
+    await tester.pump();
+    await tester.tap(find.byKey(Key('sudoku-animal-$wrong')));
+    await tester.pump();
+    expect(
+      find.text(
+        'Ce n’est pas cet animal. Observe la ligne, la colonne et l’enclos.',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets(
@@ -74,21 +111,45 @@ void main() {
         }
         await tester.tap(find.byKey(const Key('game-solitaire-animaux')));
         await tester.pump();
+        expect(find.byKey(const Key('solitaire-level-grid')), findsOneWidget);
+        expect(
+          find.byKey(const Key('solitaire-journey-progress')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('solitaire-journey-legend')),
+          findsOneWidget,
+        );
+        expect(
+          tester
+              .widget<InkWell>(find.byKey(const Key('solitaire-level-2')))
+              .onTap,
+          isNull,
+        );
+        await tester.tap(find.byKey(const Key('solitaire-level-1')));
+        await tester.pump();
+        expect(find.byKey(const Key('solitaire-board')), findsOneWidget);
+        expect(find.byKey(const Key('solitaire-redeals')), findsOneWidget);
+        await tester.tap(find.byKey(const Key('solitaire-back')));
+        await tester.pump();
+        expect(find.byKey(const Key('solitaire-level-grid')), findsOneWidget);
+        await tester.tap(find.byKey(const Key('solitaire-open-custom')));
+        await tester.pump();
         expect(find.byKey(const Key('solitaire-setup')), findsOneWidget);
         expect(
           find.byKey(const Key('solitaire-animal-suricate')),
           findsOneWidget,
         );
 
-        await tester.tap(find.text('Pioche 3 cartes').first);
+        await tester.tap(
+          find.text(size.width < 560 ? '3 cartes' : 'Pioche 3 cartes').first,
+        );
         await tester.pump();
         await tester.scrollUntilVisible(
           find.byKey(const Key('solitaire-animal-panthereNeiges')),
           400,
           scrollable: find.byType(Scrollable).last,
         );
-        await tester.drag(find.byType(CustomScrollView), const Offset(0, -140));
-        await tester.pump();
         await tester.tap(
           find.byKey(const Key('solitaire-animal-panthereNeiges')),
         );
@@ -107,6 +168,70 @@ void main() {
       }
     },
   );
+
+  testWidgets('les deux nouvelles parties libres appliquent leurs réglages', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = await ProgressStore.load();
+    await _pumpRoot(tester, store, const Size(1366, 768));
+
+    await tester.tap(find.byKey(const Key('game-pattes-friandises')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('match3-open-custom')));
+    await tester.pump();
+    expect(find.byKey(const Key('match3-custom-goal')), findsOneWidget);
+    expect(find.byKey(const Key('match3-custom-difficulty')), findsOneWidget);
+    expect(find.byKey(const Key('match3-custom-biome')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('match3-custom-goal')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Livrer des paniers').last);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('match3-start-custom')));
+    await tester.tap(find.byKey(const Key('match3-start-custom')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('match3-start-custom')), findsNothing);
+    expect(find.byKey(const Key('match3-cell-0-0')), findsOneWidget);
+    expect(find.text('Livrer les paniers'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('match3-back-to-levels')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('match3-custom-goal')), findsOneWidget);
+    expect(find.text('Livrer des paniers'), findsOneWidget);
+
+    await _pumpRoot(tester, store, const Size(1366, 768));
+    await tester.tap(find.byKey(const Key('game-sudoku-animaux')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('sudoku-open-custom')));
+    await tester.pump();
+    expect(find.byKey(const Key('sudoku-custom-size')), findsOneWidget);
+    expect(find.byKey(const Key('sudoku-custom-difficulty')), findsOneWidget);
+    expect(find.byKey(const Key('sudoku-custom-biome')), findsOneWidget);
+    expect(
+      find.byKey(const Key('sudoku-custom-background-savanna')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const Key('sudoku-custom-size')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('9 × 9').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('sudoku-custom-biome')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bord de rivière').last);
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const Key('sudoku-custom-background-riverside')),
+      findsOneWidget,
+    );
+    await tester.ensureVisible(find.byKey(const Key('sudoku-start-custom')));
+    await tester.tap(find.byKey(const Key('sudoku-start-custom')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('sudoku-board')), findsOneWidget);
+    expect(find.textContaining('Partie libre · 9 × 9'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('sudoku-back')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('sudoku-custom-size')), findsOneWidget);
+    expect(find.text('9 × 9'), findsOneWidget);
+  });
 
   testWidgets('le bouton quitter est réservé à Windows', (tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -146,7 +271,7 @@ void main() {
     final store = await ProgressStore.load();
     await _pumpApp(tester, store, const Size(1366, 768));
 
-    expect(find.text('PAPATTE PARC'), findsOneWidget);
+    expect(find.text('BALISES DU REFUGE'), findsOneWidget);
     expect(find.text('Terrier des sentinelles'), findsOneWidget);
     expect(find.text('Clique sur un point de la carte'), findsOneWidget);
     await tester.tap(find.byKey(const Key('start-mission')));
@@ -608,6 +733,28 @@ void main() {
     await tester.tap(find.byKey(const Key('help-match3')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('help-content-match3')), findsOneWidget);
+    expect(find.byKey(const Key('match3-legend')), findsOneWidget);
+    for (final label in [
+      'Flèches horizontales',
+      'Flèches verticales',
+      'Cadeau',
+      'Patte dorée',
+      'Feuilles',
+      'Boue',
+      'Lianes',
+      'Glace',
+      'Panier de friandises',
+    ]) {
+      expect(find.textContaining(label), findsOneWidget);
+    }
+    expect(
+      find.textContaining('Fais passer un alignement par cette case'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Forme un alignement sur une case voisine'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('J’AI COMPRIS'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('match3-level-1')));
@@ -642,6 +789,7 @@ Future<void> _pumpApp(
       match3Store: await Match3ProgressStore.load(),
       mahjongStore: await MahjongProgressStore.load(),
       solitaireStore: await SolitaireProgressStore.load(),
+      sudokuStore: await SudokuProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
@@ -665,6 +813,7 @@ Future<void> _pumpRoot(
       match3Store: await Match3ProgressStore.load(),
       mahjongStore: await MahjongProgressStore.load(),
       solitaireStore: await SolitaireProgressStore.load(),
+      sudokuStore: await SudokuProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );

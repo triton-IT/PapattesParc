@@ -5,11 +5,16 @@ import '../games/pattes_friandises/data/match3_progress_store.dart';
 import '../games/mahjong_animaux/data/mahjong_progress_store.dart';
 import '../games/refuge/data/progress_store.dart';
 import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
-import '../games/solitaire_animaux/domain/models.dart';
+import '../games/sudoku_animaux/data/sudoku_progress_store.dart';
 import '../shared/app_theme.dart';
-import '../shared/formatters.dart';
 
-enum GameId { refuge, pattesFriandises, mahjongAnimaux, solitaireAnimaux }
+enum GameId {
+  refuge,
+  pattesFriandises,
+  mahjongAnimaux,
+  solitaireAnimaux,
+  sudokuAnimaux,
+}
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({
@@ -17,6 +22,7 @@ class MainMenuScreen extends StatelessWidget {
     required this.match3Store,
     required this.mahjongStore,
     required this.solitaireStore,
+    required this.sudokuStore,
     required this.musicEnabled,
     required this.effectsEnabled,
     required this.onSelect,
@@ -30,6 +36,7 @@ class MainMenuScreen extends StatelessWidget {
   final Match3ProgressStore match3Store;
   final MahjongProgressStore mahjongStore;
   final SolitaireProgressStore solitaireStore;
+  final SudokuProgressStore sudokuStore;
   final bool musicEnabled;
   final bool effectsEnabled;
   final ValueChanged<GameId> onSelect;
@@ -108,11 +115,27 @@ class MainMenuScreen extends StatelessWidget {
                         title: 'Solitaire des animaux',
                         description:
                             'Range les cartes et révèle les animaux du parc.',
-                        progress: _solitaireProgress(solitaireStore),
+                        progress:
+                            '${solitaireStore.unlockedLevel} / 45 niveaux · '
+                            '${solitaireStore.totalFootprints} empreintes',
                         artAsset: 'assets/solitaire/solitaire-cover.png',
                         icon: Icons.style_rounded,
                         color: AppColors.primary,
                         onPlay: () => onSelect(GameId.solitaireAnimaux),
+                      ),
+                      _GameCard(
+                        key: const Key('game-sudoku-animaux'),
+                        title: 'Le Défi des Papattes',
+                        description:
+                            'Replace chaque animal dans sa ligne, sa colonne et son enclos.',
+                        progress:
+                            '${sudokuStore.unlockedLevel} / 45 niveaux · '
+                            '${sudokuStore.totalFootprints} empreintes',
+                        artAsset:
+                            'assets/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers.png',
+                        icon: Icons.grid_view_rounded,
+                        color: const Color(0xff8c5e9e),
+                        onPlay: () => onSelect(GameId.sudokuAnimaux),
                       ),
                     ];
                     return Center(
@@ -343,15 +366,4 @@ class _GameCard extends StatelessWidget {
       ),
     ),
   );
-}
-
-String _solitaireProgress(SolitaireProgressStore store) {
-  String line(SolitaireMode mode) {
-    final time = store.bestTime(mode);
-    return '${mode == SolitaireMode.drawOne ? '1 carte' : '3 cartes'} : '
-        '${store.wins(mode)} victoire(s) · '
-        '${time == null ? '—' : formatDuration(time)}';
-  }
-
-  return '${line(SolitaireMode.drawOne)}\n${line(SolitaireMode.drawThree)}';
 }

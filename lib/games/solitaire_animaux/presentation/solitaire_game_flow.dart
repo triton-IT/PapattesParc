@@ -7,37 +7,45 @@ import '../../../shared/game_audio.dart';
 import '../../../shared/park_catalog.dart';
 import '../../../shared/settings_store.dart';
 import '../data/solitaire_progress_store.dart';
+import '../domain/campaign.dart';
 import '../domain/models.dart';
 import '../domain/solitaire_session.dart';
 import 'game_screen.dart';
+import 'level_select_screen.dart';
 import 'setup_screen.dart';
 
-enum _SolitaireScreen { setup, playing }
+enum _SolitaireScreen { levels, setup, playing }
 
 class SolitaireGameFlow extends StatefulWidget {
   const SolitaireGameFlow({
+    required this.stages,
     required this.progress,
     required this.settings,
     required this.onExit,
+    this.onQuit,
     super.key,
   });
 
+  final List<ParkStage> stages;
   final SolitaireProgressStore progress;
   final SettingsStore settings;
   final VoidCallback onExit;
+  final VoidCallback? onQuit;
 
   @override
   State<SolitaireGameFlow> createState() => _SolitaireGameFlowState();
 }
 
 class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
-  _SolitaireScreen _screen = _SolitaireScreen.setup;
+  _SolitaireScreen _screen = _SolitaireScreen.levels;
+  late final List<SolitaireLevelDefinition> _levels;
   late SolitaireMode _mode;
   late AnimalKind _animal;
   late bool _musicEnabled;
   late bool _effectsEnabled;
   late final GameAudio _audio;
   SolitaireSession? _session;
+  SolitaireLevelDefinition? _level;
   CardLocation? _selected;
   SolitaireHint? _hint;
   Timer? _ticker;
@@ -45,11 +53,13 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
   bool _finished = false;
   bool _autoFinishing = false;
   bool _newRecord = false;
+  int _footprints = 0;
   int _nonce = 0;
 
   @override
   void initState() {
     super.initState();
+    _levels = buildSolitaireCampaign(widget.stages);
     _mode = widget.progress.mode;
     _animal = widget.progress.backAnimal;
     _musicEnabled = widget.settings.musicEnabled;
@@ -75,8 +85,23 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
 
   @override
   Widget build(BuildContext context) => switch (_screen) {
-    _SolitaireScreen.setup => _handleBack(
+    _SolitaireScreen.levels => _handleBack(
       widget.onExit,
+      SolitaireLevelSelectScreen(
+        levels: _levels,
+        store: widget.progress,
+        musicEnabled: _musicEnabled,
+        effectsEnabled: _effectsEnabled,
+        onBack: widget.onExit,
+        onPlay: _startLevel,
+        onCustom: _showSetup,
+        onToggleMusic: () => unawaited(_toggleMusic()),
+        onToggleEffects: () => unawaited(_toggleEffects()),
+        onQuit: widget.onQuit,
+      ),
+    ),
+    _SolitaireScreen.setup => _handleBack(
+      _showLevels,
       SolitaireSetupScreen(
         progress: widget.progress,
         mode: _mode,
@@ -87,8 +112,8 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
         onAnimalChanged: _setAnimal,
         onToggleMusic: () => unawaited(_toggleMusic()),
         onToggleEffects: () => unawaited(_toggleEffects()),
-        onStart: _startGame,
-        onExit: widget.onExit,
+        onStart: _startFreeGame,
+        onExit: _showLevels,
       ),
     ),
     _SolitaireScreen.playing => _handleBack(
@@ -98,6 +123,9 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
         child: SolitaireGameScreen(
           session: _session!,
           backAnimal: _animal,
+          backgroundAsset: _level?.stage.artAsset ?? _animal.backgroundAsset,
+          level: _level,
+          footprints: _footprints,
           selected: _selected,
           hint: _hint,
           finished: _finished,
@@ -109,10 +137,11 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
           onUndo: _undo,
           onHint: _showHint,
           onBack: () => unawaited(_requestBack()),
-          onNewGame: () => unawaited(_requestNewGame()),
-          onReplay: _startGame,
-          onConfigure: _showSetup,
-          onExit: widget.onExit,
+          onNewGame: () => unawaited(_requestReplay()),
+          onReplay: _replay,
+          onConfigure: _level == null ? _showSetup : null,
+          onLevels: _showLevels,
+          onNext: _nextLevel,
         ),
       ),
     ),
@@ -129,16 +158,30 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
     unawaited(_audio.playEffect(SoundEffect.click));
   }
 
-  void _startGame() {
+  void _startLevel(SolitaireLevelDefinition level) {
+    _level = level;
+    _mode = level.mode;
+    _startSession(level.seed);
+  }
+
+  void _startFreeGame() {
     unawaited(widget.progress.setMode(_mode));
     unawaited(widget.progress.setBackAnimal(_animal));
-    _session = SolitaireSession(mode: _mode, seed: _newSeed());
+    _level = null;
+    _startSession(_newSeed());
+  }
+
+  void _startSession(int seed) {
+    _session = SolitaireSession(mode: _mode, seed: seed);
     _selected = null;
     _hint = null;
     _finished = false;
     _autoFinishing = false;
     _newRecord = false;
-    unawaited(_audio.playLevel(AnimalTemperament.peaceful));
+    _footprints = 0;
+    unawaited(
+      _audio.playLevel(_level?.stage.temperament ?? AnimalTemperament.peaceful),
+    );
     setState(() => _screen = _SolitaireScreen.playing);
   }
 
@@ -262,7 +305,17 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
 
   Future<void> _finish() async {
     if (_finished) return;
-    _newRecord = await widget.progress.complete(_mode, _session!.elapsed);
+    final level = _level;
+    if (level == null) {
+      _newRecord = await widget.progress.complete(_mode, _session!.elapsed);
+    } else {
+      _footprints = solitaireFootprints(level, _session!.redealCount);
+      _newRecord = await widget.progress.completeLevel(
+        level.number,
+        _session!.elapsed,
+        _footprints,
+      );
+    }
     unawaited(_audio.playEffect(SoundEffect.win));
     if (mounted) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -273,13 +326,13 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
   Future<void> _requestBack() async {
     if (_autoFinishing) return;
     if (_session!.hasMoved && !_finished && !await _confirmAbandon()) return;
-    _showSetup();
+    _level == null ? _showSetup() : _showLevels();
   }
 
-  Future<void> _requestNewGame() async {
+  Future<void> _requestReplay() async {
     if (_autoFinishing) return;
     if (_session!.hasMoved && !_finished && !await _confirmAbandon()) return;
-    _startGame();
+    _replay();
   }
 
   Future<bool> _confirmAbandon() async =>
@@ -321,7 +374,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
         FilledButton(
           onPressed: () {
             Navigator.pop(context);
-            _startGame();
+            _replay();
           },
           child: const Text('Nouvelle donne'),
         ),
@@ -337,6 +390,32 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
       _autoFinishing = false;
       _clearSelection();
     });
+  }
+
+  void _showLevels() {
+    unawaited(_audio.playHome());
+    setState(() {
+      _screen = _SolitaireScreen.levels;
+      _session = null;
+      _level = null;
+      _autoFinishing = false;
+      _clearSelection();
+    });
+  }
+
+  void _replay() {
+    final level = _level;
+    if (level == null) {
+      _startFreeGame();
+      return;
+    }
+    _startSession(level.seed);
+  }
+
+  VoidCallback? get _nextLevel {
+    final level = _level;
+    if (level == null || level.number >= _levels.length) return null;
+    return () => _startLevel(_levels[level.number]);
   }
 
   void _clearSelection() {

@@ -9,10 +9,11 @@ import '../data/match3_progress_store.dart';
 import '../domain/campaign.dart';
 import '../domain/match3_session.dart';
 import '../domain/models.dart';
+import 'custom_game_screen.dart';
 import 'level_select_screen.dart';
 import 'match3_screen.dart';
 
-enum _Match3Screen { levels, playing }
+enum _Match3Screen { levels, custom, playing }
 
 class Match3GameFlow extends StatefulWidget {
   const Match3GameFlow({
@@ -20,6 +21,7 @@ class Match3GameFlow extends StatefulWidget {
     required this.progress,
     required this.settings,
     required this.onExit,
+    this.onQuit,
     super.key,
   });
 
@@ -27,6 +29,7 @@ class Match3GameFlow extends StatefulWidget {
   final Match3ProgressStore progress;
   final SettingsStore settings;
   final VoidCallback onExit;
+  final VoidCallback? onQuit;
 
   @override
   State<Match3GameFlow> createState() => _Match3GameFlowState();
@@ -39,6 +42,7 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
   late bool _musicEnabled;
   late bool _effectsEnabled;
   Match3LevelDefinition? _level;
+  Match3FreeGameConfig? _freeConfig;
   Match3Session? _session;
   Match3Position? _selected;
   Match3BoardSnapshot? _displayed;
@@ -67,6 +71,19 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
     super.dispose();
   }
 
+  void _startLevel(Match3LevelDefinition level) {
+    _freeConfig = null;
+    _start(level);
+  }
+
+  void _startFree(Match3FreeGameConfig config) {
+    _freeConfig = config;
+    final stage = widget.stages.firstWhere(
+      (stage) => stage.biome == config.biome,
+    );
+    _start(buildFreeMatch3Level(stage, config));
+  }
+
   void _start(Match3LevelDefinition level) {
     _level = level;
     _session = Match3Session(
@@ -85,6 +102,12 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
 
   void _select(Match3Position position) {
     if (_resolving || _session!.status != Match3Status.playing) return;
+    if (!_session!.canMove(position)) {
+      setState(() => _selected = null);
+      unawaited(_audio.playEffect(SoundEffect.blocked));
+      _toast(_blockedMessage(position));
+      return;
+    }
     final selected = _selected;
     if (selected == null) {
       setState(() => _selected = position);
@@ -104,6 +127,12 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
 
   Future<void> _swap(Match3Position first, Match3Position second) async {
     if (_resolving) return;
+    if (!_session!.canMove(first) || !_session!.canMove(second)) {
+      final blocked = !_session!.canMove(first) ? first : second;
+      unawaited(_audio.playEffect(SoundEffect.blocked));
+      _toast(_blockedMessage(blocked));
+      return;
+    }
     final result = _session!.swap(first, second);
     _selected = null;
     if (!result.changed) {
@@ -142,19 +171,32 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
     setState(() {});
   }
 
+  String _blockedMessage(Match3Position position) {
+    final cell = _session!.cell(position);
+    return switch (cell.blocker) {
+      BlockerKind.leaves =>
+        'Les feuilles bloquent cet animal. Fais un alignement sur une case voisine.',
+      BlockerKind.vines =>
+        'Les lianes immobilisent cet animal. Fais un alignement sur sa case ou une voisine.',
+      _ => 'Le panier ne se déplace pas. Libère les cases sous lui.',
+    };
+  }
+
   Future<void> _finishLevel() async {
     final won = _session!.status == Match3Status.won;
     unawaited(_audio.playEffect(won ? SoundEffect.win : SoundEffect.lose));
     if (!won) return;
-    await widget.progress.completeLevel(
-      _level!.number,
-      _session!.score,
-      _session!.footprintsForScore(),
-    );
+    if (_freeConfig == null) {
+      await widget.progress.completeLevel(
+        _level!.number,
+        _session!.score,
+        _session!.footprintsForScore(),
+      );
+    }
     if (mounted) setState(() {});
   }
 
-  Future<void> _requestLevels() async {
+  Future<void> _requestBack() async {
     if (_resolving) {
       _toast('Le coup est en cours de résolution.');
       return;
@@ -179,7 +221,7 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
       );
       if (leave != true) return;
     }
-    _showLevels();
+    _freeConfig == null ? _showLevels() : _showCustom();
   }
 
   void _showLevels() {
@@ -193,6 +235,24 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
       _cascade = 0;
       _resolving = false;
     });
+  }
+
+  void _showCustom() {
+    unawaited(_audio.playHome());
+    setState(() {
+      _screen = _Match3Screen.custom;
+      _session = null;
+      _selected = null;
+      _displayed = null;
+      _clearing = const {};
+      _cascade = 0;
+      _resolving = false;
+    });
+  }
+
+  void _openCustom() {
+    _freeConfig = null;
+    _showCustom();
   }
 
   Future<void> _toggleMusic() async {
@@ -219,8 +279,8 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
 
   @override
   Widget build(BuildContext context) {
-    if (_screen == _Match3Screen.levels) {
-      return _handleBack(
+    return switch (_screen) {
+      _Match3Screen.levels => _handleBack(
         widget.onExit,
         Match3LevelSelectScreen(
           levels: _levels,
@@ -228,31 +288,45 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
           musicEnabled: _musicEnabled,
           effectsEnabled: _effectsEnabled,
           onBack: widget.onExit,
-          onPlay: _start,
+          onPlay: _startLevel,
+          onCustom: _openCustom,
           onToggleMusic: _toggleMusic,
           onToggleEffects: _toggleEffects,
+          onQuit: widget.onQuit,
         ),
-      );
-    }
-    return _handleBack(
-      () => unawaited(_requestLevels()),
-      Match3Screen(
-        session: _session!,
-        displayed: _displayed,
-        clearing: _clearing,
-        cascade: _cascade,
-        inputEnabled: !_resolving,
-        showResult: !_resolving && _session!.status != Match3Status.playing,
-        selected: _selected,
-        onSelect: _select,
-        onSwap: (first, second) => unawaited(_swap(first, second)),
-        onLevels: () => unawaited(_requestLevels()),
-        onRetry: () => _start(_level!),
-        onNext: _level!.number < _levels.length
-            ? () => _start(_levels[_level!.number])
-            : null,
       ),
-    );
+      _Match3Screen.custom => _handleBack(
+        _showLevels,
+        Match3CustomGameScreen(
+          stages: widget.stages,
+          initialConfig: _freeConfig,
+          onBack: _showLevels,
+          onStart: _startFree,
+        ),
+      ),
+      _Match3Screen.playing => _handleBack(
+        () => unawaited(_requestBack()),
+        Match3Screen(
+          session: _session!,
+          displayed: _displayed,
+          clearing: _clearing,
+          cascade: _cascade,
+          inputEnabled: !_resolving,
+          showResult: !_resolving && _session!.status != Match3Status.playing,
+          selected: _selected,
+          onSelect: _select,
+          onSwap: (first, second) => unawaited(_swap(first, second)),
+          onLevels: _showLevels,
+          onBack: () => unawaited(_requestBack()),
+          onRetry: () => _start(_level!),
+          onNext: _freeConfig == null && _level!.number < _levels.length
+              ? () => _startLevel(_levels[_level!.number])
+              : null,
+          isFreeGame: _freeConfig != null,
+          onConfigure: _freeConfig == null ? null : _showCustom,
+        ),
+      ),
+    };
   }
 
   Widget _handleBack(VoidCallback onBack, Widget child) => PopScope(

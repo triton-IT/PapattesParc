@@ -48,6 +48,7 @@ class Match3Session {
 
   bool get hasMatches => _findMatches().isNotEmpty;
   bool get hasAvailableMove => _hasAvailableMove();
+  bool canMove(Match3Position position) => _canMove(_index(position));
 
   Match3MoveResult swap(Match3Position first, Match3Position second) {
     if (status != Match3Status.playing || !_areAdjacent(first, second)) {
@@ -164,7 +165,7 @@ class Match3Session {
         clearedIndexes.add(index);
         clearedAnimals++;
       }
-      _damageAdjacentVines(clear);
+      _damageAdjacentBlockers(clear);
       for (final entry in specials.entries) {
         if (_inactive.contains(entry.key)) continue;
         _tiles[entry.key] = Match3Tile(
@@ -310,13 +311,13 @@ class Match3Session {
     for (var y = 0; y < size; y++) {
       var start = 0;
       while (start < size) {
-        final first = _tiles[y * size + start];
+        final first = _matchableTile(y * size + start);
         var end = start + 1;
         while (end < size &&
             first != null &&
             !first.isBasket &&
-            _tiles[y * size + end]?.animal == first.animal &&
-            !_tiles[y * size + end]!.isBasket) {
+            _matchableTile(y * size + end)?.animal == first.animal &&
+            !_matchableTile(y * size + end)!.isBasket) {
           end++;
         }
         if (first != null && !first.isBasket && end - start >= 3) {
@@ -330,13 +331,13 @@ class Match3Session {
     for (var x = 0; x < size; x++) {
       var start = 0;
       while (start < size) {
-        final first = _tiles[start * size + x];
+        final first = _matchableTile(start * size + x);
         var end = start + 1;
         while (end < size &&
             first != null &&
             !first.isBasket &&
-            _tiles[end * size + x]?.animal == first.animal &&
-            !_tiles[end * size + x]!.isBasket) {
+            _matchableTile(end * size + x)?.animal == first.animal &&
+            !_matchableTile(end * size + x)!.isBasket) {
           end++;
         }
         if (first != null && !first.isBasket && end - start >= 3) {
@@ -350,6 +351,9 @@ class Match3Session {
     return matches;
   }
 
+  Match3Tile? _matchableTile(int index) =>
+      _blockers[index] == BlockerKind.leaves ? null : _tiles[index];
+
   void _damageBlocker(int index) {
     if (_blockerLayers[index] == 0) return;
     _blockerLayers[index]--;
@@ -358,10 +362,13 @@ class Match3Session {
     score += 250;
   }
 
-  void _damageAdjacentVines(Set<int> clear) {
+  void _damageAdjacentBlockers(Set<int> clear) {
     for (final index in clear) {
       for (final neighbour in _neighbours(index)) {
-        if (_blockers[neighbour] != BlockerKind.vines) continue;
+        if (_blockers[neighbour] != BlockerKind.leaves &&
+            _blockers[neighbour] != BlockerKind.vines) {
+          continue;
+        }
         _damageBlocker(neighbour);
       }
     }
@@ -509,6 +516,7 @@ class Match3Session {
       !_inactive.contains(index) &&
       _tiles[index] != null &&
       !_tiles[index]!.isBasket &&
+      _blockers[index] != BlockerKind.leaves &&
       _blockers[index] != BlockerKind.vines;
 
   bool _areAdjacent(Match3Position first, Match3Position second) =>

@@ -13,6 +13,8 @@ import '../games/refuge/domain/levels.dart';
 import '../games/refuge/presentation/game_app.dart';
 import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
 import '../games/solitaire_animaux/presentation/solitaire_game_flow.dart';
+import '../games/sudoku_animaux/data/sudoku_progress_store.dart';
+import '../games/sudoku_animaux/presentation/sudoku_game_flow.dart';
 import '../shared/app_theme.dart';
 import '../shared/settings_store.dart';
 import 'main_menu_screen.dart';
@@ -25,6 +27,7 @@ class PapatteParcApp extends StatelessWidget {
     required this.match3Store,
     required this.mahjongStore,
     required this.solitaireStore,
+    required this.sudokuStore,
     required this.settings,
     super.key,
   });
@@ -33,6 +36,7 @@ class PapatteParcApp extends StatelessWidget {
   final Match3ProgressStore match3Store;
   final MahjongProgressStore mahjongStore;
   final SolitaireProgressStore solitaireStore;
+  final SudokuProgressStore sudokuStore;
   final SettingsStore settings;
 
   @override
@@ -45,6 +49,7 @@ class PapatteParcApp extends StatelessWidget {
       match3Store: match3Store,
       mahjongStore: mahjongStore,
       solitaireStore: solitaireStore,
+      sudokuStore: sudokuStore,
       settings: settings,
     ),
   );
@@ -56,6 +61,7 @@ class _AppFlow extends StatefulWidget {
     required this.match3Store,
     required this.mahjongStore,
     required this.solitaireStore,
+    required this.sudokuStore,
     required this.settings,
   });
 
@@ -63,6 +69,7 @@ class _AppFlow extends StatefulWidget {
   final Match3ProgressStore match3Store;
   final MahjongProgressStore mahjongStore;
   final SolitaireProgressStore solitaireStore;
+  final SudokuProgressStore sudokuStore;
   final SettingsStore settings;
 
   @override
@@ -83,35 +90,50 @@ class _AppFlowState extends State<_AppFlow> {
       progress: widget.match3Store,
       settings: widget.settings,
       onExit: _showMenu,
+      onQuit: _onQuit,
     ),
     GameId.mahjongAnimaux => MahjongGameFlow(
       stages: levels,
       progress: widget.mahjongStore,
       settings: widget.settings,
       onExit: _showMenu,
+      onQuit: _onQuit,
     ),
     GameId.solitaireAnimaux => SolitaireGameFlow(
+      stages: levels,
       progress: widget.solitaireStore,
       settings: widget.settings,
       onExit: _showMenu,
+      onQuit: _onQuit,
+    ),
+    GameId.sudokuAnimaux => SudokuGameFlow(
+      stages: levels,
+      progress: widget.sudokuStore,
+      settings: widget.settings,
+      onExit: _showMenu,
+      onQuit: _onQuit,
     ),
     null => MainMenuScreen(
       refugeStore: widget.refugeStore,
       match3Store: widget.match3Store,
       mahjongStore: widget.mahjongStore,
       solitaireStore: widget.solitaireStore,
+      sudokuStore: widget.sudokuStore,
       musicEnabled: widget.settings.musicEnabled,
       effectsEnabled: widget.settings.effectsEnabled,
       onSelect: (game) => setState(() => _selectedGame = game),
       onToggleMusic: () => unawaited(_toggleMusic()),
       onToggleEffects: () => unawaited(_toggleEffects()),
-      onQuit: !kIsWeb && defaultTargetPlatform == TargetPlatform.windows
-          ? () => unawaited(_applicationChannel.invokeMethod<void>('quit'))
-          : null,
+      onQuit: _onQuit,
     ),
   };
 
   void _showMenu() => setState(() => _selectedGame = null);
+
+  VoidCallback? get _onQuit =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.windows
+      ? () => unawaited(_applicationChannel.invokeMethod<void>('quit'))
+      : null;
 
   Future<void> _toggleMusic() async {
     await widget.settings.setMusicEnabled(!widget.settings.musicEnabled);

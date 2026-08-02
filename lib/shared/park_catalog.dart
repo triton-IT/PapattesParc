@@ -8,6 +8,18 @@ enum LevelBiome {
   tundra,
 }
 
+extension LevelBiomeLabel on LevelBiome {
+  String get label => switch (this) {
+    LevelBiome.savanna => 'Savane',
+    LevelBiome.tropical => 'Forêt tropicale',
+    LevelBiome.riverside => 'Bord de rivière',
+    LevelBiome.woodland => 'Sous-bois',
+    LevelBiome.steppe => 'Steppe',
+    LevelBiome.mountain => 'Montagne',
+    LevelBiome.tundra => 'Toundra',
+  };
+}
+
 enum AnimalTemperament { curious, majestic, peaceful, adventurous, brave }
 
 abstract interface class ParkStage {
