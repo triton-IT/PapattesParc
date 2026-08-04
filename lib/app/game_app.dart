@@ -11,6 +11,8 @@ import '../games/mahjong_animaux/presentation/mahjong_game_flow.dart';
 import '../games/refuge/data/progress_store.dart';
 import '../games/refuge/domain/levels.dart';
 import '../games/refuge/presentation/game_app.dart';
+import '../games/repas_animaux/data/repas_animaux_progress_store.dart';
+import '../games/repas_animaux/presentation/repas_animaux_game_flow.dart';
 import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
 import '../games/solitaire_animaux/presentation/solitaire_game_flow.dart';
 import '../games/sudoku_animaux/data/sudoku_progress_store.dart';
@@ -28,6 +30,7 @@ class PapatteParcApp extends StatelessWidget {
     required this.mahjongStore,
     required this.solitaireStore,
     required this.sudokuStore,
+    required this.repasStore,
     required this.settings,
     super.key,
   });
@@ -37,6 +40,7 @@ class PapatteParcApp extends StatelessWidget {
   final MahjongProgressStore mahjongStore;
   final SolitaireProgressStore solitaireStore;
   final SudokuProgressStore sudokuStore;
+  final RepasAnimauxProgressStore repasStore;
   final SettingsStore settings;
 
   @override
@@ -50,6 +54,7 @@ class PapatteParcApp extends StatelessWidget {
       mahjongStore: mahjongStore,
       solitaireStore: solitaireStore,
       sudokuStore: sudokuStore,
+      repasStore: repasStore,
       settings: settings,
     ),
   );
@@ -62,6 +67,7 @@ class _AppFlow extends StatefulWidget {
     required this.mahjongStore,
     required this.solitaireStore,
     required this.sudokuStore,
+    required this.repasStore,
     required this.settings,
   });
 
@@ -70,6 +76,7 @@ class _AppFlow extends StatefulWidget {
   final MahjongProgressStore mahjongStore;
   final SolitaireProgressStore solitaireStore;
   final SudokuProgressStore sudokuStore;
+  final RepasAnimauxProgressStore repasStore;
   final SettingsStore settings;
 
   @override
@@ -113,12 +120,20 @@ class _AppFlowState extends State<_AppFlow> {
       onExit: _showMenu,
       onQuit: _onQuit,
     ),
+    GameId.repasAnimaux => RepasAnimauxGameFlow(
+      stages: levels,
+      progress: widget.repasStore,
+      settings: widget.settings,
+      onExit: _showMenu,
+      onQuit: _onQuit,
+    ),
     null => MainMenuScreen(
       refugeStore: widget.refugeStore,
       match3Store: widget.match3Store,
       mahjongStore: widget.mahjongStore,
       solitaireStore: widget.solitaireStore,
       sudokuStore: widget.sudokuStore,
+      repasStore: widget.repasStore,
       musicEnabled: widget.settings.musicEnabled,
       effectsEnabled: widget.settings.effectsEnabled,
       onSelect: (game) => setState(() => _selectedGame = game),

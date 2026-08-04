@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
 
-enum GameHelpKind { refuge, match3, mahjong, solitaire, sudoku }
+enum GameHelpKind { refuge, match3, mahjong, solitaire, sudoku, repasAnimaux }
 
 class GameHelpButton extends StatelessWidget {
   const GameHelpButton({
@@ -66,6 +66,7 @@ class GameHelpButton extends StatelessWidget {
     GameHelpKind.mahjong => 'Mahjong des animaux',
     GameHelpKind.solitaire => 'Solitaire des animaux',
     GameHelpKind.sudoku => 'Le Défi des Papattes',
+    GameHelpKind.repasAnimaux => 'Le repas des animaux',
   };
 
   List<String> get _items => switch (kind) {
@@ -94,6 +95,11 @@ class GameHelpButton extends StatelessWidget {
       'Les emplacements de la parade ont été mélangés. Replace les animaux avant l’ouverture du parc.',
       'Chaque animal doit apparaître une seule fois dans chaque ligne, chaque colonne et chaque enclos.',
       'Sélectionne une case puis un animal. Le mode Notes conserve tes candidats et trois indices peuvent remplir une case si tu bloques.',
+    ],
+    GameHelpKind.repasAnimaux => const [
+      'Guide le soigneur avec les flèches, les touches WASD, un glissement ou le pavé directionnel.',
+      'Pousse chaque caisse de nourriture sur un point de nourrissage. Une caisse ne peut être ni tirée ni pousser une autre caisse.',
+      'Annule autant de déplacements que nécessaire ou recommence le niveau si une caisse est bloquée.',
     ],
   };
 }

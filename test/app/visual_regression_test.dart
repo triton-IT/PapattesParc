@@ -10,6 +10,12 @@ import 'package:papatte_parc/games/pattes_friandises/domain/models.dart';
 import 'package:papatte_parc/games/pattes_friandises/presentation/level_select_screen.dart';
 import 'package:papatte_parc/games/pattes_friandises/presentation/match3_screen.dart';
 import 'package:papatte_parc/games/refuge/data/progress_store.dart';
+import 'package:papatte_parc/games/repas_animaux/data/repas_animaux_progress_store.dart';
+import 'package:papatte_parc/games/repas_animaux/domain/campaign.dart';
+import 'package:papatte_parc/games/repas_animaux/domain/repas_session.dart';
+import 'package:papatte_parc/games/repas_animaux/presentation/level_select_screen.dart';
+import 'package:papatte_parc/games/repas_animaux/presentation/custom_game_screen.dart';
+import 'package:papatte_parc/games/repas_animaux/presentation/repas_screen.dart';
 import 'package:papatte_parc/games/refuge/domain/board_generator.dart';
 import 'package:papatte_parc/games/refuge/domain/game_session.dart';
 import 'package:papatte_parc/games/refuge/domain/levels.dart';
@@ -40,9 +46,11 @@ void main() {
     final store = await ProgressStore.load();
     final match3Store = await Match3ProgressStore.load();
     final sudokuStore = await SudokuProgressStore.load();
+    final repasStore = await RepasAnimauxProgressStore.load();
     final level = levels.first;
     final match3Levels = buildMatch3Campaign(levels);
     final sudokuLevels = buildSudokuCampaign(levels);
+    final repasLevels = buildRepasCampaign(levels);
     for (final size in _sizes) {
       await _pump(
         tester,
@@ -264,6 +272,85 @@ void main() {
         find.byType(Scaffold),
         matchesGoldenFile('../goldens/sudoku-result-${_name(size)}.png'),
       );
+
+      await _pump(
+        tester,
+        size,
+        RepasLevelSelectScreen(
+          levels: repasLevels,
+          store: repasStore,
+          musicEnabled: true,
+          effectsEnabled: true,
+          onBack: () {},
+          onPlay: (_) {},
+          onCustom: () {},
+          onToggleMusic: () {},
+          onToggleEffects: () {},
+          onQuit: () {},
+        ),
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('../goldens/repas-levels-${_name(size)}.png'),
+      );
+
+      await _pump(
+        tester,
+        size,
+        RepasCustomGameScreen(
+          generating: false,
+          onBack: () {},
+          onStart: (_) {},
+        ),
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('../goldens/repas-custom-${_name(size)}.png'),
+      );
+
+      final repasSession = RepasSession(repasLevels.first);
+      await _pump(
+        tester,
+        size,
+        RepasScreen(
+          session: repasSession,
+          finished: false,
+          newRecord: false,
+          onMove: (_) {},
+          onUndo: () {},
+          onRestart: () {},
+          onLevels: () {},
+          onRetry: () {},
+          onNext: () {},
+        ),
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('../goldens/repas-mission-${_name(size)}.png'),
+      );
+
+      for (final direction in repasLevels.first.referenceSolution) {
+        repasSession.move(direction);
+      }
+      await _pump(
+        tester,
+        size,
+        RepasScreen(
+          session: repasSession,
+          finished: true,
+          newRecord: true,
+          onMove: (_) {},
+          onUndo: () {},
+          onRestart: () {},
+          onLevels: () {},
+          onRetry: () {},
+          onNext: () {},
+        ),
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('../goldens/repas-result-${_name(size)}.png'),
+      );
     }
   }, skip: !Platform.isWindows);
 }
@@ -295,6 +382,11 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
   for (final asset in [
     'assets/level_art/level-45-alpagas.png',
     'assets/mahjong/mahjong-cover.png',
+    'assets/sokoban/cover.png',
+    'assets/sokoban/keeper-south.png',
+    'assets/sokoban/food-crate-mixed.png',
+    'assets/sokoban/feeding-spot-v2.png',
+    'assets/sokoban/fence-v2.png',
     'assets/match3/animals/suricate.png',
     'assets/match3/animals/lion.png',
     'assets/match3/animals/girafe.png',

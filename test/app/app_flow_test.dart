@@ -12,6 +12,11 @@ import 'package:papatte_parc/games/mahjong_animaux/domain/campaign.dart';
 import 'package:papatte_parc/games/mahjong_animaux/domain/mahjong_session.dart';
 import 'package:papatte_parc/games/mahjong_animaux/presentation/mahjong_screen.dart';
 import 'package:papatte_parc/games/refuge/data/progress_store.dart';
+import 'package:papatte_parc/games/repas_animaux/data/repas_animaux_progress_store.dart';
+import 'package:papatte_parc/games/repas_animaux/domain/campaign.dart';
+import 'package:papatte_parc/games/repas_animaux/domain/models.dart';
+import 'package:papatte_parc/games/repas_animaux/domain/repas_session.dart';
+import 'package:papatte_parc/games/repas_animaux/presentation/repas_screen.dart';
 import 'package:papatte_parc/games/refuge/domain/board_generator.dart';
 import 'package:papatte_parc/games/refuge/domain/custom_game.dart';
 import 'package:papatte_parc/games/refuge/domain/game_session.dart';
@@ -87,6 +92,36 @@ void main() {
       ),
       findsOneWidget,
     );
+    await _pumpRoot(tester, refugeStore, const Size(1366, 768));
+    expect(find.text('Le repas des animaux'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('game-repas-animaux')));
+    await tester.pump();
+    expect(find.byKey(const Key('repas-level-grid')), findsOneWidget);
+    expect(find.byKey(const Key('repas-journey-progress')), findsOneWidget);
+    expect(find.byKey(const Key('repas-journey-legend')), findsOneWidget);
+    expect(find.text('Observe · Planifie · Nourris'), findsOneWidget);
+    expect(find.byKey(const Key('campaign-continue')), findsOneWidget);
+    final firstRepasLevel = buildRepasCampaign(levels).first;
+    await tester.tap(find.byKey(const Key('repas-level-1')));
+    await tester.pump();
+    expect(find.byKey(const Key('repas-board')), findsOneWidget);
+    await tester.tap(
+      find.byKey(
+        Key('repas-move-${firstRepasLevel.referenceSolution.first.name}'),
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('repas-restart')));
+    await tester.pumpAndSettle();
+    expect(find.text('Recommencer ce niveau ?'), findsOneWidget);
+    await tester.tap(find.text('Recommencer'));
+    await tester.pumpAndSettle();
+    for (final direction in firstRepasLevel.referenceSolution) {
+      await tester.tap(find.byKey(Key('repas-move-${direction.name}')));
+      await tester.pump();
+    }
+    await tester.pumpAndSettle();
+    expect(find.text('REPAS DISTRIBUÉ !'), findsOneWidget);
   });
 
   testWidgets(
@@ -97,19 +132,21 @@ void main() {
         final store = await ProgressStore.load();
         await _pumpRoot(tester, store, size);
 
-        if (find
-            .byKey(const Key('game-solitaire-animaux'))
-            .evaluate()
-            .isEmpty) {
-          await tester.scrollUntilVisible(
-            find.byKey(const Key('game-solitaire-animaux')),
-            400,
-            scrollable: find.byType(Scrollable).first,
-          );
-          await tester.drag(find.byType(ListView).first, const Offset(0, -180));
-          await tester.pump();
-        }
-        await tester.tap(find.byKey(const Key('game-solitaire-animaux')));
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('game-solitaire-animaux')),
+          400,
+          scrollable: find.byType(Scrollable).first,
+        );
+        tester
+            .widget<InkWell>(
+              find
+                  .descendant(
+                    of: find.byKey(const Key('game-solitaire-animaux')),
+                    matching: find.byType(InkWell),
+                  )
+                  .first,
+            )
+            .onTap!();
         await tester.pump();
         expect(find.byKey(const Key('solitaire-level-grid')), findsOneWidget);
         expect(
@@ -168,6 +205,102 @@ void main() {
       }
     },
   );
+
+  testWidgets('le soigneur répond au pavé, au clavier et au glissement', (
+    tester,
+  ) async {
+    final session = RepasSession(
+      RepasLevelDefinition(
+        stage: levels.first,
+        rows: const ['#####', '#s..#', '#.c.#', '#.t.#', '#####'],
+        parPushes: 1,
+      ),
+    );
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 800);
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildAppTheme(),
+        home: StatefulBuilder(
+          builder: (context, setState) => RepasScreen(
+            session: session,
+            finished: false,
+            newRecord: false,
+            onMove: (direction) => setState(() => session.move(direction)),
+            onUndo: () => setState(session.undo),
+            onRestart: () => setState(session.reset),
+            onLevels: () {},
+            onRetry: () {},
+            onNext: null,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('repas-move-east')));
+    await tester.pump();
+    expect(session.keeper, const RepasPosition(2, 1));
+    await tester.tap(find.byKey(const Key('repas-undo')));
+    await tester.pump();
+    expect(session.keeper, const RepasPosition(1, 1));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(session.keeper, const RepasPosition(2, 1));
+    await tester.tap(find.byKey(const Key('repas-undo')));
+    await tester.pump();
+
+    await tester.drag(
+      find.byKey(const Key('repas-board')),
+      const Offset(80, 0),
+    );
+    await tester.pump();
+    expect(session.keeper, const RepasPosition(2, 1));
+    await tester.tap(find.byKey(const Key('repas-move-south')));
+    await tester.pump();
+    expect(session.status, RepasStatus.won);
+  });
+
+  testWidgets('les caisses montrent la nourriture des animaux du niveau', (
+    tester,
+  ) async {
+    const diets = {
+      1: 'mixed',
+      2: 'meat',
+      3: 'herbivore',
+      6: 'fruit',
+      9: 'fish',
+      20: 'meat',
+      35: 'meat',
+      45: 'herbivore',
+    };
+    for (final entry in diets.entries) {
+      final session = RepasSession(
+        RepasLevelDefinition(
+          stage: levels[entry.key - 1],
+          rows: const ['#####', '#sct#', '#####'],
+          parPushes: 1,
+        ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: RepasBoard(session: session, onMove: (_) {}),
+        ),
+      );
+      await tester.pump();
+
+      final crate = tester.widget<Image>(
+        find.byKey(const Key('repas-crate-2-1')),
+      );
+      expect(
+        (crate.image as AssetImage).assetName,
+        'assets/sokoban/food-crate-${entry.value}.png',
+        reason: 'étape ${entry.key}',
+      );
+    }
+  });
 
   testWidgets('les deux nouvelles parties libres appliquent leurs réglages', (
     tester,
@@ -231,6 +364,54 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('sudoku-custom-size')), findsOneWidget);
     expect(find.text('9 × 9'), findsOneWidget);
+  });
+
+  testWidgets('la partie libre respecte taille, difficulté et résolution', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = await ProgressStore.load();
+    await _pumpRoot(tester, store, const Size(800, 1280));
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('game-repas-animaux')),
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.byKey(const Key('game-repas-animaux')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('repas-open-custom')));
+    await tester.pump();
+
+    expect(find.byKey(const Key('repas-custom-start')), findsOneWidget);
+    await tester.tap(find.text('Grande'));
+    await tester.tap(find.text('Difficile'));
+    await tester.tap(find.byKey(const Key('repas-custom-start')));
+    await tester.pump();
+    for (
+      var attempt = 0;
+      attempt < 100 &&
+          find.byKey(const Key('repas-custom-start')).evaluate().isNotEmpty;
+      attempt++
+    ) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pump();
+    }
+
+    final screen = tester.widget<RepasScreen>(find.byType(RepasScreen));
+    expect(screen.session.level.width, 11);
+    expect(screen.session.level.initialCrates, hasLength(5));
+    expect(
+      screen.session.level.walls.any(
+        (wall) => wall.x > 0 && wall.y > 0 && wall.x < 10 && wall.y < 10,
+      ),
+      isTrue,
+    );
+    for (final direction in screen.session.level.referenceSolution) {
+      screen.session.move(direction);
+    }
+    expect(screen.session.status, RepasStatus.won);
   });
 
   testWidgets('le bouton quitter est réservé à Windows', (tester) async {
@@ -790,6 +971,7 @@ Future<void> _pumpApp(
       mahjongStore: await MahjongProgressStore.load(),
       solitaireStore: await SolitaireProgressStore.load(),
       sudokuStore: await SudokuProgressStore.load(),
+      repasStore: await RepasAnimauxProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
@@ -814,6 +996,7 @@ Future<void> _pumpRoot(
       mahjongStore: await MahjongProgressStore.load(),
       solitaireStore: await SolitaireProgressStore.load(),
       sudokuStore: await SudokuProgressStore.load(),
+      repasStore: await RepasAnimauxProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
