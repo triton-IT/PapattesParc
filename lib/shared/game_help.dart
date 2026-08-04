@@ -41,11 +41,7 @@ class GameHelpButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final item in _items)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Text(item),
-                ),
+              _GameCoach(kind: kind, messages: _items),
               if (kind == GameHelpKind.match3) const _Match3Legend(),
             ],
           ),
@@ -102,6 +98,157 @@ class GameHelpButton extends StatelessWidget {
       'Annule autant de déplacements que nécessaire ou recommence le niveau si une caisse est bloquée.',
     ],
   };
+}
+
+class _GameCoach extends StatefulWidget {
+  const _GameCoach({required this.kind, required this.messages});
+
+  final GameHelpKind kind;
+  final List<String> messages;
+
+  @override
+  State<_GameCoach> createState() => _GameCoachState();
+}
+
+class _GameCoachState extends State<_GameCoach> {
+  var _messageIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final duration = MediaQuery.of(context).disableAnimations
+        ? Duration.zero
+        : const Duration(milliseconds: 350);
+    return Padding(
+      key: Key('help-coach-${widget.kind.name}'),
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final portraitSize = constraints.maxWidth < 320 ? 56.0 : 76.0;
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TweenAnimationBuilder<double>(
+                    key: ValueKey(_messageIndex),
+                    tween: Tween(begin: 0, end: 1),
+                    duration: duration,
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, child) => Transform.translate(
+                      offset: Offset(-12 * (1 - value), 0),
+                      child: Transform.rotate(
+                        angle: -.08 * (1 - value),
+                        child: Opacity(opacity: value, child: child),
+                      ),
+                    ),
+                    child: Semantics(
+                      image: true,
+                      label: 'Suricate guide',
+                      child: Image.asset(
+                        'assets/match3/animals/suricate.png',
+                        key: const Key('help-coach-suricate'),
+                        width: portraitSize,
+                        height: portraitSize,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      duration: duration,
+                      transitionBuilder: (child, animation) => FadeTransition(
+                        opacity: animation,
+                        child: ScaleTransition(
+                          alignment: Alignment.centerLeft,
+                          scale: Tween(begin: .92, end: 1.0).animate(animation),
+                          child: child,
+                        ),
+                      ),
+                      child: _SpeechBubble(
+                        key: ValueKey(_messageIndex),
+                        message: widget.messages[_messageIndex],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                key: const Key('help-coach-previous'),
+                tooltip: 'Consigne précédente',
+                onPressed: _messageIndex == 0
+                    ? null
+                    : () => setState(() => _messageIndex--),
+                icon: const Icon(Icons.arrow_back_rounded),
+              ),
+              Text('${_messageIndex + 1} sur ${widget.messages.length}'),
+              IconButton(
+                key: const Key('help-coach-next'),
+                tooltip: 'Consigne suivante',
+                onPressed: _messageIndex == widget.messages.length - 1
+                    ? null
+                    : () => setState(() => _messageIndex++),
+                icon: const Icon(Icons.arrow_forward_rounded),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SpeechBubble extends StatelessWidget {
+  const _SpeechBubble({required this.message, super.key});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) => CustomPaint(
+    painter: const _SpeechBubblePainter(),
+    child: Semantics(
+      liveRegion: true,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 14, 14, 14),
+        child: Text(message),
+      ),
+    ),
+  );
+}
+
+class _SpeechBubblePainter extends CustomPainter {
+  const _SpeechBubblePainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(10, 0, size.width - 10, size.height),
+          const Radius.circular(18),
+        ),
+      )
+      ..moveTo(11, 24)
+      ..lineTo(0, 36)
+      ..lineTo(11, 44)
+      ..close();
+    canvas.drawShadow(path, AppColors.deep.withValues(alpha: .2), 4, false);
+    canvas.drawPath(path, Paint()..color = const Color(0xfffff4dc));
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = AppColors.sun
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_SpeechBubblePainter oldDelegate) => false;
 }
 
 class _Match3Legend extends StatelessWidget {

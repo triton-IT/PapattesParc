@@ -914,6 +914,12 @@ void main() {
     await tester.tap(find.byKey(const Key('help-match3')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('help-content-match3')), findsOneWidget);
+    expect(find.byKey(const Key('help-coach-match3')), findsOneWidget);
+    expect(find.byKey(const Key('help-coach-suricate')), findsOneWidget);
+    expect(find.textContaining('Échange deux animaux voisins'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('help-coach-next')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Les obstacles se nettoient'), findsOneWidget);
     expect(find.byKey(const Key('match3-legend')), findsOneWidget);
     for (final label in [
       'Flèches horizontales',
