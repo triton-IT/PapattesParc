@@ -6,6 +6,7 @@ import '../games/mahjong_animaux/data/mahjong_progress_store.dart';
 import '../games/refuge/data/progress_store.dart';
 import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
 import '../games/sudoku_animaux/data/sudoku_progress_store.dart';
+import '../games/repas_animaux/data/repas_animaux_progress_store.dart';
 import '../shared/app_theme.dart';
 
 enum GameId {
@@ -14,6 +15,7 @@ enum GameId {
   mahjongAnimaux,
   solitaireAnimaux,
   sudokuAnimaux,
+  repasAnimaux,
 }
 
 class MainMenuScreen extends StatelessWidget {
@@ -23,6 +25,7 @@ class MainMenuScreen extends StatelessWidget {
     required this.mahjongStore,
     required this.solitaireStore,
     required this.sudokuStore,
+    required this.repasStore,
     required this.musicEnabled,
     required this.effectsEnabled,
     required this.onSelect,
@@ -37,6 +40,7 @@ class MainMenuScreen extends StatelessWidget {
   final MahjongProgressStore mahjongStore;
   final SolitaireProgressStore solitaireStore;
   final SudokuProgressStore sudokuStore;
+  final RepasAnimauxProgressStore repasStore;
   final bool musicEnabled;
   final bool effectsEnabled;
   final ValueChanged<GameId> onSelect;
@@ -68,9 +72,6 @@ class MainMenuScreen extends StatelessWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final wide =
-                        constraints.maxWidth >= 780 &&
-                        constraints.maxWidth > constraints.maxHeight;
                     final cards = [
                       _GameCard(
                         key: const Key('game-refuge'),
@@ -137,38 +138,44 @@ class MainMenuScreen extends StatelessWidget {
                         color: const Color(0xff8c5e9e),
                         onPlay: () => onSelect(GameId.sudokuAnimaux),
                       ),
+                      _GameCard(
+                        key: const Key('game-repas-animaux'),
+                        title: 'Le repas des animaux',
+                        description:
+                            'Aide le soigneur à livrer les caisses de nourriture dans chaque enclos.',
+                        progress:
+                            '${repasStore.unlockedLevel} / 45 niveaux · '
+                            '${repasStore.totalFootprints} empreintes',
+                        artAsset: 'assets/sokoban/cover.png',
+                        icon: Icons.restaurant_rounded,
+                        color: const Color(0xffb56736),
+                        onPlay: () => onSelect(GameId.repasAnimaux),
+                      ),
                     ];
                     return Center(
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 1240),
+                        constraints: const BoxConstraints(maxWidth: 1400),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
-                          child: wide
-                              ? Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    for (
-                                      var index = 0;
-                                      index < cards.length;
-                                      index++
-                                    ) ...[
-                                      if (index > 0) const SizedBox(width: 14),
-                                      Expanded(child: cards[index]),
-                                    ],
-                                  ],
-                                )
-                              : ListView.separated(
-                                  itemCount: cards.length,
-                                  separatorBuilder: (_, _) =>
-                                      const SizedBox(height: 14),
-                                  itemBuilder: (_, index) => SizedBox(
-                                    height: constraints.maxHeight < 700
-                                        ? 255
-                                        : 300,
-                                    child: cards[index],
-                                  ),
+                          child: GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: constraints.maxWidth >= 1100
+                                      ? 3
+                                      : constraints.maxWidth >= 680
+                                      ? 2
+                                      : 1,
+                                  crossAxisSpacing: 14,
+                                  mainAxisSpacing: 14,
+                                  mainAxisExtent: constraints.maxWidth >= 1100
+                                      ? (constraints.maxHeight - 46) / 2
+                                      : constraints.maxHeight < 700
+                                      ? 255
+                                      : 300,
                                 ),
+                            itemCount: cards.length,
+                            itemBuilder: (_, index) => cards[index],
+                          ),
                         ),
                       ),
                     );
