@@ -2,7 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
 
-enum GameHelpKind { refuge, match3, mahjong, solitaire, sudoku, repasAnimaux }
+enum GameHelpKind {
+  refuge,
+  match3,
+  mahjong,
+  solitaire,
+  sudoku,
+  repasAnimaux,
+  numberlink,
+}
 
 class GameHelpButton extends StatelessWidget {
   const GameHelpButton({
@@ -63,6 +71,7 @@ class GameHelpButton extends StatelessWidget {
     GameHelpKind.solitaire => 'Solitaire des animaux',
     GameHelpKind.sudoku => 'Le Défi des Papattes',
     GameHelpKind.repasAnimaux => 'Le repas des animaux',
+    GameHelpKind.numberlink => 'Sentiers sauvages',
   };
 
   List<String> get _items => switch (kind) {
@@ -96,6 +105,11 @@ class GameHelpButton extends StatelessWidget {
       'Guide le soigneur avec les flèches, les touches WASD, un glissement ou le pavé directionnel.',
       'Pousse chaque caisse de nourriture sur un point de nourrissage. Une caisse ne peut être ni tirée ni pousser une autre caisse.',
       'Annule autant de déplacements que nécessaire ou recommence le niveau si une caisse est bloquée.',
+    ],
+    GameHelpKind.numberlink => const [
+      'Relie chaque animal à son enclos en traçant un sentier horizontal ou vertical.',
+      'Les sentiers ne peuvent ni se croiser ni partager une case. Reviens sur ton propre sentier pour en effacer la fin.',
+      'Mets tous les animaux à l’abri et couvre toute la grille. Trois indices peuvent révéler un sentier sans le tracer à ta place.',
     ],
   };
 }

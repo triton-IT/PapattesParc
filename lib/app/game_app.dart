@@ -13,6 +13,8 @@ import '../games/refuge/domain/levels.dart';
 import '../games/refuge/presentation/game_app.dart';
 import '../games/repas_animaux/data/repas_animaux_progress_store.dart';
 import '../games/repas_animaux/presentation/repas_animaux_game_flow.dart';
+import '../games/sentiers_sauvages/data/numberlink_progress_store.dart';
+import '../games/sentiers_sauvages/presentation/numberlink_game_flow.dart';
 import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
 import '../games/solitaire_animaux/presentation/solitaire_game_flow.dart';
 import '../games/sudoku_animaux/data/sudoku_progress_store.dart';
@@ -31,6 +33,7 @@ class PapatteParcApp extends StatelessWidget {
     required this.solitaireStore,
     required this.sudokuStore,
     required this.repasStore,
+    required this.numberlinkStore,
     required this.settings,
     super.key,
   });
@@ -41,6 +44,7 @@ class PapatteParcApp extends StatelessWidget {
   final SolitaireProgressStore solitaireStore;
   final SudokuProgressStore sudokuStore;
   final RepasAnimauxProgressStore repasStore;
+  final NumberlinkProgressStore numberlinkStore;
   final SettingsStore settings;
 
   @override
@@ -55,6 +59,7 @@ class PapatteParcApp extends StatelessWidget {
       solitaireStore: solitaireStore,
       sudokuStore: sudokuStore,
       repasStore: repasStore,
+      numberlinkStore: numberlinkStore,
       settings: settings,
     ),
   );
@@ -68,6 +73,7 @@ class _AppFlow extends StatefulWidget {
     required this.solitaireStore,
     required this.sudokuStore,
     required this.repasStore,
+    required this.numberlinkStore,
     required this.settings,
   });
 
@@ -77,6 +83,7 @@ class _AppFlow extends StatefulWidget {
   final SolitaireProgressStore solitaireStore;
   final SudokuProgressStore sudokuStore;
   final RepasAnimauxProgressStore repasStore;
+  final NumberlinkProgressStore numberlinkStore;
   final SettingsStore settings;
 
   @override
@@ -127,6 +134,13 @@ class _AppFlowState extends State<_AppFlow> {
       onExit: _showMenu,
       onQuit: _onQuit,
     ),
+    GameId.numberlink => NumberlinkGameFlow(
+      stages: levels,
+      progress: widget.numberlinkStore,
+      settings: widget.settings,
+      onExit: _showMenu,
+      onQuit: _onQuit,
+    ),
     null => MainMenuScreen(
       refugeStore: widget.refugeStore,
       match3Store: widget.match3Store,
@@ -134,6 +148,7 @@ class _AppFlowState extends State<_AppFlow> {
       solitaireStore: widget.solitaireStore,
       sudokuStore: widget.sudokuStore,
       repasStore: widget.repasStore,
+      numberlinkStore: widget.numberlinkStore,
       musicEnabled: widget.settings.musicEnabled,
       effectsEnabled: widget.settings.effectsEnabled,
       onSelect: (game) => setState(() => _selectedGame = game),

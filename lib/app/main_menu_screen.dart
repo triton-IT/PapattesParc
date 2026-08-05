@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import '../games/pattes_friandises/data/match3_progress_store.dart';
 import '../games/mahjong_animaux/data/mahjong_progress_store.dart';
 import '../games/refuge/data/progress_store.dart';
+import '../games/repas_animaux/data/repas_animaux_progress_store.dart';
+import '../games/sentiers_sauvages/data/numberlink_progress_store.dart';
 import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
 import '../games/sudoku_animaux/data/sudoku_progress_store.dart';
-import '../games/repas_animaux/data/repas_animaux_progress_store.dart';
 import '../shared/app_theme.dart';
 
 enum GameId {
@@ -16,6 +17,7 @@ enum GameId {
   solitaireAnimaux,
   sudokuAnimaux,
   repasAnimaux,
+  numberlink,
 }
 
 class MainMenuScreen extends StatelessWidget {
@@ -26,6 +28,7 @@ class MainMenuScreen extends StatelessWidget {
     required this.solitaireStore,
     required this.sudokuStore,
     required this.repasStore,
+    required this.numberlinkStore,
     required this.musicEnabled,
     required this.effectsEnabled,
     required this.onSelect,
@@ -41,6 +44,7 @@ class MainMenuScreen extends StatelessWidget {
   final SolitaireProgressStore solitaireStore;
   final SudokuProgressStore sudokuStore;
   final RepasAnimauxProgressStore repasStore;
+  final NumberlinkProgressStore numberlinkStore;
   final bool musicEnabled;
   final bool effectsEnabled;
   final ValueChanged<GameId> onSelect;
@@ -151,6 +155,20 @@ class MainMenuScreen extends StatelessWidget {
                         color: const Color(0xffb56736),
                         onPlay: () => onSelect(GameId.repasAnimaux),
                       ),
+                      _GameCard(
+                        key: const Key('game-numberlink'),
+                        title: 'Sentiers sauvages',
+                        description:
+                            'Relie chaque animal à son enclos sans croiser les sentiers.',
+                        progress:
+                            '${numberlinkStore.unlockedLevel} / 45 niveaux · '
+                            '${numberlinkStore.totalFootprints} empreintes',
+                        artAsset:
+                            'assets/level_art/level-09-gibbons-loutres-asie.png',
+                        icon: Icons.route_rounded,
+                        color: AppColors.success,
+                        onPlay: () => onSelect(GameId.numberlink),
+                      ),
                     ];
                     return Center(
                       child: ConstrainedBox(
@@ -160,7 +178,9 @@ class MainMenuScreen extends StatelessWidget {
                           child: GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: constraints.maxWidth >= 1100
+                                  crossAxisCount: constraints.maxWidth >= 1280
+                                      ? 4
+                                      : constraints.maxWidth >= 1100
                                       ? 3
                                       : constraints.maxWidth >= 680
                                       ? 2

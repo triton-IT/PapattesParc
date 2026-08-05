@@ -13,6 +13,8 @@ import 'package:papatte_parc/games/mahjong_animaux/domain/mahjong_session.dart';
 import 'package:papatte_parc/games/mahjong_animaux/presentation/mahjong_screen.dart';
 import 'package:papatte_parc/games/refuge/data/progress_store.dart';
 import 'package:papatte_parc/games/repas_animaux/data/repas_animaux_progress_store.dart';
+import 'package:papatte_parc/games/sentiers_sauvages/data/numberlink_progress_store.dart';
+import 'package:papatte_parc/games/sentiers_sauvages/domain/campaign.dart';
 import 'package:papatte_parc/games/repas_animaux/domain/campaign.dart';
 import 'package:papatte_parc/games/repas_animaux/domain/models.dart';
 import 'package:papatte_parc/games/repas_animaux/domain/repas_session.dart';
@@ -122,6 +124,67 @@ void main() {
     }
     await tester.pumpAndSettle();
     expect(find.text('REPAS DISTRIBUÉ !'), findsOneWidget);
+
+    await _pumpRoot(tester, refugeStore, const Size(1366, 768));
+    expect(find.text('Sentiers sauvages'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('game-numberlink')));
+    await tester.pump();
+    expect(find.byKey(const Key('numberlink-level-grid')), findsOneWidget);
+    expect(
+      find.byKey(const Key('numberlink-journey-progress')),
+      findsOneWidget,
+    );
+    expect(find.text('Relie · Guide · Protège'), findsOneWidget);
+    expect(
+      tester.widget<InkWell>(find.byKey(const Key('numberlink-level-2'))).onTap,
+      isNull,
+    );
+    await tester.tap(find.byKey(const Key('numberlink-level-1')));
+    await tester.pump();
+    expect(find.byKey(const Key('numberlink-board')), findsOneWidget);
+    expect(find.byKey(const Key('numberlink-cell-0')), findsOneWidget);
+    expect(find.byKey(const Key('numberlink-hint')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('numberlink-hint')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('numberlink-restart')));
+    await tester.pumpAndSettle();
+    expect(find.text('Recommencer cette partie ?'), findsOneWidget);
+    await tester.tap(find.text('Continuer'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('numberlink-back')));
+    await tester.pumpAndSettle();
+    expect(find.text('Abandonner cette partie ?'), findsOneWidget);
+    await tester.tap(find.text('Quitter'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('numberlink-level-grid')), findsOneWidget);
+
+    final numberlinkLevel = buildNumberlinkCampaign(levels).first;
+    await tester.tap(find.byKey(const Key('numberlink-level-1')));
+    await tester.pump();
+    final board = tester.getRect(find.byKey(const Key('numberlink-board')));
+    for (final pair in numberlinkLevel.pairs) {
+      for (final position in pair.referencePath) {
+        await tester.tapAt(
+          Offset(
+            board.left + (position.x + .5) * board.width / numberlinkLevel.size,
+            board.top + (position.y + .5) * board.height / numberlinkLevel.size,
+          ),
+        );
+        await tester.pump();
+      }
+    }
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('numberlink-result-overlay')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('numberlink-next')));
+    await tester.pump();
+    expect(find.text('Niveau 2 · 5 × 5'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('numberlink-back')));
+    await tester.pump();
+    expect(find.byKey(const Key('numberlink-level-grid')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('numberlink-open-custom')));
+    await tester.pump();
+    expect(find.byKey(const Key('numberlink-custom-preview')), findsOneWidget);
+    expect(find.byKey(const Key('numberlink-start-custom')), findsOneWidget);
   });
 
   testWidgets(
@@ -978,6 +1041,7 @@ Future<void> _pumpApp(
       solitaireStore: await SolitaireProgressStore.load(),
       sudokuStore: await SudokuProgressStore.load(),
       repasStore: await RepasAnimauxProgressStore.load(),
+      numberlinkStore: await NumberlinkProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
@@ -1003,6 +1067,7 @@ Future<void> _pumpRoot(
       solitaireStore: await SolitaireProgressStore.load(),
       sudokuStore: await SudokuProgressStore.load(),
       repasStore: await RepasAnimauxProgressStore.load(),
+      numberlinkStore: await NumberlinkProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
