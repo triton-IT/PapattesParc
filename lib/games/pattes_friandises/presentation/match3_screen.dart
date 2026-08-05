@@ -201,8 +201,8 @@ class _Match3BoardState extends State<Match3Board> {
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: Match3Session.size,
-                crossAxisSpacing: 3,
-                mainAxisSpacing: 3,
+                crossAxisSpacing: 4,
+                mainAxisSpacing: 4,
               ),
               itemCount: Match3Session.size * Match3Session.size,
               itemBuilder: (context, index) {
@@ -340,20 +340,20 @@ class _Match3Cell extends StatelessWidget {
       selected: selected,
       label: tile?.isBasket == true
           ? 'Panier de friandises'
-          : tile?.animal.label,
+          : tile == null
+          ? null
+          : tile.special == SpecialKind.none
+          ? tile.animal.label
+          : '${tile.animal.label}, ${_specialLabel(tile.special)}',
       child: AnimatedContainer(
         key: Key('match3-cell-${position.x}-${position.y}'),
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
-          color: snapshot.blocker == null
-              ? haloColor
-              : _cellColor(snapshot.blocker),
-          borderRadius: BorderRadius.circular(6),
+          color: haloColor,
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: selected
-                ? AppColors.sun
-                : Colors.white.withValues(alpha: .6),
-            width: selected ? 4 : 1,
+            color: selected ? AppColors.sun : const Color(0xfffffdf5),
+            width: selected ? 4 : 2,
           ),
         ),
         child: Stack(
@@ -411,20 +411,26 @@ class _Match3Cell extends StatelessWidget {
     );
   }
 
-  Color _cellColor(BlockerKind? blocker) => switch (blocker) {
-    BlockerKind.leaves => const Color(0xffa8c878),
-    BlockerKind.mud => const Color(0xffb88a66),
-    BlockerKind.vines => const Color(0xff77a45b),
-    BlockerKind.ice => const Color(0xffbde8ef),
-    null => const Color(0xfffffdf5),
-  };
-
   IconData _specialIcon(SpecialKind special) => switch (special) {
     SpecialKind.horizontalBinoculars => Icons.swap_horiz_rounded,
     SpecialKind.verticalBinoculars => Icons.swap_vert_rounded,
     SpecialKind.basketBlast => Icons.redeem_rounded,
     SpecialKind.goldenPaw => Icons.pets_rounded,
+    SpecialKind.scout => Icons.explore_rounded,
+    SpecialKind.largeGift => Icons.card_giftcard_rounded,
+    SpecialKind.giantGift => Icons.celebration_rounded,
     SpecialKind.none => Icons.circle,
+  };
+
+  String _specialLabel(SpecialKind special) => switch (special) {
+    SpecialKind.horizontalBinoculars => 'flèches horizontales',
+    SpecialKind.verticalBinoculars => 'flèches verticales',
+    SpecialKind.basketBlast => 'cadeau',
+    SpecialKind.goldenPaw => 'patte dorée',
+    SpecialKind.scout => 'éclaireur',
+    SpecialKind.largeGift => 'grand cadeau',
+    SpecialKind.giantGift => 'cadeau géant',
+    SpecialKind.none => '',
   };
 }
 
@@ -439,7 +445,7 @@ class _BlockerOverlay extends StatelessWidget {
     child: DecoratedBox(
       decoration: BoxDecoration(
         border: Border.all(color: _color, width: layers == 2 ? 4 : 2),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Align(
         alignment: Alignment.topLeft,

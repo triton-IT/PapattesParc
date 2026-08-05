@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:meta/meta.dart';
+
 import 'models.dart';
 
 class Match3Session {
@@ -11,6 +13,17 @@ class Match3Session {
       _blockerLayers[index] = placement.layers;
     }
     _buildBoard();
+  }
+
+  @visibleForTesting
+  factory Match3Session.forTesting(
+    Match3LevelDefinition level,
+    int seed,
+    List<Match3Tile?> tiles,
+  ) {
+    final session = Match3Session(level, seed);
+    session._tiles.setAll(0, tiles);
+    return session;
   }
 
   static const size = 8;
@@ -46,7 +59,7 @@ class Match3Session {
     );
   }
 
-  bool get hasMatches => _findMatches().isNotEmpty;
+  bool get hasMatches => _analyzeMatches().isNotEmpty;
   bool get hasAvailableMove => _hasAvailableMove();
   bool canMove(Match3Position position) => _canMove(_index(position));
 
@@ -63,7 +76,7 @@ class Match3Session {
     final secondTile = _tiles[secondIndex]!;
     _swap(firstIndex, secondIndex);
 
-    final matches = _findMatches();
+    final matches = _analyzeMatches();
     final combinesSpecials =
         firstTile.special != SpecialKind.none &&
         secondTile.special != SpecialKind.none;
@@ -76,7 +89,7 @@ class Match3Session {
     final initial = _snapshot();
     final steps = combinesSpecials
         ? _resolveSpecialCombination(firstIndex, secondIndex)
-        : _resolve(matches, secondIndex);
+        : _resolve(matches, [secondIndex, firstIndex]);
     _finishTurn();
     final reshuffled = status == Match3Status.playing && !_hasAvailableMove();
     if (reshuffled) _reshuffle();
@@ -97,7 +110,7 @@ class Match3Session {
     for (var attempt = 0; attempt < 200; attempt++) {
       _fillWithoutMatches();
       _placeBaskets();
-      if (_findMatches().isEmpty && _hasAvailableMove()) return;
+      if (_analyzeMatches().isEmpty && _hasAvailableMove()) return;
     }
     throw StateError('Impossible de créer un plateau jouable.');
   }
@@ -121,6 +134,12 @@ class Match3Session {
           _tiles[index - size]?.animal == _tiles[index - size * 2]?.animal) {
         forbidden.add(_tiles[index - size]!.animal);
       }
+      if (x > 0 &&
+          y > 0 &&
+          _tiles[index - 1]?.animal == _tiles[index - size]?.animal &&
+          _tiles[index - 1]?.animal == _tiles[index - size - 1]?.animal) {
+        forbidden.add(_tiles[index - 1]!.animal);
+      }
       final choices = level.animals
           .where((animal) => !forbidden.contains(animal))
           .toList();
@@ -141,18 +160,21 @@ class Match3Session {
     }
   }
 
-  List<Match3ResolutionStep> _resolve(Set<int> matches, int preferred) {
+  List<Match3ResolutionStep> _resolve(
+    _MatchAnalysis initial,
+    List<int> preferred,
+  ) {
     final steps = <Match3ResolutionStep>[];
     var cascade = 1;
-    var current = matches;
+    var analysis = initial;
     var specialPreference = preferred;
-    while (current.isNotEmpty) {
-      final specials = _specialsFor(current, specialPreference);
+    while (analysis.isNotEmpty) {
+      final specials = _specialsFor(analysis, specialPreference);
       final specialAnimals = {
         for (final entry in specials.entries)
           entry.key: _tiles[entry.key]!.animal,
       };
-      final clear = _expandSpecials(current);
+      final clear = _expandSpecials(analysis.cells);
       final clearedIndexes = <int>{};
       var clearedAnimals = 0;
       for (final index in clear) {
@@ -189,8 +211,8 @@ class Match3Session {
           result: _snapshot(),
         ),
       );
-      current = _findMatches();
-      specialPreference = -1;
+      analysis = _analyzeMatches();
+      specialPreference = const [];
       cascade++;
     }
     return steps;
@@ -199,29 +221,75 @@ class Match3Session {
   List<Match3ResolutionStep> _resolveSpecialCombination(int first, int second) {
     final firstTile = _tiles[first]!;
     final secondTile = _tiles[second]!;
-    final clear = <int>{};
+    final clear = <int>{first, second};
     if (firstTile.special == SpecialKind.goldenPaw &&
         secondTile.special == SpecialKind.goldenPaw) {
-      clear.addAll(_activeTileIndexes);
+      _removeSpecial(first);
+      _removeSpecial(second);
+      clear.addAll(
+        _activeTileIndexes.where((index) => !_tiles[index]!.isBasket),
+      );
     } else if (firstTile.special == SpecialKind.goldenPaw) {
+      _transformAnimal(first, second, secondTile);
       clear.addAll(_indexesForAnimal(secondTile.animal));
-      clear.addAll(_specialTargets(second, secondTile));
     } else if (secondTile.special == SpecialKind.goldenPaw) {
+      _transformAnimal(first, second, firstTile);
       clear.addAll(_indexesForAnimal(firstTile.animal));
-      clear.addAll(_specialTargets(first, firstTile));
     } else {
-      clear.addAll(_specialTargets(first, firstTile));
-      clear.addAll(_specialTargets(second, secondTile));
+      _removeSpecial(first);
+      _removeSpecial(second);
+      if (firstTile.special == SpecialKind.scout &&
+          secondTile.special == SpecialKind.scout) {
+        clear.addAll(_scoutTargets(second, 3, {first, second}));
+      } else if (firstTile.special == SpecialKind.scout ||
+          secondTile.special == SpecialKind.scout) {
+        final scout = firstTile.special == SpecialKind.scout ? first : second;
+        final carried = scout == first ? secondTile.special : firstTile.special;
+        final target = _scoutTargets(scout, 1, {first, second}).single;
+        clear.addAll(_effectAt(target, carried));
+      } else if (_isArrow(firstTile.special) && _isArrow(secondTile.special)) {
+        clear.addAll(_crossBands(second, 0));
+      } else if (_isArrow(firstTile.special) || _isArrow(secondTile.special)) {
+        final area = _isArea(firstTile.special)
+            ? firstTile.special
+            : secondTile.special;
+        clear.addAll(_crossBands(second, _areaRadius(area)));
+      } else {
+        clear.addAll(
+          _area(
+            second,
+            min(
+              4,
+              _areaRadius(firstTile.special) + _areaRadius(secondTile.special),
+            ),
+          ),
+        );
+      }
     }
-    _tiles[first] = Match3Tile(animal: firstTile.animal);
-    _tiles[second] = Match3Tile(animal: secondTile.animal);
-    return _resolve(clear, -1);
+    return _resolve(_MatchAnalysis.clear(clear), const []);
+  }
+
+  void _transformAnimal(int first, int second, Match3Tile transformed) {
+    _removeSpecial(first);
+    _removeSpecial(second);
+    for (final index in _indexesForAnimal(transformed.animal).toList()) {
+      _tiles[index] = Match3Tile(
+        animal: transformed.animal,
+        special: transformed.special,
+      );
+    }
+  }
+
+  void _removeSpecial(int index) {
+    final tile = _tiles[index]!;
+    _tiles[index] = Match3Tile(animal: tile.animal);
   }
 
   Set<int> _expandSpecials(Set<int> initial) {
     final clear = {...initial};
     final pending = [...initial];
     final triggered = <int>{};
+    final reservedTargets = {...initial};
     while (pending.isNotEmpty) {
       final index = pending.removeLast();
       final tile = _tiles[index];
@@ -230,7 +298,8 @@ class Match3Session {
           !triggered.add(index)) {
         continue;
       }
-      final targets = _specialTargets(index, tile);
+      if (tile.special == SpecialKind.scout) reservedTargets.add(index);
+      final targets = _specialTargets(index, tile, reservedTargets);
       for (final target in targets) {
         if (clear.add(target)) pending.add(target);
       }
@@ -239,7 +308,11 @@ class Match3Session {
     return clear;
   }
 
-  Set<int> _specialTargets(int index, Match3Tile tile) {
+  Set<int> _specialTargets(
+    int index,
+    Match3Tile tile,
+    Set<int> reservedTargets,
+  ) {
     final x = index % size;
     final y = index ~/ size;
     return switch (tile.special) {
@@ -251,63 +324,171 @@ class Match3Session {
         for (var row = 0; row < size; row++)
           if (!_inactive.contains(row * size + x)) row * size + x,
       },
-      SpecialKind.basketBlast => {
-        for (var row = max(0, y - 1); row <= min(size - 1, y + 1); row++)
-          for (
-            var column = max(0, x - 1);
-            column <= min(size - 1, x + 1);
-            column++
-          )
-            if (!_inactive.contains(row * size + column)) row * size + column,
-      },
+      SpecialKind.basketBlast => {..._area(index, 1)},
       SpecialKind.goldenPaw => _indexesForAnimal(tile.animal).toSet(),
+      SpecialKind.scout => _scoutTargets(index, 1, reservedTargets),
+      SpecialKind.largeGift => _area(index, 2),
+      SpecialKind.giantGift => _area(index, 3),
       SpecialKind.none => {index},
     };
   }
 
-  Map<int, SpecialKind> _specialsFor(Set<int> matches, int preferred) {
-    final candidates = preferred >= 0 && matches.contains(preferred)
-        ? [preferred, ...matches.where((index) => index != preferred)]
-        : matches.toList();
-    for (final index in candidates) {
-      final horizontal = _runLength(index, 1, 0);
-      final vertical = _runLength(index, 0, 1);
-      if (horizontal >= 5 || vertical >= 5) {
-        return {index: SpecialKind.goldenPaw};
-      }
-      if (horizontal >= 3 && vertical >= 3) {
-        return {index: SpecialKind.basketBlast};
-      }
-      if (horizontal == 4) {
-        return {index: SpecialKind.horizontalBinoculars};
-      }
-      if (vertical == 4) {
-        return {index: SpecialKind.verticalBinoculars};
-      }
+  Set<int> _effectAt(int index, SpecialKind special) {
+    if (_isArrow(special)) {
+      final x = index % size;
+      final y = index ~/ size;
+      return special == SpecialKind.horizontalBinoculars
+          ? {
+              for (var column = 0; column < size; column++)
+                if (!_inactive.contains(y * size + column)) y * size + column,
+            }
+          : {
+              for (var row = 0; row < size; row++)
+                if (!_inactive.contains(row * size + x)) row * size + x,
+            };
     }
-    return const {};
+    return _area(index, _areaRadius(special));
   }
 
-  int _runLength(int index, int dx, int dy) {
-    final tile = _tiles[index];
-    if (tile == null || tile.isBasket) return 0;
-    var length = 1;
-    for (final direction in [-1, 1]) {
-      var x = index % size + dx * direction;
-      var y = index ~/ size + dy * direction;
-      while (x >= 0 && x < size && y >= 0 && y < size) {
-        final next = _tiles[y * size + x];
-        if (next == null || next.isBasket || next.animal != tile.animal) break;
-        length++;
-        x += dx * direction;
-        y += dy * direction;
-      }
-    }
-    return length;
+  Set<int> _area(int center, int radius) {
+    final x = center % size;
+    final y = center ~/ size;
+    return {
+      for (
+        var row = max(0, y - radius);
+        row <= min(size - 1, y + radius);
+        row++
+      )
+        for (
+          var column = max(0, x - radius);
+          column <= min(size - 1, x + radius);
+          column++
+        )
+          if (!_inactive.contains(row * size + column)) row * size + column,
+    };
   }
 
-  Set<int> _findMatches() {
-    final matches = <int>{};
+  Set<int> _crossBands(int center, int radius) {
+    final x = center % size;
+    final y = center ~/ size;
+    return {
+      for (
+        var row = max(0, y - radius);
+        row <= min(size - 1, y + radius);
+        row++
+      )
+        for (var column = 0; column < size; column++)
+          if (!_inactive.contains(row * size + column)) row * size + column,
+      for (
+        var column = max(0, x - radius);
+        column <= min(size - 1, x + radius);
+        column++
+      )
+        for (var row = 0; row < size; row++)
+          if (!_inactive.contains(row * size + column)) row * size + column,
+    };
+  }
+
+  Set<int> _scoutTargets(int origin, int count, [Set<int>? initiallyReserved]) {
+    final reserved = {...?initiallyReserved};
+    final targets = <int>{};
+    for (var i = 0; i < count; i++) {
+      final target = _scoutTarget(origin, reserved);
+      targets.add(target);
+      reserved.add(target);
+    }
+    return targets;
+  }
+
+  int _scoutTarget(int origin, Set<int> reserved) {
+    for (var i = 0; i < level.goals.length; i++) {
+      if (_goalProgress[i] >= level.goals[i].target) continue;
+      final target = _nearest(
+        origin,
+        _goalTargets(
+          level.goals[i],
+        ).where((index) => !reserved.contains(index)),
+      );
+      if (target != null) return target;
+    }
+    final fallback = _activeTileIndexes.where(
+      (index) =>
+          !_tiles[index]!.isBasket &&
+          index != origin &&
+          !reserved.contains(index),
+    );
+    final fallbackTarget = _nearest(origin, fallback);
+    if (fallbackTarget != null) return fallbackTarget;
+    for (var i = 0; i < level.goals.length; i++) {
+      if (_goalProgress[i] >= level.goals[i].target) continue;
+      final target = _nearest(origin, _goalTargets(level.goals[i]));
+      if (target != null) return target;
+    }
+    return _nearest(
+      origin,
+      _activeTileIndexes.where((index) => !_tiles[index]!.isBasket),
+    )!;
+  }
+
+  Iterable<int> _goalTargets(Match3Goal goal) sync* {
+    switch (goal.kind) {
+      case Match3GoalKind.clearBlockers:
+        for (final index in _activeTileIndexes) {
+          if (_blockerLayers[index] > 0 && !_tiles[index]!.isBasket) {
+            yield index;
+          }
+        }
+        return;
+      case Match3GoalKind.collectAnimal:
+        yield* _indexesForAnimal(goal.animal!);
+        return;
+      case Match3GoalKind.deliverBaskets:
+        for (final basket in _activeTileIndexes.where(
+          (index) => _tiles[index]!.isBasket,
+        )) {
+          final x = basket % size;
+          for (var y = basket ~/ size + 1; y < size; y++) {
+            final index = y * size + x;
+            if (!_inactive.contains(index) &&
+                _tiles[index] != null &&
+                !_tiles[index]!.isBasket) {
+              yield index;
+            }
+          }
+        }
+        return;
+    }
+  }
+
+  int? _nearest(int origin, Iterable<int> candidates) {
+    int? best;
+    var bestDistance = 1 << 30;
+    for (final candidate in candidates) {
+      final distance =
+          ((candidate % size) - (origin % size)).abs() +
+          ((candidate ~/ size) - (origin ~/ size)).abs();
+      if (distance < bestDistance ||
+          (distance == bestDistance && (best == null || candidate < best))) {
+        best = candidate;
+        bestDistance = distance;
+      }
+    }
+    return best;
+  }
+
+  Map<int, SpecialKind> _specialsFor(
+    _MatchAnalysis analysis,
+    List<int> preferred,
+  ) => {
+    for (final candidate in analysis.candidates)
+      preferred.firstWhere(
+        candidate.cells.contains,
+        orElse: () => candidate.anchor,
+      ): candidate.kind,
+  };
+
+  _MatchAnalysis _analyzeMatches() {
+    final runs = <_MatchRun>[];
     for (var y = 0; y < size; y++) {
       var start = 0;
       while (start < size) {
@@ -321,9 +502,11 @@ class Match3Session {
           end++;
         }
         if (first != null && !first.isBasket && end - start >= 3) {
-          for (var x = start; x < end; x++) {
-            matches.add(y * size + x);
-          }
+          runs.add(
+            _MatchRun(_MatchAxis.horizontal, [
+              for (var x = start; x < end; x++) y * size + x,
+            ]),
+          );
         }
         start = end;
       }
@@ -341,15 +524,104 @@ class Match3Session {
           end++;
         }
         if (first != null && !first.isBasket && end - start >= 3) {
-          for (var y = start; y < end; y++) {
-            matches.add(y * size + x);
-          }
+          runs.add(
+            _MatchRun(_MatchAxis.vertical, [
+              for (var y = start; y < end; y++) y * size + x,
+            ]),
+          );
         }
         start = end;
       }
     }
-    return matches;
+    final squares = <Set<int>>[];
+    for (var y = 0; y < size - 1; y++) {
+      for (var x = 0; x < size - 1; x++) {
+        final indexes = {
+          y * size + x,
+          y * size + x + 1,
+          (y + 1) * size + x,
+          (y + 1) * size + x + 1,
+        };
+        final first = _matchableTile(indexes.first);
+        if (first != null &&
+            !first.isBasket &&
+            indexes.every(
+              (index) => _matchableTile(index)?.animal == first.animal,
+            )) {
+          squares.add(indexes);
+        }
+      }
+    }
+    final cells = <int>{
+      for (final run in runs) ...run.cells,
+      for (final square in squares) ...square,
+    };
+    final candidates =
+        <_SpecialCandidate>[
+          for (final run in runs)
+            if (run.cells.length >= 4)
+              _SpecialCandidate(
+                run.cells.toSet(),
+                _specialFor(run),
+                run.cells[(run.cells.length - 1) ~/ 2],
+              ),
+          for (final horizontal in runs.where(
+            (run) => run.axis == _MatchAxis.horizontal,
+          ))
+            for (final vertical in runs.where(
+              (run) => run.axis == _MatchAxis.vertical,
+            ))
+              for (final intersection in horizontal.cells.toSet().intersection(
+                vertical.cells.toSet(),
+              ))
+                _SpecialCandidate(
+                  {...horizontal.cells, ...vertical.cells},
+                  SpecialKind.basketBlast,
+                  intersection,
+                ),
+          for (final square in squares)
+            _SpecialCandidate(square, SpecialKind.scout, square.reduce(min)),
+        ]..sort((first, second) {
+          final priority = second.priority.compareTo(first.priority);
+          return priority != 0
+              ? priority
+              : first.anchor.compareTo(second.anchor);
+        });
+    final accepted = <_SpecialCandidate>[];
+    final claimed = <int>{};
+    for (final candidate in candidates) {
+      if (candidate.cells.any(claimed.contains)) continue;
+      accepted.add(candidate);
+      claimed.addAll(candidate.cells);
+    }
+    return _MatchAnalysis(cells, accepted);
   }
+
+  SpecialKind _specialFor(_MatchRun run) => switch (run.cells.length) {
+    >= 7 => SpecialKind.giantGift,
+    6 => SpecialKind.largeGift,
+    5 => SpecialKind.goldenPaw,
+    _ =>
+      run.axis == _MatchAxis.horizontal
+          ? SpecialKind.horizontalBinoculars
+          : SpecialKind.verticalBinoculars,
+  };
+
+  bool _isArrow(SpecialKind special) =>
+      special == SpecialKind.horizontalBinoculars ||
+      special == SpecialKind.verticalBinoculars;
+
+  bool _isArea(SpecialKind special) =>
+      special == SpecialKind.basketBlast ||
+      special == SpecialKind.largeGift ||
+      special == SpecialKind.giantGift;
+
+  int _areaRadius(SpecialKind special) => switch (special) {
+    SpecialKind.basketBlast => 1,
+    SpecialKind.largeGift => 2,
+    SpecialKind.giantGift => 3,
+    _ => throw StateError('$special n’est pas un bonus de zone.'),
+  };
 
   Match3Tile? _matchableTile(int index) =>
       _blockers[index] == BlockerKind.leaves ? null : _tiles[index];
@@ -466,7 +738,7 @@ class Match3Session {
           return true;
         }
         _swap(index, next);
-        final matches = _findMatches().isNotEmpty;
+        final matches = _analyzeMatches().isNotEmpty;
         _swap(index, next);
         if (matches) return true;
       }
@@ -485,7 +757,7 @@ class Match3Session {
       for (var i = 0; i < indexes.length; i++) {
         _tiles[indexes[i]] = tiles[i];
       }
-      if (_findMatches().isEmpty && _hasAvailableMove()) return;
+      if (_analyzeMatches().isEmpty && _hasAvailableMove()) return;
     }
     _buildBoard();
   }
@@ -544,4 +816,43 @@ class Match3Session {
     score: score,
     status: status,
   );
+}
+
+enum _MatchAxis { horizontal, vertical }
+
+class _MatchRun {
+  const _MatchRun(this.axis, this.cells);
+
+  final _MatchAxis axis;
+  final List<int> cells;
+}
+
+class _SpecialCandidate {
+  const _SpecialCandidate(this.cells, this.kind, this.anchor);
+
+  final Set<int> cells;
+  final SpecialKind kind;
+  final int anchor;
+
+  int get priority => switch (kind) {
+    SpecialKind.giantGift => 6,
+    SpecialKind.largeGift => 5,
+    SpecialKind.goldenPaw => 4,
+    SpecialKind.basketBlast => 3,
+    SpecialKind.horizontalBinoculars || SpecialKind.verticalBinoculars => 2,
+    SpecialKind.scout => 1,
+    SpecialKind.none => 0,
+  };
+}
+
+class _MatchAnalysis {
+  const _MatchAnalysis(this.cells, this.candidates);
+
+  const _MatchAnalysis.clear(this.cells) : candidates = const [];
+
+  final Set<int> cells;
+  final List<_SpecialCandidate> candidates;
+
+  bool get isEmpty => cells.isEmpty;
+  bool get isNotEmpty => cells.isNotEmpty;
 }

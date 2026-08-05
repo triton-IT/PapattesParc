@@ -11,6 +11,9 @@ enum SpecialKind {
   verticalBinoculars,
   basketBlast,
   goldenPaw,
+  scout,
+  largeGift,
+  giantGift,
 }
 
 enum BlockerKind { leaves, mud, vines, ice }

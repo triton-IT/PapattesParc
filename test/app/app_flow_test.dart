@@ -982,23 +982,29 @@ void main() {
     expect(find.textContaining('Échange deux animaux voisins'), findsOneWidget);
     await tester.tap(find.byKey(const Key('help-coach-next')));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Les obstacles se nettoient'), findsOneWidget);
+    expect(
+      find.textContaining('Nettoie les éléments demandés'),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('match3-legend')), findsOneWidget);
     for (final label in [
       'Flèches horizontales',
       'Flèches verticales',
       'Cadeau',
       'Patte dorée',
+      'Éclaireur',
+      'Grand cadeau',
+      'Cadeau géant',
       'Feuilles',
       'Boue',
       'Lianes',
       'Glace',
       'Panier de friandises',
     ]) {
-      expect(find.textContaining(label), findsOneWidget);
+      expect(find.textContaining('$label —'), findsOneWidget);
     }
     expect(
-      find.textContaining('Fais passer un alignement par cette case'),
+      find.textContaining('Fais passer un alignement par la case'),
       findsOneWidget,
     );
     expect(
