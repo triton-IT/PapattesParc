@@ -82,7 +82,7 @@ class GameHelpButton extends StatelessWidget {
     ],
     GameHelpKind.match3 => const [
       'Échange deux animaux voisins pour en aligner au moins trois et remplir les objectifs avant la fin des coups.',
-      'Les obstacles se nettoient avec les alignements. Les paniers doivent atteindre le bas du plateau. Les alignements de quatre ou cinq créent des bonus.',
+      'Nettoie les éléments demandés avec des alignements et fais descendre les paniers. Les formes de quatre animaux ou les lignes plus longues créent des bonus.',
       'Les nouveaux alignements forment des cascades : chaque étape compte dans les objectifs et rapporte davantage de points.',
     ],
     GameHelpKind.mahjong => const [
@@ -287,11 +287,26 @@ class _Match3Legend extends StatelessWidget {
     (
       icon: Icons.pets_rounded,
       title: 'Patte dorée',
-      effect: '5 animaux ou plus : retire tous ceux de la même espèce.',
+      effect: '5 animaux en ligne : retire tous ceux de la même espèce.',
+    ),
+    (
+      icon: Icons.explore_rounded,
+      title: 'Éclaireur',
+      effect: '4 animaux en carré : vise une case utile à l’objectif.',
+    ),
+    (
+      icon: Icons.card_giftcard_rounded,
+      title: 'Grand cadeau',
+      effect: '6 animaux en ligne : nettoie une zone 5 × 5.',
+    ),
+    (
+      icon: Icons.celebration_rounded,
+      title: 'Cadeau géant',
+      effect: '7 animaux ou plus en ligne : nettoie une zone 7 × 7.',
     ),
   ];
 
-  static const _obstacles = [
+  static const _blockedCells = [
     (
       icon: Icons.eco_rounded,
       iconColor: Color(0xff39784f),
@@ -301,19 +316,23 @@ class _Match3Legend extends StatelessWidget {
           'Bloquent l’animal et les alignements. Forme un alignement sur une case voisine pour les retirer.',
     ),
     (
-      icon: Icons.water_drop_rounded,
-      iconColor: Color(0xff70432e),
-      backgroundColor: Color(0xffb88a66),
-      title: 'Boue',
-      effect: 'Fais passer un alignement par cette case pour retirer la boue.',
-    ),
-    (
       icon: Icons.grass_rounded,
       iconColor: Color(0xff245b4a),
       backgroundColor: Color(0xff77a45b),
       title: 'Lianes',
       effect:
           'Immobilisent l’animal ; forme un alignement sur sa case ou une voisine directe.',
+    ),
+  ];
+
+  static const _cleanableCells = [
+    (
+      icon: Icons.water_drop_rounded,
+      iconColor: Color(0xff70432e),
+      backgroundColor: Color(0xffb88a66),
+      title: 'Boue',
+      effect:
+          'L’animal s’y déplace et s’y aligne normalement. Fais passer un alignement par la case pour la nettoyer.',
     ),
     (
       icon: Icons.ac_unit_rounded,
@@ -345,18 +364,34 @@ class _Match3Legend extends StatelessWidget {
       const Padding(
         padding: EdgeInsets.only(bottom: 16),
         child: Text(
-          'Un bonus s’active dans un alignement ou lorsqu’un autre bonus le touche. Deux bonus voisins combinent leurs effets ; deux pattes nettoient tout le plateau.',
+          'Un bonus s’active dans un alignement ou lorsqu’un autre bonus le touche. Deux bonus voisins amplifient leurs effets ; deux pattes nettoient tout le plateau.',
         ),
       ),
-      _sectionTitle(context, 'OBSTACLES · SYMBOLE EN HAUT À GAUCHE'),
+      const Padding(
+        padding: EdgeInsets.only(bottom: 16),
+        child: Text(
+          'Feuilles, lianes, boue et glace peuvent être demandées par l’objectif « Nettoyer l’habitat ».',
+        ),
+      ),
+      _sectionTitle(context, 'CASES BLOQUÉES · SYMBOLE EN HAUT À GAUCHE'),
       const SizedBox(height: 8),
-      for (final obstacle in _obstacles)
+      for (final obstacle in _blockedCells)
         _LegendRow(
           icon: obstacle.icon,
           iconColor: obstacle.iconColor,
           backgroundColor: obstacle.backgroundColor,
           title: obstacle.title,
           effect: obstacle.effect,
+        ),
+      _sectionTitle(context, 'CASES À NETTOYER · SYMBOLE EN HAUT À GAUCHE'),
+      const SizedBox(height: 8),
+      for (final cell in _cleanableCells)
+        _LegendRow(
+          icon: cell.icon,
+          iconColor: cell.iconColor,
+          backgroundColor: cell.backgroundColor,
+          title: cell.title,
+          effect: cell.effect,
         ),
       _sectionTitle(context, 'À LIVRER'),
       const SizedBox(height: 8),
