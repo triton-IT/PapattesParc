@@ -8,6 +8,7 @@ import 'package:papatte_parc/games/mahjong_animaux/data/mahjong_progress_store.d
 import 'package:papatte_parc/games/pattes_friandises/data/match3_progress_store.dart';
 import 'package:papatte_parc/games/refuge/data/progress_store.dart';
 import 'package:papatte_parc/games/repas_animaux/data/repas_animaux_progress_store.dart';
+import 'package:papatte_parc/games/sentiers_sauvages/data/numberlink_progress_store.dart';
 import 'package:papatte_parc/games/solitaire_animaux/data/solitaire_progress_store.dart';
 import 'package:papatte_parc/games/sudoku_animaux/data/sudoku_progress_store.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
@@ -31,6 +32,7 @@ void main() {
     final solitaire = await SolitaireProgressStore.load();
     final sudoku = await SudokuProgressStore.load();
     final repas = await RepasAnimauxProgressStore.load();
+    final numberlink = await NumberlinkProgressStore.load();
     for (final size in _sizes) {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = size;
@@ -45,6 +47,7 @@ void main() {
             solitaireStore: solitaire,
             sudokuStore: sudoku,
             repasStore: repas,
+            numberlinkStore: numberlink,
             musicEnabled: true,
             effectsEnabled: true,
             onSelect: (_) {},

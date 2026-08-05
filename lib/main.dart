@@ -7,6 +7,7 @@ import 'games/mahjong_animaux/data/mahjong_progress_store.dart';
 import 'games/pattes_friandises/data/match3_progress_store.dart';
 import 'games/refuge/data/progress_store.dart';
 import 'games/repas_animaux/data/repas_animaux_progress_store.dart';
+import 'games/sentiers_sauvages/data/numberlink_progress_store.dart';
 import 'games/solitaire_animaux/data/solitaire_progress_store.dart';
 import 'games/sudoku_animaux/data/sudoku_progress_store.dart';
 import 'shared/settings_store.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
       solitaireStore: await SolitaireProgressStore.load(),
       sudokuStore: await SudokuProgressStore.load(),
       repasStore: await RepasAnimauxProgressStore.load(),
+      numberlinkStore: await NumberlinkProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
