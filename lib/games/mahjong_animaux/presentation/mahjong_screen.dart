@@ -207,6 +207,10 @@ class _MahjongBoardState extends State<MahjongBoard> {
           1.0,
           min(viewport.width / width, viewport.height / height),
         );
+        final boundaryMargin = EdgeInsets.symmetric(
+          horizontal: (viewport.width / fitScale - width) / 2,
+          vertical: (viewport.height / fitScale - height) / 2,
+        );
         if (_session != widget.session || _viewport != viewport) {
           _session = widget.session;
           _viewport = viewport;
@@ -223,7 +227,7 @@ class _MahjongBoardState extends State<MahjongBoard> {
           constrained: false,
           minScale: fitScale,
           maxScale: max(1, min(2.4, fitScale * 5)),
-          boundaryMargin: const EdgeInsets.all(80),
+          boundaryMargin: boundaryMargin,
           child: SizedBox(
             width: width,
             height: height,

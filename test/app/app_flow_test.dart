@@ -966,6 +966,27 @@ void main() {
     );
   });
 
+  testWidgets('un clic glissé ne désaxe pas le mahjong', (tester) async {
+    final level = buildMahjongCampaign(levels)[3];
+    final session = MahjongSession(
+      layout: level.layout,
+      biome: level.stage.biome,
+      seed: 41,
+    );
+    await _pumpMahjong(tester, session, const Size(1514, 680));
+    final tile = find.byKey(
+      Key(
+        'mahjong-tile-${session.tiles.firstWhere((tile) => tile.isFree).tile.id}',
+      ),
+    );
+    final initialLeft = tester.getTopLeft(tile).dx;
+
+    await tester.drag(tile, const Offset(0, -30));
+    await tester.pumpAndSettle();
+
+    expect(tester.getTopLeft(tile).dx, initialLeft);
+  });
+
   testWidgets('les aides et les repères animaux sont accessibles', (
     tester,
   ) async {
