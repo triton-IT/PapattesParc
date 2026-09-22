@@ -1,4 +1,4 @@
-package fr.papatteparc.papatte_parc
+package de.papattesparc.papatte_parc
 
 import io.flutter.embedding.android.FlutterActivity
 

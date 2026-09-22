@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "fr.papatteparc.papatte_parc"
+    namespace = "de.papattesparc.papatte_parc"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "fr.papatteparc.papatte_parc"
+        applicationId = "de.papattesparc.papatte_parc"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
