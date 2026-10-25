@@ -1,8 +1,29 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+
+val signingProperties = Properties().apply {
+    val signingFile = rootProject.file("key.properties")
+    if (signingFile.exists()) signingFile.inputStream().use { load(it) }
+}
+fun signingValue(key: String, environment: String): String? =
+    System.getenv(environment)?.takeIf { it.isNotBlank() }
+        ?: signingProperties.getProperty(key)?.takeIf { it.isNotBlank() }
+val releaseStore = signingValue("storeFile", "ANDROID_KEYSTORE_PATH")
+val releaseAlias = signingValue("keyAlias", "ANDROID_KEY_ALIAS")
+val releaseStorePassword = signingValue("storePassword", "ANDROID_KEYSTORE_PASSWORD")
+val releaseKeyPassword = signingValue("keyPassword", "ANDROID_KEY_PASSWORD")
+val signingValues = listOf(releaseStore, releaseAlias, releaseStorePassword, releaseKeyPassword)
+if (signingValues.any { it != null } && signingValues.any { it == null }) {
+    throw GradleException("Incomplete Android release signing configuration")
+}
+val hasReleaseSigning = listOf(releaseStore, releaseAlias, releaseStorePassword, releaseKeyPassword).all { it != null }
+
 
 android {
     namespace = "de.papattesparc.papatte_parc"
@@ -25,11 +46,20 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("production") {
+                storeFile = rootProject.file(releaseStore!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Without production secrets, release artifacts are unsigned, never debug-signed.
+            signingConfig = if (hasReleaseSigning) signingConfigs.getByName("production") else null
         }
     }
 }

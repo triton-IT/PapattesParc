@@ -1,3 +1,5 @@
+import '../support/visible_artwork.dart';
+import 'package:papatte_parc/shared/artwork.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -104,6 +106,7 @@ void main() {
 }
 
 const _sizes = [
+  Size(800, 360),
   Size(360, 800),
   Size(800, 1280),
   Size(1366, 768),
@@ -124,13 +127,14 @@ Future<void> _pump(
   await tester.pumpWidget(MaterialApp(theme: buildAppTheme(), home: screen));
   for (final asset in assets) {
     await tester.runAsync(
-      () => precacheImage(
-        AssetImage(asset),
+      () => precacheArtwork(
+        ArtworkResolver.provider(asset),
         tester.element(find.byType(MaterialApp)),
       ),
     );
   }
   await tester.pumpAndSettle();
+  await loadVisibleArtwork(tester);
   expect(tester.takeException(), isNull, reason: '$size');
 }
 

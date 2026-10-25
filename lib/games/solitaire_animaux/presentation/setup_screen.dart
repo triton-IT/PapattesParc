@@ -1,3 +1,4 @@
+import '../../../shared/artwork.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/animal_catalog.dart';
@@ -253,7 +254,7 @@ class _AnimalChoice extends StatelessWidget {
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 6, 8, 24),
-                child: Image.asset(animal.asset, fit: BoxFit.contain),
+                child: ArtworkImage(animal.asset, fit: BoxFit.contain),
               ),
             ),
             Positioned(

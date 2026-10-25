@@ -1,3 +1,6 @@
+import '../../../shared/board_camera.dart';
+import '../../../shared/artwork.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -11,9 +14,11 @@ import '../domain/models.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
+import '../../../shared/game_stage_layout.dart';
 
 class GameScreen extends StatelessWidget {
   const GameScreen({
+    this.elapsed,
     required this.level,
     required this.session,
     required this.generating,
@@ -40,360 +45,117 @@ class GameScreen extends StatelessWidget {
   final VoidCallback onReplayNew;
   final VoidCallback onNext;
 
+  final ValueListenable<Duration>? elapsed;
+
   @override
-  Widget build(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width >= 1000;
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Transform.scale(
-              scale: wide ? 1.12 : 1.2,
-              alignment: wide ? Alignment.centerRight : Alignment.bottomCenter,
-              child: LevelBackdrop(level: level),
-            ),
-          ),
-          Positioned.fill(child: _GameBackdropVeil(wide: wide)),
-          Column(
-            children: [
-              _GameHeader(level: level, session: session, onHome: onHome),
-              Expanded(
-                child: BoardView(
-                  level: level,
-                  session: session,
-                  onReveal: onReveal,
-                  onFlag: onFlag,
-                ),
-              ),
-            ],
-          ),
-          if (generating) const _GenerationOverlay(),
-          if (finished)
-            _EndOverlay(
-              level: level,
-              session: session,
-              newRecord: newRecord,
-              onReplaySame: onReplaySame,
-              onReplayNew: onReplayNew,
-              onNext: onNext,
-              onHome: onHome,
-            ),
-        ],
+  Widget build(BuildContext context) => GameStageLayout(
+    background: LayoutBuilder(
+      builder: (context, constraints) {
+        final wide =
+            constraints.maxWidth >= 900 &&
+            constraints.maxWidth > constraints.maxHeight;
+        return Transform.scale(
+          scale: wide ? 1.12 : 1.2,
+          alignment: wide ? Alignment.centerRight : Alignment.bottomCenter,
+          child: LevelBackdrop(level: level),
+        );
+      },
+    ),
+    backgroundOverlay: const _GameBackdropVeil(),
+    scrim: Colors.transparent,
+    eyebrow: level.isCustom
+        ? 'PARTIE LIBRE'
+        : 'MISSION ${level.number.toString().padLeft(2, '0')}',
+    title: level.isCustom
+        ? level.title
+        : 'Niveau ${level.number} · ${level.title}',
+    backKey: const Key('back-to-course'),
+    onBack: onHome,
+    backTooltip: level.isCustom ? 'Accueil' : 'Parcours',
+    helpKind: GameHelpKind.refuge,
+    metrics: [
+      GameStageMetric(
+        icon: Icons.pets_rounded,
+        label: 'À localiser : ${session.remainingAnimals}',
       ),
-    );
-  }
+      GameStageMetric(
+        icon: Icons.timer_rounded,
+        elapsed: elapsed,
+        label: formatDuration(session.elapsed),
+      ),
+    ],
+    builder: (context, layout) => BoardView(
+      level: level,
+      session: session,
+      onReveal: onReveal,
+      onFlag: onFlag,
+    ),
+    overlays: [
+      if (generating) const Positioned.fill(child: _GenerationOverlay()),
+      if (finished)
+        Positioned.fill(
+          child: _EndOverlay(
+            level: level,
+            session: session,
+            newRecord: newRecord,
+            onReplaySame: onReplaySame,
+            onReplayNew: onReplayNew,
+            onNext: onNext,
+            onHome: onHome,
+          ),
+        ),
+    ],
+  );
 }
 
 class _GameBackdropVeil extends StatelessWidget {
-  const _GameBackdropVeil({required this.wide});
-
-  final bool wide;
+  const _GameBackdropVeil();
 
   @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      Positioned.fill(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: wide ? Alignment.centerLeft : Alignment.topCenter,
-              end: wide ? Alignment.centerRight : Alignment.bottomCenter,
-              colors: wide
-                  ? [
-                      Colors.transparent,
-                      AppColors.deep.withValues(alpha: .08),
-                      AppColors.deep.withValues(alpha: .4),
-                    ]
-                  : [
-                      AppColors.deep.withValues(alpha: .12),
-                      Colors.transparent,
-                      AppColors.deep.withValues(alpha: .2),
-                    ],
-            ),
-          ),
-        ),
-      ),
-      Positioned.fill(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.deep.withValues(alpha: .68),
-                Colors.transparent,
-              ],
-              stops: const [0, .24],
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-class _GameHeader extends StatelessWidget {
-  const _GameHeader({
-    required this.level,
-    required this.session,
-    required this.onHome,
-  });
-
-  final LevelDefinition level;
-  final GameSession session;
-  final VoidCallback onHome;
-
-  @override
-  Widget build(BuildContext context) => SafeArea(
-    bottom: false,
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-      child: LayoutBuilder(
-        builder: (context, constraints) => constraints.maxWidth >= 760
-            ? _WideHeader(level: level, session: session, onHome: onHome)
-            : _CompactHeader(level: level, session: session, onHome: onHome),
-      ),
-    ),
-  );
-}
-
-class _WideHeader extends StatelessWidget {
-  const _WideHeader({
-    required this.level,
-    required this.session,
-    required this.onHome,
-  });
-
-  final LevelDefinition level;
-  final GameSession session;
-  final VoidCallback onHome;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-    child: Row(
+  Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final wide = size.width >= 900 && size.width > size.height;
+    return Stack(
       children: [
-        TextButton.icon(
-          onPressed: onHome,
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.white.withValues(alpha: .12),
-            minimumSize: const Size(48, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-          icon: Icon(
-            level.isCustom ? Icons.home_rounded : Icons.map_rounded,
-            size: 20,
-          ),
-          label: Text(level.isCustom ? 'Accueil' : 'Parcours'),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                level.isCustom
-                    ? 'PARTIE LIBRE'
-                    : 'MISSION ${level.number.toString().padLeft(2, '0')}',
-                style: const TextStyle(
-                  color: AppColors.sun,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              Text(
-                level.isCustom
-                    ? level.title
-                    : 'Niveau ${level.number} · ${level.title}',
-                key: const Key('game-level-title'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-        ),
-        _HeaderMetric(
-          icon: Icons.pets_rounded,
-          text: 'À localiser : ${session.remainingAnimals}',
-        ),
-        const SizedBox(width: 12),
-        _HeaderMetric(
-          icon: Icons.timer_rounded,
-          text: formatDuration(session.elapsed),
-        ),
-        const SizedBox(width: 12),
-        const GameHelpButton(kind: GameHelpKind.refuge, color: Colors.white),
-        const SizedBox(width: 4),
-        const Flexible(
-          child: _Instruction(
-            text: 'Toucher : observer · Appui long : baliser',
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-class _CompactHeader extends StatelessWidget {
-  const _CompactHeader({
-    required this.level,
-    required this.session,
-    required this.onHome,
-  });
-
-  final LevelDefinition level;
-  final GameSession session;
-  final VoidCallback onHome;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(8, 7, 10, 9),
-    child: Column(
-      children: [
-        Row(
-          children: [
-            IconButton(
-              key: const Key('back-to-course'),
-              tooltip: level.isCustom ? 'Accueil' : 'Parcours',
-              onPressed: onHome,
-              color: AppColors.sun,
-              icon: Icon(
-                level.isCustom ? Icons.home_rounded : Icons.map_rounded,
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: wide ? Alignment.centerLeft : Alignment.topCenter,
+                end: wide ? Alignment.centerRight : Alignment.bottomCenter,
+                colors: wide
+                    ? [
+                        Colors.transparent,
+                        AppColors.deep.withValues(alpha: .08),
+                        AppColors.deep.withValues(alpha: .4),
+                      ]
+                    : [
+                        AppColors.deep.withValues(alpha: .12),
+                        Colors.transparent,
+                        AppColors.deep.withValues(alpha: .2),
+                      ],
               ),
             ),
-            const SizedBox(width: 3),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    level.isCustom
-                        ? 'PARTIE LIBRE'
-                        : 'MISSION ${level.number.toString().padLeft(2, '0')}',
-                    style: const TextStyle(
-                      color: AppColors.sun,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  Text(
-                    level.isCustom
-                        ? level.title
-                        : 'Niveau ${level.number} · ${level.title}',
-                    key: const Key('game-level-title'),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
+          ),
+        ),
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.deep.withValues(alpha: .68),
+                  Colors.transparent,
                 ],
+                stops: const [0, .24],
               ),
             ),
-            const SizedBox(width: 8),
-            _HeaderMetric(
-              icon: Icons.timer_rounded,
-              text: formatDuration(session.elapsed),
-            ),
-            const GameHelpButton(
-              kind: GameHelpKind.refuge,
-              color: Colors.white,
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            _HeaderMetric(
-              icon: Icons.pets_rounded,
-              text: '${session.remainingAnimals} à localiser',
-            ),
-            const SizedBox(width: 8),
-            const Expanded(
-              child: _Instruction(
-                text: 'Toucher · Maintenir : baliser',
-                compact: true,
-              ),
-            ),
-          ],
+          ),
         ),
       ],
-    ),
-  );
-}
-
-class _Instruction extends StatelessWidget {
-  const _Instruction({required this.text, this.compact = false});
-
-  final String text;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      const Icon(Icons.touch_app_rounded, color: Color(0xffdbeee3), size: 16),
-      const SizedBox(width: 5),
-      Flexible(
-        child: Text(
-          text,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.end,
-          style: TextStyle(
-            color: const Color(0xffdbeee3),
-            fontSize: compact ? 11 : 13,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-class _HeaderMetric extends StatelessWidget {
-  const _HeaderMetric({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: .14),
-      borderRadius: BorderRadius.circular(99),
-      border: Border.all(color: Colors.white.withValues(alpha: .1)),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 17),
-          const SizedBox(width: 6),
-          Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+    );
+  }
 }
 
 class BoardView extends StatelessWidget {
@@ -417,27 +179,45 @@ class BoardView extends StatelessWidget {
     builder: (context, constraints) {
       final compact = constraints.maxWidth < 600;
       final wide = constraints.maxWidth >= 1000;
+      final short =
+          constraints.maxWidth > constraints.maxHeight &&
+          constraints.maxHeight < 400;
       final config = session.config;
       final compactHeight =
           config.height * 48 + (config.height - 1) * spacing + padding * 2 + 54;
       return Padding(
-        padding: EdgeInsets.all(compact ? 12 : 20),
+        padding: EdgeInsets.all(
+          short
+              ? 8
+              : compact
+              ? 12
+              : 20,
+        ),
         child: Align(
-          alignment: wide ? Alignment.centerRight : Alignment.center,
+          alignment: Alignment.center,
           child: ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: wide ? min(820, constraints.maxWidth * .47) : 820,
               maxHeight: 820,
             ),
             child: SizedBox(
-              height: compact
+              height: compact && !short
                   ? min(compactHeight, constraints.maxHeight - 24)
                   : null,
-              child: Column(
+              child: Flex(
                 key: const Key('board-background'),
+                direction: short ? Axis.horizontal : Axis.vertical,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _BoardLabel(level: level, compact: compact),
+                  if (short)
+                    SizedBox(
+                      width: 160,
+                      child: Center(
+                        child: _BoardLabel(level: level, compact: true),
+                      ),
+                    )
+                  else
+                    _BoardLabel(level: level, compact: compact),
                   Expanded(
                     child: Material(
                       color: biomeBoardColor(
@@ -557,7 +337,10 @@ class _BoardGridState extends State<_BoardGrid> {
           config.height * _cellSize + (config.height - 1) * BoardView.spacing;
       final contentWidth = boardWidth + BoardView.padding * 2;
       final contentHeight = boardHeight + BoardView.padding * 2;
-      final viewport = Size(constraints.maxWidth, constraints.maxHeight);
+      final viewport = Size(
+        (constraints.maxWidth - 48).clamp(1, double.infinity),
+        constraints.maxHeight,
+      );
       final fitScale = min(
         1.0,
         min(viewport.width / contentWidth, viewport.height / contentHeight),
@@ -572,8 +355,8 @@ class _BoardGridState extends State<_BoardGrid> {
             0,
           );
       }
-      return InteractiveViewer(
-        key: const Key('refuge-board-viewer'),
+      return BoardCamera(
+        viewerKey: const Key('refuge-board-viewer'),
         transformationController: _controller,
         constrained: false,
         minScale: fitScale,
@@ -718,7 +501,7 @@ class _CellState extends State<_Cell> {
     } else if (cell.isFlagged) {
       content = widget.animalAsset == null
           ? const Icon(Icons.pets_rounded, color: AppColors.deep)
-          : Image.asset(
+          : ArtworkImage(
               widget.animalAsset!,
               key: const Key('flagged-animal-image'),
               width: widget.size * .9,

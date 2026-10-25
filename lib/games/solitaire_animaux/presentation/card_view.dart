@@ -1,3 +1,4 @@
+import '../../../shared/artwork.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/animal_catalog.dart';
@@ -112,7 +113,7 @@ class CardBack extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(2),
-                      child: Image.asset(animal.asset, fit: BoxFit.contain),
+                      child: ArtworkImage(animal.asset, fit: BoxFit.contain),
                     ),
                   ),
                 ),
@@ -211,7 +212,7 @@ class _CardFace extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: color, width: 1.4),
                     ),
-                    child: Image.asset(figure.asset, fit: BoxFit.contain),
+                    child: ArtworkImage(figure.asset, fit: BoxFit.contain),
                   ),
                 ),
         ),

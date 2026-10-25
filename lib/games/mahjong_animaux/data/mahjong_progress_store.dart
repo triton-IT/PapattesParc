@@ -1,4 +1,5 @@
-import 'dart:math';
+import '../../../shared/game_records.dart';
+import '../../../shared/campaign_progress.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,24 +10,28 @@ class MahjongProgressStore {
 
   static const _unlockedLevelKey = 'mahjong:unlockedLevel';
   final SharedPreferences _preferences;
+  late final GameRecords _records = GameRecords(_preferences);
+  late final CampaignProgress campaign = CampaignProgress(
+    _preferences,
+    'mahjong',
+    unlockedLevel: () => unlockedLevel,
+    legacyCompleted: (level) => bestTime(level) != null,
+  );
+  int get completedCount => campaign.completedCount;
 
-  static Future<MahjongProgressStore> load() async =>
-      MahjongProgressStore._(await SharedPreferences.getInstance());
+  static Future<MahjongProgressStore> load() async {
+    final store = MahjongProgressStore._(await SharedPreferences.getInstance());
+    await store.campaign.migrate();
+    return store;
+  }
 
   int get unlockedLevel =>
       (_preferences.getInt(_unlockedLevelKey) ?? 1).clamp(1, 45);
 
   Duration? bestTime(int level) => _duration('mahjong:bestTime:$level');
-  int footprints(int level) =>
-      _preferences.getInt('mahjong:footprints:$level') ?? 0;
+  int footprints(int level) => campaign.reward(level);
 
-  int get totalFootprints {
-    var total = 0;
-    for (var level = 1; level <= 45; level++) {
-      total += footprints(level);
-    }
-    return total;
-  }
+  int get totalFootprints => campaign.totalRewards;
 
   Duration? freeBestTime(MahjongFreeGameConfig config) => _duration(
     'mahjong:freeBestTime:${config.layoutId}:${config.difficulty.name}:${config.biome.name}',
@@ -37,14 +42,10 @@ class MahjongProgressStore {
     Duration elapsed,
     int footprints,
   ) async {
+    await campaign.complete(level);
     final key = 'mahjong:bestTime:$level';
     final isRecord = await _saveBest(key, elapsed);
-    if (footprints > this.footprints(level)) {
-      await _preferences.setInt('mahjong:footprints:$level', footprints);
-    }
-    if (level < 45 && unlockedLevel <= level) {
-      await _preferences.setInt(_unlockedLevelKey, min(45, level + 1));
-    }
+    await campaign.rewardAndUnlock(level, footprints);
     return isRecord;
   }
 
@@ -56,15 +57,8 @@ class MahjongProgressStore {
     elapsed,
   );
 
-  Duration? _duration(String key) {
-    final milliseconds = _preferences.getInt(key);
-    return milliseconds == null ? null : Duration(milliseconds: milliseconds);
-  }
+  Duration? _duration(String key) => _records.duration(key);
 
-  Future<bool> _saveBest(String key, Duration elapsed) async {
-    final current = _duration(key);
-    if (current != null && current <= elapsed) return false;
-    await _preferences.setInt(key, elapsed.inMilliseconds);
-    return true;
-  }
+  Future<bool> _saveBest(String key, Duration elapsed) =>
+      _records.saveDuration(key, elapsed);
 }

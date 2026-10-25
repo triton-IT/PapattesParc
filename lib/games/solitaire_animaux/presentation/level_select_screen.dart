@@ -33,7 +33,6 @@ class SolitaireLevelSelectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mission = levels[store.unlockedLevel - 1];
     return CampaignLevelSelectScreen(
       title: 'SOLITAIRE DES ANIMAUX',
       tagline: 'Révèle · Range · Complète',
@@ -42,27 +41,36 @@ class SolitaireLevelSelectScreen extends StatelessWidget {
       keyPrefix: 'solitaire',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
+      completedCount: store.completedCount,
       progressLabel: 'CARTES RANGÉES',
-      missionTitle: mission.stage.title,
-      missionSubtitle: mission.stage.species,
-      missionArtAsset: mission.stage.artAsset!,
-      missionStats: [
-        CampaignMissionStat(
-          Icons.style_rounded,
-          '${mission.mode.drawCount} carte${mission.mode.drawCount > 1 ? 's' : ''}',
-          'pioche',
-        ),
-        CampaignMissionStat(
-          Icons.replay_rounded,
-          '${mission.targetRedeals}',
-          'objectif',
-        ),
-        CampaignMissionStat(
-          Icons.workspace_premium_rounded,
-          '${store.totalFootprints} / 135',
-          'empreintes',
-        ),
-      ],
+      missionBuilder: (index) {
+        final mission = levels[index];
+        return CampaignMission(
+          completed: store.campaign.isCompleted(index + 1),
+          title: mission.stage.title,
+          subtitle: mission.stage.species,
+          artAsset: mission.stage.artAsset!,
+          stats: [
+            CampaignMissionStat(
+              Icons.style_rounded,
+              '${mission.mode.drawCount} carte${mission.mode.drawCount > 1 ? 's' : ''}',
+              'pioche',
+            ),
+            CampaignMissionStat(
+              Icons.replay_rounded,
+              '${mission.targetRedeals}',
+              'objectif',
+            ),
+            CampaignMissionStat(
+              Icons.workspace_premium_rounded,
+              '${store.totalFootprints} / 135',
+              'empreintes',
+            ),
+          ],
+          bestResult:
+              store.levelBestTime(index + 1)?.toString() ?? 'Aucun record',
+        );
+      },
       labelBuilder: (index) => levels[index].stage.title,
       musicEnabled: musicEnabled,
       effectsEnabled: effectsEnabled,

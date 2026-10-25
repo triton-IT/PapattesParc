@@ -1,0 +1,43 @@
+{
+  "units": "bytes; MiB = bytes / 1048576",
+  "source": {
+    "assets/3d": 183606412,
+    "assets/animal_markers": 222290,
+    "assets/app_icon": 1652346,
+    "assets/audio": 5201827,
+    "assets/fonts": 281317,
+    "assets/food_sort": 5097725,
+    "assets/level_art": 117640341,
+    "assets/mahjong": 2488519,
+    "assets/match3": 5964681,
+    "assets/park_map.png": 2165828,
+    "assets/sokoban": 11446555,
+    "assets/solitaire": 2403382
+  },
+  "web_export_by_top_level": {
+    ".last_build_id": 32,
+    "favicon.png": 756,
+    "flutter.js": 9553,
+    "flutter_bootstrap.js": 9975,
+    "flutter_service_worker.js": 815,
+    "index.html": 1560,
+    "main.dart.js": 2775988,
+    "manifest.json": 963,
+    "version.json": 94,
+    "assets": 154311900,
+    "canvaskit": 38476651,
+    "icons": 984178
+  },
+  "web_export_total": 196572465,
+  "main_js_gzip_estimate": 812474,
+  "menu_images_observed_requested_on_local_open": {
+    "park_map.png": 2165828,
+    "level_art/level-01-suricates-porcs-epics.png": 2198831,
+    "level_art/level-45-alpagas.png": 2585824,
+    "mahjong/mahjong-cover.png": 2488519,
+    "solitaire/solitaire-cover.png": 2403382,
+    "level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers.png": 2611553,
+    "sokoban/cover.png": 2331070
+  },
+  "limits": "Local file sizes, not measured production transfer timings. 3d source folder is not declared in pubspec. Export size includes alternative engines."
+}

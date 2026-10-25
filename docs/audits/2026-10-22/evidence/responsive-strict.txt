@@ -1,0 +1,173 @@
+00:00 +0: loading C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart
+00:00 +0: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: (setUpAll)
+00:00 +0: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:03 +0: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 320x568
+AUDIT Match3CustomGameScreen Size(320.0, 568.0)
+00:03 +0: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:04 +0: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 320x568
+AUDIT SudokuCustomGameScreen Size(320.0, 568.0)
+00:04 +0: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+AUDIT MahjongLevelSelectScreen Size(320.0, 568.0)
+00:04 +1: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:05 +1: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 800x360
+AUDIT Match3CustomGameScreen Size(800.0, 360.0)
+00:05 +1: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+AUDIT NumberlinkLevelSelectScreen Size(320.0, 568.0)
+00:06 +1: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 800x360
+AUDIT SudokuCustomGameScreen Size(800.0, 360.0)
+00:06 +1: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+AUDIT SolitaireLevelSelectScreen Size(320.0, 568.0)
+00:06 +2: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:07 +2: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: FlutterError:<A RenderFlex overflowed by 38 pixels on the right.>
+Size(320.0, 568.0)
+
+When the exception was thrown, this was the stack:
+#4      _pump (file:///C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart:126:3)
+<asynchronous suspension>
+#5      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart:32:7)
+<asynchronous suspension>
+#6      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#7      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart line 126
+The test description was:
+  références visuelles du mahjong
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:07 +2 -1: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:07 +2 -1: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong [E]
+  Test failed. See exception logs above.
+  The test description was: références visuelles du mahjong
+  
+00:07 +2 -1: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:08 +2 -1: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 1024x600
+AUDIT Match3CustomGameScreen Size(1024.0, 600.0)
+AUDIT SudokuCustomGameScreen Size(1024.0, 600.0)
+00:09 +2 -1: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: FlutterError:<A RenderFlex overflowed by 38 pixels on the right.>
+Size(320.0, 568.0)
+
+When the exception was thrown, this was the stack:
+#4      _pump (file:///C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart:130:3)
+<asynchronous suspension>
+#5      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart:46:7)
+<asynchronous suspension>
+#6      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#7      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart line 130
+The test description was:
+  références visuelles des sentiers sauvages
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:09 +2 -2: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:09 +2 -2: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages [E]
+  Test failed. See exception logs above.
+  The test description was: références visuelles des sentiers sauvages
+  
+00:09 +2 -2: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:09 +3 -2: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:10 +3 -2: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 900x900
+AUDIT Match3CustomGameScreen Size(900.0, 900.0)
+00:10 +3 -2: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:10 +3 -2: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: FlutterError:<A RenderFlex overflowed by 38 pixels on the right.>
+Size(320.0, 568.0)
+
+When the exception was thrown, this was the stack:
+#4      _pump (file:///C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart:153:3)
+<asynchronous suspension>
+#5      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart:33:7)
+<asynchronous suspension>
+#6      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#7      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart line 153
+The test description was:
+  références visuelles du solitaire
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:10 +3 -3: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:10 +3 -3: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire [E]
+  Test failed. See exception logs above.
+  The test description was: références visuelles du solitaire
+  
+00:11 +3 -3: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: la carte reste prioritaire sur un écran court
+AUDIT SolitaireLevelSelectScreen Size(611.0, 896.0)
+00:11 +4 -3: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:11 +4 -3: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 900x900
+AUDIT SudokuCustomGameScreen Size(900.0, 900.0)
+00:11 +4 -3: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+AUDIT HomeScreen Size(320.0, 568.0)
+00:12 +5 -3: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:12 +6 -3: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:12 +7 -3: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+AUDIT CustomGameScreen Size(320.0, 568.0)
+AUDIT GameScreen Size(320.0, 568.0)
+AUDIT GameScreen Size(320.0, 568.0)
+00:14 +7 -3: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 2560x1080
+AUDIT Match3CustomGameScreen Size(2560.0, 1080.0)
+00:15 +8 -3: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+00:15 +8 -3: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 2560x1080
+AUDIT SudokuCustomGameScreen Size(2560.0, 1080.0)
+00:16 +8 -3: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+AUDIT Match3LevelSelectScreen Size(320.0, 568.0)
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: FlutterError:<A RenderFlex overflowed by 38 pixels on the right.>
+Size(320.0, 568.0)
+
+When the exception was thrown, this was the stack:
+#4      _pump (file:///C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart:405:3)
+<asynchronous suspension>
+#5      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart:133:7)
+<asynchronous suspension>
+#6      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#7      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart line 405
+The test description was:
+  références visuelles responsive
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:16 +8 -4: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 2560x1080
+00:16 +8 -4: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive [E]
+  Test failed. See exception logs above.
+  The test description was: références visuelles responsive
+  
+00:16 +8 -4: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 2560x1080
+00:17 +9 -4: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: (tearDownAll)
+00:17 +9 -4: Some tests failed.
+
+Failing tests:
+  C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+  C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+  C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+  C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive

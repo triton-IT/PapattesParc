@@ -1,3 +1,4 @@
+import '../../../shared/game_activity.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -48,8 +49,8 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
   SolitaireLevelDefinition? _level;
   CardLocation? _selected;
   SolitaireHint? _hint;
-  Timer? _ticker;
-  Timer? _hintTimer;
+  late final ActiveGameClock _clock;
+  ActiveGameTimer? _hintTimer;
   bool _finished = false;
   bool _autoFinishing = false;
   bool _newRecord = false;
@@ -69,15 +70,20 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
       effectsEnabled: _effectsEnabled,
     );
     unawaited(_audio.initialize());
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_autoFinishing || _session?.status != SolitaireStatus.playing) return;
-      setState(() => _session!.tick(const Duration(seconds: 1)));
-    });
+    _clock = ActiveGameClock(
+      onTick: (delta) {
+        if (_autoFinishing || _session?.status != SolitaireStatus.playing) {
+          return _session?.elapsed ?? Duration.zero;
+        }
+        _session!.tick(delta);
+        return _session!.elapsed;
+      },
+    );
   }
 
   @override
   void dispose() {
-    _ticker?.cancel();
+    _clock.dispose();
     _hintTimer?.cancel();
     unawaited(_audio.dispose());
     super.dispose();
@@ -121,6 +127,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
       AbsorbPointer(
         absorbing: _autoFinishing,
         child: SolitaireGameScreen(
+          elapsed: _clock,
           session: _session!,
           backAnimal: _animal,
           backgroundAsset: _level?.stage.artAsset ?? _animal.backgroundAsset,
@@ -132,7 +139,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
           newRecord: _newRecord,
           onDraw: _draw,
           onCardTap: _tapCard,
-          onDoubleTap: _autoFoundation,
+          onDoubleTap: _autoMove,
           onMove: _move,
           onUndo: _undo,
           onHint: _showHint,
@@ -172,6 +179,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
   }
 
   void _startSession(int seed) {
+    _clock.reset();
     _session = SolitaireSession(mode: _mode, seed: seed);
     _selected = null;
     _hint = null;
@@ -188,6 +196,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
   int _newSeed() => DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919;
 
   void _draw() {
+    _clock.flush();
     if (!_session!.draw()) return;
     _clearSelection();
     unawaited(_audio.playEffect(SoundEffect.reveal));
@@ -234,17 +243,16 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
     CardArea.stock => false,
   };
 
-  void _autoFoundation(CardLocation source) {
-    if (!_session!.moveToFoundation(source)) {
-      _blocked(
-        'La fondation attend une carte plus petite de la même enseigne.',
-      );
+  void _autoMove(CardLocation source) {
+    if (!_session!.moveAutomatically(source)) {
+      _blocked('Cette carte ne peut pas être déplacée automatiquement.');
       return;
     }
     _afterMove();
   }
 
   void _move(SolitaireMove move) {
+    _clock.flush();
     if (!_session!.move(move)) {
       _blocked(
         'Alterne les couleurs en ordre décroissant. Seul un roi ouvre une colonne.',
@@ -272,7 +280,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
     setState(() => _autoFinishing = true);
     _toast('Finition automatique…');
     while (mounted && identical(_session, session) && _autoFinishing) {
-      await Future<void>.delayed(const Duration(milliseconds: 180));
+      await GameActivity.delay(const Duration(milliseconds: 180));
       if (!mounted || !identical(_session, session) || !_autoFinishing) return;
       if (!session.autoFinishStep()) break;
       setState(() {});
@@ -298,7 +306,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
     _hintTimer?.cancel();
     setState(() => _hint = value);
     _toast(value.message);
-    _hintTimer = Timer(const Duration(seconds: 3), () {
+    _hintTimer = ActiveGameTimer(const Duration(seconds: 3), () {
       if (mounted) setState(() => _hint = null);
     });
   }

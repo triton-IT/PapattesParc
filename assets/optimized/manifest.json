@@ -1,0 +1,3046 @@
+{
+  "assets/animal_markers/level-01-suricates-porcs-epics.png": {
+    "sha256": "cbd466884de87d101bedc03fc515b2fb11d54e6c8342ea0b9ca154f796d0ca06",
+    "sourceBytes": 74273,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/animal_markers/level-01-suricates-porcs-epics-256.webp",
+        "bytes": 52012,
+        "sha256": "14f6312f7cbe31e2df8845619b117b2aed1e06acff377fa06676eaefaa93c011"
+      }
+    ]
+  },
+  "assets/animal_markers/level-02-lion.png": {
+    "sha256": "706d767f4bf104a2effc03d4ce22c8b4fb30e9f407ed092638e6cec71d2238cc",
+    "sourceBytes": 70830,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/animal_markers/level-02-lion-256.webp",
+        "bytes": 47852,
+        "sha256": "0ea824d36dbacf5cf7166cb02682323f2d8259ed975ff85a17a8e771469feb65"
+      }
+    ]
+  },
+  "assets/animal_markers/level-03-girafe-gazelle-addax.png": {
+    "sha256": "6379317b25f747bc192b9f17d24a96f74e169a20850129690dd0aec0c116af6a",
+    "sourceBytes": 77187,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/animal_markers/level-03-girafe-gazelle-addax-256.webp",
+        "bytes": 59540,
+        "sha256": "2f8722f566ba5c1679598553476e78a158b4f5240c0115549dcac32cc2cf529e"
+      }
+    ]
+  },
+  "assets/food_sort/addax.png": {
+    "sha256": "254de88457946db7f72c8b6fc79ea7293eedb20919fe7151eb472ccb4c21c55c",
+    "sourceBytes": 25860,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/addax-256.webp",
+        "bytes": 18466,
+        "sha256": "ea45db9f021c4e50fd2ceab4a18bec61c8d7a1b893f9a8b9388eba4295276655"
+      }
+    ]
+  },
+  "assets/food_sort/alpaga.png": {
+    "sha256": "0706a61a5e863f2da69048e761828efc10b425ccd8aa0cab536e6c978b538145",
+    "sourceBytes": 41453,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/alpaga-256.webp",
+        "bytes": 30098,
+        "sha256": "1c32fbb5dddd3324978cd9e42616ed77338037f06423b78925105722efe73284"
+      }
+    ]
+  },
+  "assets/food_sort/atele.png": {
+    "sha256": "b11fbec8f8d1a4c92fa05870c81164be16ef8424b007abe5974a2ab2c06218bc",
+    "sourceBytes": 42588,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/atele-256.webp",
+        "bytes": 30140,
+        "sha256": "860bd4ddea3a79c1cc0a537a5238af1b376207c6f4e9612982c71ab176b5100e"
+      }
+    ]
+  },
+  "assets/food_sort/capybara.png": {
+    "sha256": "62d804e5ee8f486c33a71b394af273ee154fbca1907fbdc5fdc737021960c9ca",
+    "sourceBytes": 33113,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/capybara-256.webp",
+        "bytes": 24016,
+        "sha256": "ac7d890e3f5b0a6d3e6c0c5771a32ea1da84e65512effada3b891eb75b129cad"
+      }
+    ]
+  },
+  "assets/food_sort/cerfCochon.png": {
+    "sha256": "ab3082d856802c12a8ae1e5c98322ef55ae75efa3e135d5b884d32485f9ac778",
+    "sourceBytes": 35787,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/cerfCochon-256.webp",
+        "bytes": 27260,
+        "sha256": "f8d8a03d3e21117c64ebb18b9cd8929af1574fa6e8e16e48694277aff85eaa73"
+      }
+    ]
+  },
+  "assets/food_sort/cerfSika.png": {
+    "sha256": "4ad4bd7fc49039476b1e015263a982c08178dfcd80696b846ef3932feb869dd5",
+    "sourceBytes": 37095,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/cerfSika-256.webp",
+        "bytes": 25974,
+        "sha256": "9dcdedd4600df6c9b6e4ea638c3ee082dff9ef3ce94792fa0cf0f5e84c1dca86"
+      }
+    ]
+  },
+  "assets/food_sort/gazelle.png": {
+    "sha256": "f6dc6fd11d2e60e2558619517f35a69ca5ff6f4f3891b72ab2d6bd4d6d14d351",
+    "sourceBytes": 36529,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/gazelle-256.webp",
+        "bytes": 26362,
+        "sha256": "efaba2e3b32150cd575603cd38c944146dfb8a2108995b283e9d1d1ac7e2dd26"
+      }
+    ]
+  },
+  "assets/food_sort/gibbon.png": {
+    "sha256": "4b65702759d4a4d8d5db001c6437ed5c0cf83026be00c422fbabc97b28627928",
+    "sourceBytes": 28531,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/gibbon-256.webp",
+        "bytes": 19004,
+        "sha256": "426968bb5c9258842ee39937cee7081da956815aa279171aeb9ffe2683741d2a"
+      }
+    ]
+  },
+  "assets/food_sort/girafe.png": {
+    "sha256": "2853d324d1cc9827c17d23b973cb175d5d6bbb373debc75d76446e5449ebfcb7",
+    "sourceBytes": 29484,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/girafe-256.webp",
+        "bytes": 22156,
+        "sha256": "3998adfd38c1ef821981e2ad751db3cb74b06f911cb0ec01f4ad7670955f248e"
+      }
+    ]
+  },
+  "assets/food_sort/glouton.png": {
+    "sha256": "8d3d2f53fb754fcb89805fd604770dca0781f9b364801ca955e7f9df5e40a66b",
+    "sourceBytes": 23905,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/glouton-256.webp",
+        "bytes": 16028,
+        "sha256": "0edb5c40d1dc507c37749c33489a11e1aee962cf4389d31837053990d8aceef0"
+      }
+    ]
+  },
+  "assets/food_sort/goral.png": {
+    "sha256": "0e8c560e1eec166ed547f6f4cdd4acb7d5096864f581b9a04af554d1cdc05253",
+    "sourceBytes": 41231,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/goral-256.webp",
+        "bytes": 29360,
+        "sha256": "da523109602e824ee4ae03cc7fc31dbf98e9b8e07c1b8e9d750039fbbed87150"
+      }
+    ]
+  },
+  "assets/food_sort/guepard.png": {
+    "sha256": "6aa2f369e01b9ecd9f99d5c30be147ede9968f974e28187e20c1be8626c3e083",
+    "sourceBytes": 29005,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/guepard-256.webp",
+        "bytes": 20334,
+        "sha256": "378434c7f2faa34c23c001b41d1db9e8b61d9dee2e0138e69fe9226b48289fc0"
+      }
+    ]
+  },
+  "assets/food_sort/hippopotame.png": {
+    "sha256": "fefaffe8e658a9c906463dfaa19a48a804e7536b01bd6bfa2743927caa9758c4",
+    "sourceBytes": 33488,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/hippopotame-256.webp",
+        "bytes": 23398,
+        "sha256": "9e24a33e3ff8b3e08f30ffaa8226fd09999161fc24935092d6b5ce70f0b82873"
+      }
+    ]
+  },
+  "assets/food_sort/kulan.png": {
+    "sha256": "20d4700af45b77fb5da9cfc7188b5c068127514c2a2e58c109a989da287c309d",
+    "sourceBytes": 32544,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/kulan-256.webp",
+        "bytes": 25870,
+        "sha256": "0489c043cee5cc76870e8b0ecdd69d8f9a959cfb7122ac13c9ee6f9db198c612"
+      }
+    ]
+  },
+  "assets/food_sort/lemurien.png": {
+    "sha256": "70936007e7a32282244e002fc5b0a1818052887a3f3d734c766e82265c467678",
+    "sourceBytes": 32161,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/lemurien-256.webp",
+        "bytes": 23366,
+        "sha256": "dc2cf552a0cc54d4eb4a3539333a60a8a9d73736060622dec8b182bf6e774041"
+      }
+    ]
+  },
+  "assets/food_sort/lion.png": {
+    "sha256": "3fad5417f33b247c13e367d8045802efec9e1a6a411243cf6c02ac35558da64c",
+    "sourceBytes": 33439,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/lion-256.webp",
+        "bytes": 23624,
+        "sha256": "5dc2ee2f323c7ac1c33eadf361e506dc5f1b9628a18ffc4db00b8488bd317459"
+      }
+    ]
+  },
+  "assets/food_sort/loup.png": {
+    "sha256": "fb7304bdb674acbccedae2c1f9d12fe94fde156f0cefec3075f1bca8297f7b86",
+    "sourceBytes": 38453,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/loup-256.webp",
+        "bytes": 28314,
+        "sha256": "12f5694e69b472a3fc7fd3ec6608fc16b183a6cc90a31504edfa59c409b68e54"
+      }
+    ]
+  },
+  "assets/food_sort/loutre.png": {
+    "sha256": "25657a1a8e775407fc481d30e3004f3552954f943e1ba567a31af5ce9ad9ed6f",
+    "sourceBytes": 31364,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/loutre-256.webp",
+        "bytes": 24484,
+        "sha256": "e1a13f75edc1e11f9b95b214d601af3dba0ec4da40a85181123707fdce3256b0"
+      }
+    ]
+  },
+  "assets/food_sort/markhor.png": {
+    "sha256": "004826376cd6d0baa9e930394049541f733e16dd2e97509cff455a193da6965a",
+    "sourceBytes": 33982,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/markhor-256.webp",
+        "bytes": 26064,
+        "sha256": "095041d5b39207c6789cc22b6fd4868cc5611b7f86c50e901b4a8b96bc226aef"
+      }
+    ]
+  },
+  "assets/food_sort/oryx.png": {
+    "sha256": "47081e1490f5a316cb94ddc388aae2a4b867af90a51a5bfab1d6cf8389774f44",
+    "sourceBytes": 47557,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/oryx-256.webp",
+        "bytes": 35872,
+        "sha256": "f9e76513cd98a1eaa3d3121c2dec5ef21a093670eb0ce44a74ddc81d28826cc4"
+      }
+    ]
+  },
+  "assets/food_sort/ours.png": {
+    "sha256": "02edab5c0fe519d09c8ccbdce427447f1933c1b2a91a7b732a2b8a0bd21be16b",
+    "sourceBytes": 37107,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/ours-256.webp",
+        "bytes": 27940,
+        "sha256": "4793113aa9d6008435194c26eae80bb04d91d4971692238609f61265c6a108c4"
+      }
+    ]
+  },
+  "assets/food_sort/pandaRoux.png": {
+    "sha256": "1e74ec546d9915d1ceb372d81641bf9c0a6b0863722b9ad646e9170eb17a876a",
+    "sourceBytes": 31581,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/pandaRoux-256.webp",
+        "bytes": 23848,
+        "sha256": "086affef15c4dfe8ba0715bbf0790576593b9820c215649d19348ed16a2f609d"
+      }
+    ]
+  },
+  "assets/food_sort/panthereAmour.png": {
+    "sha256": "389d6c5ee8f19ba4b438c743bdc3a9c94c54b9890ec305008cb364cca22d4ea1",
+    "sourceBytes": 29692,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/panthereAmour-256.webp",
+        "bytes": 21000,
+        "sha256": "60fd5d15a18c8728a06b24ecf5096bc4c7ebb43690bfef5a7ea10a58024a5271"
+      }
+    ]
+  },
+  "assets/food_sort/panthereNeiges.png": {
+    "sha256": "10b19626d96f0c281db69d6ff8e66a98628444dd8b1d2ab886615055da02aa36",
+    "sourceBytes": 35913,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/panthereNeiges-256.webp",
+        "bytes": 24728,
+        "sha256": "382bde9c4ea94e6b33343c684748e7f3c6c24fadead534f53fbe894630281aa4"
+      }
+    ]
+  },
+  "assets/food_sort/paresseux.png": {
+    "sha256": "d0a64695c868c34248958fe2b23e371684921d9e31041cc0c1d7e604b757af33",
+    "sourceBytes": 39175,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/paresseux-256.webp",
+        "bytes": 28020,
+        "sha256": "38998ab60026239abbdb4ce0e326f4fb8d52805b05eef85f3266b20bd758c385"
+      }
+    ]
+  },
+  "assets/food_sort/renne.png": {
+    "sha256": "513507205d81ed2d37868f8625b285fa23a60fa87e98bfa9b6cbce516e34521e",
+    "sourceBytes": 47051,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/renne-256.webp",
+        "bytes": 33624,
+        "sha256": "cfe88647cbd979183c94331c495f496cce65227e9604d1984c3782b958265042"
+      }
+    ]
+  },
+  "assets/food_sort/saimiri.png": {
+    "sha256": "54b15cd0b7e2c99c72ef01d561202234c4a32c6ef190749bd422f843388a90a3",
+    "sourceBytes": 35357,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/saimiri-256.webp",
+        "bytes": 26414,
+        "sha256": "6273482854a624ea1108986100c6481e66f7f21d5528cf1ed044020077d59ec1"
+      }
+    ]
+  },
+  "assets/food_sort/suricate.png": {
+    "sha256": "c08e395d5ef73fdd3b4430f9888cec9cf0032357b0a0ecb5a41925bf9ebf29b5",
+    "sourceBytes": 34613,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/suricate-256.webp",
+        "bytes": 26630,
+        "sha256": "2ea282eca29009ad16def5ec8e36f224bc6ad6764329e88a71e1cfc8df132bfe"
+      }
+    ]
+  },
+  "assets/food_sort/tahr.png": {
+    "sha256": "efe273f11b682ff432aed82e7d61b3fd807aa6adce36d9082a673298a0de4a19",
+    "sourceBytes": 46086,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/tahr-256.webp",
+        "bytes": 36640,
+        "sha256": "8ecec08fc4305670a91785f10cec11798c34d482fb19c1b00d0d431197ab7db6"
+      }
+    ]
+  },
+  "assets/food_sort/tamarin.png": {
+    "sha256": "a1c18b007a6876eaa237aebe83573b8f63f7d2870034cfb35fd953c4949fad9c",
+    "sourceBytes": 34052,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/tamarin-256.webp",
+        "bytes": 25712,
+        "sha256": "fcfb1cd8f83bd3eb5ec8f94155e3390dfd902beb875f84950c7c714c184b0396"
+      }
+    ]
+  },
+  "assets/food_sort/tapir.png": {
+    "sha256": "63e44bfac7b254ff4844db9ecd0f63a9510f325f02fa1974ebacf92e8067805b",
+    "sourceBytes": 42208,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/tapir-256.webp",
+        "bytes": 30690,
+        "sha256": "52a77228e05c1960116ac5b16fc2ccaf94b4f7383f286d845390bd06f69fcba1"
+      }
+    ]
+  },
+  "assets/food_sort/tigre.png": {
+    "sha256": "ad9d86770a410e699309961f5e19610380b747c5e2da277f324e706d34ff9841",
+    "sourceBytes": 37957,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/tigre-256.webp",
+        "bytes": 26072,
+        "sha256": "d7425909c57eca2b3600f36182bf57fd71807af7a85f158cf0b8560381213c06"
+      }
+    ]
+  },
+  "assets/food_sort/tortue.png": {
+    "sha256": "4b02bff3f95b5be7216a9f4350d604e2e50b30c745d6dfa966387366ad8c68f9",
+    "sourceBytes": 35944,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/tortue-256.webp",
+        "bytes": 27972,
+        "sha256": "dd5b3f37991cdea1d350f4b5f2cc74c48f3f55699f9d71f24a85f43dee6a54bd"
+      }
+    ]
+  },
+  "assets/food_sort/ui/basket.png": {
+    "sha256": "bbc33fa9f4ed0c5a592a63a7f37e1f4c287a1953a6275c595b33c003542eee58",
+    "sourceBytes": 1454273,
+    "variants": [
+      {
+        "width": 1254,
+        "height": 1254,
+        "path": "assets/optimized/food_sort/ui/basket-1254.webp",
+        "bytes": 899536,
+        "sha256": "0fa7aec28e09de311e1c007f6186d6ce150bd4297a153c687064ffb096690661"
+      }
+    ]
+  },
+  "assets/food_sort/ui/cart-landscape.png": {
+    "sha256": "3b3afccebc914e97813158912998bcc4d087eb00360420ab25ef938562a808e3",
+    "sourceBytes": 1182716,
+    "variants": [
+      {
+        "width": 1374,
+        "height": 723,
+        "path": "assets/optimized/food_sort/ui/cart-landscape-1374.webp",
+        "bytes": 790018,
+        "sha256": "9be5cd1f1215099e6d45ee0ff1792ed3e5ac11824e0b5c73537c9fc78836f4e7"
+      }
+    ]
+  },
+  "assets/food_sort/ui/cart-portrait.png": {
+    "sha256": "d5f821ae852e44753c412035fb7fad806b10d1b9ad2586fdced99e91025bf769",
+    "sourceBytes": 1198650,
+    "variants": [
+      {
+        "width": 849,
+        "height": 1001,
+        "path": "assets/optimized/food_sort/ui/cart-portrait-849.webp",
+        "bytes": 762956,
+        "sha256": "424c60a5a1e2974dcbfaa8996053058815687df23cbc62b533c6479f6a2839a5"
+      }
+    ]
+  },
+  "assets/food_sort/urial.png": {
+    "sha256": "33bccc77a558dce846f79a94e7f6e60ac353bb69a01cea587142cb7f4978fda8",
+    "sourceBytes": 29294,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/urial-256.webp",
+        "bytes": 22684,
+        "sha256": "30ddf743aeb7f14c447eda27e4130a015aa1d2421c6127a630f996f8023147a7"
+      }
+    ]
+  },
+  "assets/food_sort/vison.png": {
+    "sha256": "df0e105da2e671685f2ba316c5298c4176b9c5e65311c8776c6a49b133f5bc69",
+    "sourceBytes": 29169,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/vison-256.webp",
+        "bytes": 19948,
+        "sha256": "5bda28ff0d8c732ce3bdfaaffeaa07b1b6211596ff000c501799d72534663f68"
+      }
+    ]
+  },
+  "assets/food_sort/zebre.png": {
+    "sha256": "a53f1d426cd18ae9612196ba084e385071a0e1a3a4137c11a73326881b610e5c",
+    "sourceBytes": 29318,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/food_sort/zebre-256.webp",
+        "bytes": 21206,
+        "sha256": "bd79c3c3f4eefd6ef5d5fd578ac29e285f49f0e786dcdb6afd4ffc2de85906e5"
+      }
+    ]
+  },
+  "assets/level_art/level-01-suricates-porcs-epics.png": {
+    "sha256": "4866b3f047dc5b2a84da947c085c8a513bc8ffc262d4d80c9d7e44cb4cf593a3",
+    "sourceBytes": 2198831,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-01-suricates-porcs-epics-320.webp",
+        "bytes": 15190,
+        "sha256": "f546e8231b14d58eb1434e000846b726f89fcfc8af124e08a9787e129f08390c"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-01-suricates-porcs-epics-640.webp",
+        "bytes": 45656,
+        "sha256": "c10e32032814a548c96a215afaa5cf420eeb8a0d35cc89ba712301d16bb09add"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-01-suricates-porcs-epics-1280.webp",
+        "bytes": 138296,
+        "sha256": "e2ddbe357377db08d35a6812de340ad80194ff487a1e0be9d77cb8c2b90576c2"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-01-suricates-porcs-epics-1672.webp",
+        "bytes": 198972,
+        "sha256": "26434a4e91a0dfea013e6e054343f24280f5e144b89f7cc8bdbea507fa93b83d"
+      }
+    ]
+  },
+  "assets/level_art/level-02-lions-afrique.png": {
+    "sha256": "90950b035366f106a1d0d740cf106ed0330f78c71437d4c84368a7e3ae85fe42",
+    "sourceBytes": 2452272,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-02-lions-afrique-320.webp",
+        "bytes": 19882,
+        "sha256": "11f2d6ad2bfb8f284a50dc289f448c15c0729591ae32b2f854136b176abc2c91"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-02-lions-afrique-640.webp",
+        "bytes": 62070,
+        "sha256": "0c1899df21620afab4009a3982e234e1973f1ce6a875d805476776c31ceff305"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-02-lions-afrique-1280.webp",
+        "bytes": 191886,
+        "sha256": "18fbc3768e20c23010af0add9ad3e35c8b1eec839cf2a38fcaf825dc2e76ef47"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-02-lions-afrique-1672.webp",
+        "bytes": 283686,
+        "sha256": "5d5116cb57c7ed6f38dcdceec42bb0f5fa7abe78d62491001d37bf297c0a930b"
+      }
+    ]
+  },
+  "assets/level_art/level-03-girafes-gazelles-addax.png": {
+    "sha256": "7921a5909def8368e286e38b2748f1e1bac536b073c8c2e4b204553c2bf11ced",
+    "sourceBytes": 2272669,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-03-girafes-gazelles-addax-320.webp",
+        "bytes": 18686,
+        "sha256": "a865f7b59fe536eb66ebeeac7b24376f69ca487bd4103745c29d447a58571fa5"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-03-girafes-gazelles-addax-640.webp",
+        "bytes": 54574,
+        "sha256": "5f358fbc0d70670d3e7856a2009100d292e4b87aa8d28edd8f0d2325976fc139"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-03-girafes-gazelles-addax-1280.webp",
+        "bytes": 157636,
+        "sha256": "c7d505ef2a47edcf08a74849d9a8c57eb7576cb4a7c24aacd18b443dd2e54534"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-03-girafes-gazelles-addax-1672.webp",
+        "bytes": 228096,
+        "sha256": "8a4791bafc5ca30d5e45782be0ad1d04f9d95d8330e5bcb6747a5b8d0993d551"
+      }
+    ]
+  },
+  "assets/level_art/level-04-tortue-etoilee-madagascar.png": {
+    "sha256": "b6b698dffdf099369ec597ff383331b9246dd1a43e10a02bed2564510b81f29e",
+    "sourceBytes": 2466960,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-04-tortue-etoilee-madagascar-320.webp",
+        "bytes": 23304,
+        "sha256": "26c024e4d3b463bfa3f4a9376c5f4b370d7cb08a1d5b90c53b8065bad06e35bd"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-04-tortue-etoilee-madagascar-640.webp",
+        "bytes": 71392,
+        "sha256": "04d0a509f1d5a0f5a93da2d6edf2abe87be452114accc4fa2c52c80abd2d6e79"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-04-tortue-etoilee-madagascar-1280.webp",
+        "bytes": 202554,
+        "sha256": "d90faedbce6dc24ed38c5d3886006fff25f0dbe2cf65a6fc44701d168ec979f5"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-04-tortue-etoilee-madagascar-1672.webp",
+        "bytes": 299064,
+        "sha256": "2f215347e6774e60cf6c70d5f027f96073572f34267edeaea65a101ac6f53b52"
+      }
+    ]
+  },
+  "assets/level_art/level-05-oryx-cobes-zebres-addax.png": {
+    "sha256": "43a488e648cd21880b0c2014aa3d12e75789ea3fe4278475d1bcf929e5f7692e",
+    "sourceBytes": 2269216,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-05-oryx-cobes-zebres-addax-320.webp",
+        "bytes": 18250,
+        "sha256": "92ca4db6b088acaebbeb3e5c340530af41df2acc772e46b2277169c1bec48046"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-05-oryx-cobes-zebres-addax-640.webp",
+        "bytes": 55078,
+        "sha256": "2f60dfd882bb06dc71f9ec9b7c442e821aa6b76cb598d2b63984306f508d9905"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-05-oryx-cobes-zebres-addax-1280.webp",
+        "bytes": 162592,
+        "sha256": "58eedc32f4e4c6addaad4c47f8077db4c53cfcbd8c1c0b4804986de48761990c"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-05-oryx-cobes-zebres-addax-1672.webp",
+        "bytes": 238300,
+        "sha256": "68e955d8dfb78d81bf5a7bfe61375dbffae361ca9bfd27bbccd2d375357a1bcf"
+      }
+    ]
+  },
+  "assets/level_art/level-06-ateles-varies.png": {
+    "sha256": "49230d9a0f2219388f08738e6ef2c9fa071f7e88793b6c11a697e4f3186870ca",
+    "sourceBytes": 2584674,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-06-ateles-varies-320.webp",
+        "bytes": 25878,
+        "sha256": "7fcfe202de7c61f7f2507e4434e695dd525bba132b653da8b90727453aeeca94"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-06-ateles-varies-640.webp",
+        "bytes": 80702,
+        "sha256": "3960aca207bfe073929d57d2eddb04ceb0d20597a80b1918162cd70f01f7accf"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-06-ateles-varies-1280.webp",
+        "bytes": 225084,
+        "sha256": "21afa3b8caebdda624eeb38ac97bf2bb8cc67186e015d1bdf4587a5029dd4129"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-06-ateles-varies-1672.webp",
+        "bytes": 320606,
+        "sha256": "5720cfc968109ca8ed4afd2fb598f2cec55d7a489b0d4a5658d689670933d058"
+      }
+    ]
+  },
+  "assets/level_art/level-07-gibbons-favoris-blancs.png": {
+    "sha256": "e5df5146f11001126ad7c3b381ac40de066d07ec9ee5f295ce71f984b67119c2",
+    "sourceBytes": 2568816,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-07-gibbons-favoris-blancs-320.webp",
+        "bytes": 24304,
+        "sha256": "58b2137d47dc9301a2c535ba61d4f1834eac6e2dcc8e2e36d499f477dfc9f187"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-07-gibbons-favoris-blancs-640.webp",
+        "bytes": 71778,
+        "sha256": "ba911110ca75cc26b4512f12d20f20fc7beb4ac1a575117417e55d16421f7e54"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-07-gibbons-favoris-blancs-1280.webp",
+        "bytes": 207900,
+        "sha256": "67af8bb050e68a4879ce4599c8b8304f02e780230a10db7b1474b818eb05a935"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-07-gibbons-favoris-blancs-1672.webp",
+        "bytes": 304462,
+        "sha256": "863b2834de8eafba0a3689192121ed23254b912da2cc4c3eed8bbc0f6d768d83"
+      }
+    ]
+  },
+  "assets/level_art/level-08-siamangs.png": {
+    "sha256": "57eb002106131b86e9e033028e59c6ff24bd94c6e26f1606b799d095f566881a",
+    "sourceBytes": 2592683,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-08-siamangs-320.webp",
+        "bytes": 23668,
+        "sha256": "d515e006016c7adde8f8ff7ced4648bd7bc72d2307ff2edbae3837f21387ae54"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-08-siamangs-640.webp",
+        "bytes": 74476,
+        "sha256": "4bc71b046386076360ca65b0c24a13bdb04b5b408aeee0a48c745660d3f74611"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-08-siamangs-1280.webp",
+        "bytes": 220030,
+        "sha256": "01a7aa58368eb11817ba058300a206b80952c9b06e3582cfbc867fbd5f9106f0"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-08-siamangs-1672.webp",
+        "bytes": 328108,
+        "sha256": "7eb44e12e4a47fb630933b195cfe0e3cd5165618751c28fc5e828d0fe79cbbba"
+      }
+    ]
+  },
+  "assets/level_art/level-09-gibbons-loutres-asie.png": {
+    "sha256": "13ae4614b776a7428f76407791ff858a37d97bbc6e5c0f1df2285bd51da5d975",
+    "sourceBytes": 2577356,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-09-gibbons-loutres-asie-320.webp",
+        "bytes": 23452,
+        "sha256": "594a7bb4cea71b018003371c6443e8a361d43696fabde1ad88dba084828d603b"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-09-gibbons-loutres-asie-640.webp",
+        "bytes": 73486,
+        "sha256": "07a853f76cbe72e1355ee5001f324113f30a1f667d4a2abba9afef9ede864aa8"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-09-gibbons-loutres-asie-1280.webp",
+        "bytes": 219452,
+        "sha256": "e467150e9646acd1cb0ca842d2dc22e5ec359d88a33ac6594e1f382844486584"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-09-gibbons-loutres-asie-1672.webp",
+        "bytes": 307940,
+        "sha256": "d34de405e90d763cf9e1fd2ce2b459cac23f3ed469c84233d384be0a2f962fb2"
+      }
+    ]
+  },
+  "assets/level_art/level-10-tamarins-tatous-paresseux.png": {
+    "sha256": "ef06cc2eafc41a08cf61829598a9ad2693ae5b6f66e45d1befab4ac60b770bb5",
+    "sourceBytes": 2681254,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-10-tamarins-tatous-paresseux-320.webp",
+        "bytes": 24478,
+        "sha256": "3b0679d8fc5b8d32731b4421f1ab2c9e03bd8045bd4876403110af84d15246b5"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-10-tamarins-tatous-paresseux-640.webp",
+        "bytes": 78692,
+        "sha256": "93544408e121cfe63b23aea4a845ea72de5a14747fdbf7b4830fb1f99da71bdc"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-10-tamarins-tatous-paresseux-1280.webp",
+        "bytes": 242028,
+        "sha256": "a6cd013afc3be203e2adeb2fdd016436547ea654e8f4745e269e4fdb2c4ab33a"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-10-tamarins-tatous-paresseux-1672.webp",
+        "bytes": 344658,
+        "sha256": "6f5b19db824078afb5e0686da3f92ac0e0612a754d46665a2f4fcda0fea65c15"
+      }
+    ]
+  },
+  "assets/level_art/level-11-lions-afrique.png": {
+    "sha256": "4958213fed0936e52d98f40a3127d0e1d537d12421e7268ab36c4725cff54ede",
+    "sourceBytes": 2564303,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-11-lions-afrique-320.webp",
+        "bytes": 20858,
+        "sha256": "711a2bea299ab7592ce2e87784ea0e84739db321580df0afcf28c010af432d7c"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-11-lions-afrique-640.webp",
+        "bytes": 69570,
+        "sha256": "b67d6d5aaf1535db515f53c8c5b8bfe0027196a57a971ddef877f62748d9dbae"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-11-lions-afrique-1280.webp",
+        "bytes": 214680,
+        "sha256": "29b73006b3af8dbc33869cdff371b3436cad916ae7f247d480ee35c7f4b8bff8"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-11-lions-afrique-1672.webp",
+        "bytes": 310862,
+        "sha256": "84a4164117953abe0703417a45a2a38355040b4e90a8511627e8ec57f9651b09"
+      }
+    ]
+  },
+  "assets/level_art/level-12-hippopotames-pygmees-tortues-sillonnees.png": {
+    "sha256": "0756eed87f7f5829d585255f45d3aa534e02ae04550f372b1b7a5eed7f3b2f80",
+    "sourceBytes": 2589464,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-12-hippopotames-pygmees-tortues-sillonnees-320.webp",
+        "bytes": 25840,
+        "sha256": "c1ef9ad5071c8d8de50591376ba7c64a3fe321d91afbe4410db8b7a90401da77"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-12-hippopotames-pygmees-tortues-sillonnees-640.webp",
+        "bytes": 85984,
+        "sha256": "bf594c80047e3ac39b37f7f5e1e48656194e74a350d6032fcf32366e574d1f3f"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-12-hippopotames-pygmees-tortues-sillonnees-1280.webp",
+        "bytes": 237908,
+        "sha256": "efee4cf7841a409496dcc77409b256b879ec100cd11c99f821dcc424b3ce6734"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-12-hippopotames-pygmees-tortues-sillonnees-1672.webp",
+        "bytes": 344850,
+        "sha256": "bc6c5365320fda01e095f7d270a6e6d9c32ad2ca4ee352805da85b6bb0605c43"
+      }
+    ]
+  },
+  "assets/level_art/level-13-tamarins-tete-doree-goeldi.png": {
+    "sha256": "90ecaa6ab8146a66ffeee9f3908a7147a344c303d1120e59436c06717d842a98",
+    "sourceBytes": 2570372,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-13-tamarins-tete-doree-goeldi-320.webp",
+        "bytes": 26186,
+        "sha256": "54d96f1046b538134073482b2a9f3b3a9ec6afd25eff6dba89eed2439687aa89"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-13-tamarins-tete-doree-goeldi-640.webp",
+        "bytes": 83096,
+        "sha256": "a587fcfecf86b7ee074826e63b44cfb67d6552e53979303f7436f37180fc1624"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-13-tamarins-tete-doree-goeldi-1280.webp",
+        "bytes": 229978,
+        "sha256": "4b64dc7dee6cbbd9e76e40cbd9a282bb9eea8ac2d2f61f9e754da2a14b58fbe3"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-13-tamarins-tete-doree-goeldi-1672.webp",
+        "bytes": 323912,
+        "sha256": "5ed21cb81aa75221a072b1c645499940d48ff778556cc0851799d35946985927"
+      }
+    ]
+  },
+  "assets/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers.png": {
+    "sha256": "4b00a8683b3b10a4fde7e314c7ef20a02499ef17ad78e88f3ea0e29dce853cf1",
+    "sourceBytes": 2611553,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers-320.webp",
+        "bytes": 21624,
+        "sha256": "c5a9b4ec277f60e695c2c064793a2e135ec02b6a7f2b9c3ed0454d0c2c9056ae"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers-640.webp",
+        "bytes": 68990,
+        "sha256": "aab0996f4a0fa0e9464c24b74fe315e911e3d956ef307b87aa81eea675ea6663"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers-1280.webp",
+        "bytes": 210336,
+        "sha256": "88c3dad63f2fe1e81a67a1e638e32ee2009ff06e030e8ed44f8c7314dd3a0263"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers-1672.webp",
+        "bytes": 303776,
+        "sha256": "a42be6ea4cb90386095ee87303ab4215c9223ce37a8806b1281d2aa7768aceca"
+      }
+    ]
+  },
+  "assets/level_art/level-15-tigres.png": {
+    "sha256": "a47fc2b55c8d480a740ba9ec459484035274cad2dacc0665e4870db8cb2d243a",
+    "sourceBytes": 2731985,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-15-tigres-320.webp",
+        "bytes": 26932,
+        "sha256": "2d5972998a0a6aca367185bafd40e8d50ab54d0f0ca85f1a138dda0c376b0e14"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-15-tigres-640.webp",
+        "bytes": 93310,
+        "sha256": "4be8f206da9354fa9c38b4539c2503e02a1a738fe5e1568992daf7671221917e"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-15-tigres-1280.webp",
+        "bytes": 268324,
+        "sha256": "178be2fa554b8e258d8d457502b2a792529c793563f849a9dde639badb13fe56"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-15-tigres-1672.webp",
+        "bytes": 388262,
+        "sha256": "9917aa1829ede1aba733bb87160e737c453f8428e36f0c4def18e9ad9699121b"
+      }
+    ]
+  },
+  "assets/level_art/level-16-cerfs-huppes-binturongs.png": {
+    "sha256": "67e90a37b657fb6869de4386f7623f5d174a8ba242073e891745b6864525e85f",
+    "sourceBytes": 2637724,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-16-cerfs-huppes-binturongs-320.webp",
+        "bytes": 24506,
+        "sha256": "a7d475fc98236d0d31bf716536ab8e95c210afff0e67b3c8bbe8bdc28b23f5bc"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-16-cerfs-huppes-binturongs-640.webp",
+        "bytes": 82528,
+        "sha256": "29fd0eca4922c0fb0274c9cd4ad74f63cbfe11c7801446c84c9272bc92bb0c3b"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-16-cerfs-huppes-binturongs-1280.webp",
+        "bytes": 239526,
+        "sha256": "0804ac49f8d5ab1ad81a91bd78cc3e6364e71fa60f3a1d5c94dd7d14a34c0cdb"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-16-cerfs-huppes-binturongs-1672.webp",
+        "bytes": 345914,
+        "sha256": "98551d852bfaf5955cf0bd6dcd54653af0d4d93fdc5957e330201e187f3d18cb"
+      }
+    ]
+  },
+  "assets/level_art/level-17-cerfs-sikas.png": {
+    "sha256": "b83bb32d81dced018fd1bdd9289a5540f4b0ffdec6d3f6921dd65c21118a2a47",
+    "sourceBytes": 2516474,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-17-cerfs-sikas-320.webp",
+        "bytes": 26192,
+        "sha256": "41b8c35d3dc3788e88c19524326ad36f9e00a33b7ef0251f9eaddf41d03de9f2"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-17-cerfs-sikas-640.webp",
+        "bytes": 83916,
+        "sha256": "681361dc0eb04484581d831542f2412dc228a9b5dff99cc2947ca4102776c70f"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-17-cerfs-sikas-1280.webp",
+        "bytes": 223136,
+        "sha256": "de8e60aacfb924d5bca5e1c3ba7d273df4dab7bc5a3dae3c8f42741a8890a840"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-17-cerfs-sikas-1672.webp",
+        "bytes": 321044,
+        "sha256": "53e18c284114d798582d7a26cb6e67c9678f0740c0b8f404d90d8704a28526e3"
+      }
+    ]
+  },
+  "assets/level_art/level-18-tigres-riviere.png": {
+    "sha256": "f229fdc67df170da4bdfef1f9843a50a97677f65655d5d635a7d24f1c73c837c",
+    "sourceBytes": 2668635,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-18-tigres-riviere-320.webp",
+        "bytes": 25652,
+        "sha256": "69eb98ad29dc78d5e446b6ef83b3c17c80a13d60ad18219f57b7e456bf75e593"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-18-tigres-riviere-640.webp",
+        "bytes": 88564,
+        "sha256": "121f7502ee8fae1ccedefc1574859216178d5ca2559faaee64c815448a0f2a92"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-18-tigres-riviere-1280.webp",
+        "bytes": 256430,
+        "sha256": "e910a2b797fc80fc08a4c571752635bf064c3a4ac204610176da500155ce4737"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-18-tigres-riviere-1672.webp",
+        "bytes": 377720,
+        "sha256": "62c6ecade0f9f686c1865d4f98d626876d73fdb65eb65b68d9d4789af5d5c100"
+      }
+    ]
+  },
+  "assets/level_art/level-19-dholes.png": {
+    "sha256": "dcefc5efe9e4c5bd1061199f8130ea8152b013d1870365d9b62178d91a0a8187",
+    "sourceBytes": 2652022,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-19-dholes-320.webp",
+        "bytes": 26308,
+        "sha256": "c1c5e2de43b7993d622499a9e9ae053dca294b095eb5e387c34891c33a43f878"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-19-dholes-640.webp",
+        "bytes": 86970,
+        "sha256": "b41ea48d1c25b0bb0410be0b118ead7d84602f9e87c1348c94938867d0276316"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-19-dholes-1280.webp",
+        "bytes": 245182,
+        "sha256": "c5bbefe28d24802f13bdb329d8d71b50d696f562eae7bb474b6b1ebe2c723f86"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-19-dholes-1672.webp",
+        "bytes": 350804,
+        "sha256": "d10948719bc4384a0cdf20852d77a269d9b58f3aa06abd33988633c259cf31ac"
+      }
+    ]
+  },
+  "assets/level_art/level-20-gloutons.png": {
+    "sha256": "75c202555d2c59674eb39a52134a4686aac7960eacabe22fcca3270df2187f04",
+    "sourceBytes": 2600334,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-20-gloutons-320.webp",
+        "bytes": 21648,
+        "sha256": "697aa37fe3bebe7a4922f410fb6751d70ce1ee66fd82c23eb51ca4f86f563248"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-20-gloutons-640.webp",
+        "bytes": 73440,
+        "sha256": "9f1948eddd15d095928af1a93be809479e2c3dde3b226a79dca42d2934e671c9"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-20-gloutons-1280.webp",
+        "bytes": 221000,
+        "sha256": "e0d649d6200dafaf15ae5713270d4326789a673af10c8a41cdb6c232894bda8c"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-20-gloutons-1672.webp",
+        "bytes": 322074,
+        "sha256": "ec076a83f93444f6603bc291fcccba14c0382b617cc83d137f49bcf405f51ab3"
+      }
+    ]
+  },
+  "assets/level_art/level-21-gorals-chine.png": {
+    "sha256": "d9fe5fd99057571d8a542c7e1035fe6427730c612277f6842d75d4f41e5d435e",
+    "sourceBytes": 2497088,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-21-gorals-chine-320.webp",
+        "bytes": 20054,
+        "sha256": "1b3a811039a143575b5171daf1f52423c52e5cefdff570e17ba767434a9a6b8f"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-21-gorals-chine-640.webp",
+        "bytes": 69172,
+        "sha256": "a76f161d74290564b22f375e876e1b7c3b799e7de51906ca807919fa663f355b"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-21-gorals-chine-1280.webp",
+        "bytes": 198978,
+        "sha256": "aa1e6d3b9ebdf04cf88b124ca9540c1c2bfa79e29432daa7cecdb6917611e62b"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-21-gorals-chine-1672.webp",
+        "bytes": 288966,
+        "sha256": "902ec26f28ac4e0853ab8278054355d93bfc52f18c212e99e2367741e97d1544"
+      }
+    ]
+  },
+  "assets/level_art/level-22-kulans-steppe.png": {
+    "sha256": "bd4dd4ff4b41f2aca59950eafe3418c8a10eefcad480ffde28dd697bec7b33e2",
+    "sourceBytes": 2225824,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-22-kulans-steppe-320.webp",
+        "bytes": 15092,
+        "sha256": "48e77177f27127b74506fcffd60b4ac9b5ae5a3790786b5aeb4b9f9bbd12983f"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-22-kulans-steppe-640.webp",
+        "bytes": 48856,
+        "sha256": "ac5a2773b9c8b57e265156a1b224f862ac6fe756c03456dd241f87ec5f6b1605"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-22-kulans-steppe-1280.webp",
+        "bytes": 146598,
+        "sha256": "b6d33b5a742c51e2abe08be547ca96c597db7548060a684adf006c0c5f633695"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-22-kulans-steppe-1672.webp",
+        "bytes": 213620,
+        "sha256": "71e98e8fea7fdfccb1468469a9577dc11f46dd57075b46f9aa429bbb8b7a6f93"
+      }
+    ]
+  },
+  "assets/level_art/level-23-kulans-grande-steppe.png": {
+    "sha256": "47fc635e5accf54ef9321a579480114ef42bc1f9a5c9bf11aa2e102c837245e2",
+    "sourceBytes": 2309147,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-23-kulans-grande-steppe-320.webp",
+        "bytes": 19536,
+        "sha256": "ea5d20edebe2b91b47b110c9884dc1e5137b9ec25e68c25421b09756a8715b9f"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-23-kulans-grande-steppe-640.webp",
+        "bytes": 64790,
+        "sha256": "077a07750fffbbc9f3dbcd624d24c68310b84e7eeb9af3c2c2d765d5a752ac57"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-23-kulans-grande-steppe-1280.webp",
+        "bytes": 184376,
+        "sha256": "a3f24f86d1b3618c858ab75ca6cfb78e59d982cfec72f0939fff1274c1716b91"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-23-kulans-grande-steppe-1672.webp",
+        "bytes": 263596,
+        "sha256": "a8379b40f690c533bf0de74a7072809566eb77964bcc4ac7b8ada3e72f7892d1"
+      }
+    ]
+  },
+  "assets/level_art/level-24-cerfs-thorold-tahrs-himalaya.png": {
+    "sha256": "8fa95ba8cc8995efd5ed73274f8734cc2abab1bfe5ddd20f1cf5917db72b3c7e",
+    "sourceBytes": 2569496,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-24-cerfs-thorold-tahrs-himalaya-320.webp",
+        "bytes": 21622,
+        "sha256": "50e0b322892e8682f53948252133d411c0d32d8953827980ec07fde99a19b8d2"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-24-cerfs-thorold-tahrs-himalaya-640.webp",
+        "bytes": 71768,
+        "sha256": "8e5bc1a7ebdc3188c9d38f6d5e92aa5c655636a340a31910ede002d1c3c87dd8"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-24-cerfs-thorold-tahrs-himalaya-1280.webp",
+        "bytes": 217700,
+        "sha256": "343fd8525bccdf054aec120325da751453cc3a490d7d39ea3e25941a109f0e36"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-24-cerfs-thorold-tahrs-himalaya-1672.webp",
+        "bytes": 320228,
+        "sha256": "1f22e3994638d718cd44eaea1818737bb14ed94f8c8a8ab33e878753dc15080c"
+      }
+    ]
+  },
+  "assets/level_art/level-25-pandas-roux.png": {
+    "sha256": "c67d6657c49e3436ab18537d5d5a6be356ee4b8dd87e21feeddfd1f16994f956",
+    "sourceBytes": 2790713,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-25-pandas-roux-320.webp",
+        "bytes": 27042,
+        "sha256": "58965e17a1e8065d6b34013964f0d9420c7d437b64bf322cd51f572ba34e3314"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-25-pandas-roux-640.webp",
+        "bytes": 91734,
+        "sha256": "cb7f7499460f2e817aacfb6b5e5952808a0bd0685bad12ebda8726789c652932"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-25-pandas-roux-1280.webp",
+        "bytes": 268870,
+        "sha256": "0572397c850a0367fc06287463131d58d4e74495f59b14878afded36d3276220"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-25-pandas-roux-1672.webp",
+        "bytes": 392690,
+        "sha256": "19c39a6cd20d1b154ba7e540200746157bf38ba28f27b594e2e590dbf4d0b5a6"
+      }
+    ]
+  },
+  "assets/level_art/level-26-loups-canada.png": {
+    "sha256": "316a08ca8d2a9edebebea51b524c99bf987e0091f6483c82aa535dedfb042b23",
+    "sourceBytes": 2747095,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-26-loups-canada-320.webp",
+        "bytes": 26798,
+        "sha256": "67d1eac0c43db4dc02d72e0c1f3072b28d4d486b71a01c70f09779d5e6940497"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-26-loups-canada-640.webp",
+        "bytes": 94344,
+        "sha256": "af11acdb27b0ca2a4dd0508f770790ef3585dc30b6e97fbf0b091a371270ec0b"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-26-loups-canada-1280.webp",
+        "bytes": 264622,
+        "sha256": "aa9f6f613134abdacfbd623cfa5ba6754cc538f47cd5d8ee8a4ff2b43fa7a6e2"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-26-loups-canada-1672.webp",
+        "bytes": 383836,
+        "sha256": "246434060eb22335f646010789bb081ebec7e45b5d3f52582533431046f898b2"
+      }
+    ]
+  },
+  "assets/level_art/level-27-ours-bruns.png": {
+    "sha256": "c6cb6fff3b2dfe2d06ac3702a88e9b7bd8f4f0142e204976558a10c9ad924e99",
+    "sourceBytes": 2707848,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-27-ours-bruns-320.webp",
+        "bytes": 28068,
+        "sha256": "4b9988400626116d09f01604ba34f997f08c79d825b3030ea38f86b1883413a1"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-27-ours-bruns-640.webp",
+        "bytes": 98532,
+        "sha256": "e8a6aceca6b2cb934efc04d791bcbc4a9c0b072c169ea60e3a0c571d579b881b"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-27-ours-bruns-1280.webp",
+        "bytes": 269974,
+        "sha256": "9b8c69c85d8a1f941d4b98d95b2f9c330b18d858c5804de0143a59349b9cb5ba"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-27-ours-bruns-1672.webp",
+        "bytes": 379122,
+        "sha256": "54fde50542dffbbbdf1078a8c3624d3f88675dfdb96f550ffc38a1f88d70a9b7"
+      }
+    ]
+  },
+  "assets/level_art/level-28-pantheres-amour-automne.png": {
+    "sha256": "c14e1ff38e2337cb10e498c7c39294f300620d581eaa0c2e35164d589d7c4988",
+    "sourceBytes": 2806356,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-28-pantheres-amour-automne-320.webp",
+        "bytes": 29600,
+        "sha256": "91a3c8bf0526350388684bda56109ea5bbfbb064e322ae543d71af0e1fdb3243"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-28-pantheres-amour-automne-640.webp",
+        "bytes": 102858,
+        "sha256": "8e3478474bc0837cbe49b83fce9772c4ad4b7ed3eb338b06f349f7c86e467c4b"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-28-pantheres-amour-automne-1280.webp",
+        "bytes": 296786,
+        "sha256": "1120fa0ccae1c7a9803aae8049dcca7d2499fbf1d67ae440e68ca171877145ac"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-28-pantheres-amour-automne-1672.webp",
+        "bytes": 411954,
+        "sha256": "3179eb99173d3baa02e6f63a8399a471f54f59f77ff776056056a5c4c6e96cf1"
+      }
+    ]
+  },
+  "assets/level_art/level-29-rennes-toundra.png": {
+    "sha256": "d14dde664fb7d31b72f7e36640ffca46faff000f91d12336b381b144296a4e93",
+    "sourceBytes": 2290485,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-29-rennes-toundra-320.webp",
+        "bytes": 19004,
+        "sha256": "9f5bcfde08171fee1f712a9d76dad21b365c7be70e80d0df14d5cb55cdc41c57"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-29-rennes-toundra-640.webp",
+        "bytes": 59268,
+        "sha256": "5073bab67c5b1b6d505a52e271b06e087b09bce02fb92b45b01328d09b14c19b"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-29-rennes-toundra-1280.webp",
+        "bytes": 167706,
+        "sha256": "67f9f28c8f0dbcf4911d024d4c24cd1675a33df8e26efbd04abf73c8319da951"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-29-rennes-toundra-1672.webp",
+        "bytes": 243006,
+        "sha256": "5bd92e54b0f8c642a1030662a543be501e92fff154bb646eea5984c6d1a0b916"
+      }
+    ]
+  },
+  "assets/level_art/level-30-pantheres-amour-hiver.png": {
+    "sha256": "2ed53521b528c9390b691c7acca62e5d89793408418e63c49e1f3b97b0c4df57",
+    "sourceBytes": 2791835,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-30-pantheres-amour-hiver-320.webp",
+        "bytes": 29148,
+        "sha256": "70884458846aac35cdce23d2186d08b352a2e91169a978b3209df57fd38e3547"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-30-pantheres-amour-hiver-640.webp",
+        "bytes": 98370,
+        "sha256": "99269e91a5ecb93bef96269c3ab5251798b4caa5afc851b4147b57d73bd6c276"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-30-pantheres-amour-hiver-1280.webp",
+        "bytes": 278622,
+        "sha256": "37e9deb34e2963a97ae6e3095ee3a030c676d6c019893b67bfeaa8310a4cb7de"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-30-pantheres-amour-hiver-1672.webp",
+        "bytes": 396032,
+        "sha256": "6c1515e8feb2f53c8c8d3fe4c12a9b9f93432add4363f2f2cd404f4650a406d5"
+      }
+    ]
+  },
+  "assets/level_art/level-31-urials-turs-caucase.png": {
+    "sha256": "0e67181fd7799c7fa0de7f944755647b00e4ac274fc06a058ab088889663ad3a",
+    "sourceBytes": 2653689,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-31-urials-turs-caucase-320.webp",
+        "bytes": 22402,
+        "sha256": "dd7571dcc95a6da1b3da72c39510aa08ca8fed68f3857b0ec942d13a49e7360c"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-31-urials-turs-caucase-640.webp",
+        "bytes": 76464,
+        "sha256": "0d62f490ade0d4d95cf189e597f9ac2e0e9db0659b3fae7994bd8738a3715379"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-31-urials-turs-caucase-1280.webp",
+        "bytes": 236038,
+        "sha256": "6276222bf665233ceb28580fee33bc72d2a5b16c1cd54a7c34988d7be28e94ba"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-31-urials-turs-caucase-1672.webp",
+        "bytes": 344428,
+        "sha256": "b1ccc9ccf36c7b7758e662cc7268274883ed29bf55e7b8cb97de12fd1397ea34"
+      }
+    ]
+  },
+  "assets/level_art/level-32-ours-bruns-vallon.png": {
+    "sha256": "90ddb0a01f245d4fa3ffad721dd3fab7731605c1001ef7ecb370896fd87181ce",
+    "sourceBytes": 2792565,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-32-ours-bruns-vallon-320.webp",
+        "bytes": 26990,
+        "sha256": "562c41c7914327a8bf9044ce19f92a4c1e48d104df6bdaa7b608574c0291bbf7"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-32-ours-bruns-vallon-640.webp",
+        "bytes": 97686,
+        "sha256": "b1f018e3e6b96a77885af55690151f7f068fe715c6db0c1475b04c04ddf8113f"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-32-ours-bruns-vallon-1280.webp",
+        "bytes": 280800,
+        "sha256": "c89f058c042da65e7fe27e025865ec4a1f1b6215570e632989232407721a6e03"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-32-ours-bruns-vallon-1672.webp",
+        "bytes": 405480,
+        "sha256": "3f688661eee8f087897463537c73a433fbe50deada189951931b4b63a4f5d668"
+      }
+    ]
+  },
+  "assets/level_art/level-33-takins-markhors.png": {
+    "sha256": "009b0db3f48abcd9ed4faa504899bd6bde28fb3c97fa00125df6e6edb2265704",
+    "sourceBytes": 3366710,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-33-takins-markhors-320.webp",
+        "bytes": 25440,
+        "sha256": "0eb12f3506d7373a8fbbb630563ca428ed34114b06ca969ea8c4add58832a542"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-33-takins-markhors-640.webp",
+        "bytes": 110534,
+        "sha256": "d2a0ea3bc703416a2ab870942753df2e3f6a69e69d587740a6920c98321321e8"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-33-takins-markhors-1280.webp",
+        "bytes": 411912,
+        "sha256": "1b14299c42ba4572a6c3cb66ecf1dc4e992b2bce7045f45fc882c67257dfd3b1"
+      },
+      {
+        "width": 1672,
+        "height": 940,
+        "path": "assets/optimized/level_art/level-33-takins-markhors-1672.webp",
+        "bytes": 628678,
+        "sha256": "5d1afb84a7c1e5b442e8ed2e9d405066a85afa7fe4bd766b39117b0ce7763d27"
+      }
+    ]
+  },
+  "assets/level_art/level-34-visons-europe.png": {
+    "sha256": "8c2465e10109c957cce12f52be5fe380312bc2633dd8d627377934eb45f7e02d",
+    "sourceBytes": 2738354,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-34-visons-europe-320.webp",
+        "bytes": 27688,
+        "sha256": "8ea2178cd06c44d75bb861d5b4fc1a151c5e0970c89879d5a7cf749942757056"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-34-visons-europe-640.webp",
+        "bytes": 96540,
+        "sha256": "e6d6c363e107fd9ff9213f63796728f3f213609c85058f3f03e97011e67fae79"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-34-visons-europe-1280.webp",
+        "bytes": 270168,
+        "sha256": "4004e81f4c695f75f51ff61ea94c59f83daff03ca5af5f25e7ef26945f07df94"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-34-visons-europe-1672.webp",
+        "bytes": 386044,
+        "sha256": "b0896999b3ae1cf129b4694547b4ecec5c67ba7b35fab19a6185fff0074ea0ec"
+      }
+    ]
+  },
+  "assets/level_art/level-35-gloutons-bois.png": {
+    "sha256": "ad55a92b1548aed226bb5b7b490698398350a4eedb51f248a62eb8a1ede7cd30",
+    "sourceBytes": 2755816,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-35-gloutons-bois-320.webp",
+        "bytes": 25742,
+        "sha256": "711bb3bf8ca72266a9961e24f06c39d4807c3c517856cd70da3104e5f5f73ef6"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-35-gloutons-bois-640.webp",
+        "bytes": 95366,
+        "sha256": "e5ec2656ae3395db82756e6e85e27fd7a9b93ba561249479878e614cbdf350b4"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-35-gloutons-bois-1280.webp",
+        "bytes": 275600,
+        "sha256": "d58fce4e0ffdd564e54c02e585c4cd68b9478f38eaf4eafdb36e7c2d1e064cad"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-35-gloutons-bois-1672.webp",
+        "bytes": 397080,
+        "sha256": "56b2ef32842edcb5e446aaef63eb9ddaf8bf6da4bc0da751aa14b294cd277cc4"
+      }
+    ]
+  },
+  "assets/level_art/level-36-cerfs-cochons.png": {
+    "sha256": "64915cb4bb18a790885342b59d5f09169b41809f5e704aa78d15e8f28d6b8fc5",
+    "sourceBytes": 2629353,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-36-cerfs-cochons-320.webp",
+        "bytes": 26870,
+        "sha256": "9059eaf38599d2e2a508b2967538d61d857a91ff218f4e4e3cada01e23efd7ac"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-36-cerfs-cochons-640.webp",
+        "bytes": 92196,
+        "sha256": "19b07180ee14673c0c54de46a923c92a8989a8ddcee31f1691a8dd63f291364a"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-36-cerfs-cochons-1280.webp",
+        "bytes": 256878,
+        "sha256": "3b1c05d3afb4e068292af5c94cf1ff703bb0f6ab01bdac67476e0a57ff835ae3"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-36-cerfs-cochons-1672.webp",
+        "bytes": 356798,
+        "sha256": "1f31c959de52c17349d68c4d41e0e8300e077daedc362f7d549bb0210b23fb73"
+      }
+    ]
+  },
+  "assets/level_art/level-37-pandas-roux-hiver.png": {
+    "sha256": "964be335bf590dd8fc701d63c4b7541c6fccb9c3c2fc7842c55f5b1dde4d3aa8",
+    "sourceBytes": 3038419,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-37-pandas-roux-hiver-320.webp",
+        "bytes": 30832,
+        "sha256": "c4d840623b70867ac58aeb9125d112a78acd87a137290c8424a714ba49e4cbaf"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-37-pandas-roux-hiver-640.webp",
+        "bytes": 109858,
+        "sha256": "26371f19c55933a5b4653d12f31b8711f49201509056d77fd49876e30f60c7df"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-37-pandas-roux-hiver-1280.webp",
+        "bytes": 339580,
+        "sha256": "9512371cc2218d4bae9984ee57be95df8e35211c2baaa4f903a8de4b685a8bf6"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-37-pandas-roux-hiver-1672.webp",
+        "bytes": 484428,
+        "sha256": "c67723bdd12490612b3364078b896479a802515dd35791a57df3d308b1417378"
+      }
+    ]
+  },
+  "assets/level_art/level-38-lemuriens.png": {
+    "sha256": "5530e1d92c04fc51ec4c4f2525d20ed00059fe771566e175c005552b772ad187",
+    "sourceBytes": 2835356,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-38-lemuriens-320.webp",
+        "bytes": 27044,
+        "sha256": "3e51a9bce5d07cb74b9c3f670d187156a928a06760343c3aa5ebb59c30262116"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-38-lemuriens-640.webp",
+        "bytes": 93612,
+        "sha256": "d0fe72250e5a92515786b74c085b7564e4cb75ff31807ab948d31f540eea0694"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-38-lemuriens-1280.webp",
+        "bytes": 288612,
+        "sha256": "2d10f267bca7cedfd1a5766cbdb7aafe4b19d071e4768ff5f2e9c94d83f674d8"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-38-lemuriens-1672.webp",
+        "bytes": 419736,
+        "sha256": "4e89ebc075c77bece3d8fc18af6c5421ce89e913ded4ee012252bd30c637d1e9"
+      }
+    ]
+  },
+  "assets/level_art/level-39-ecureuils-prevost.png": {
+    "sha256": "c5ed71fe188b775de6e57a2c4fb339024a07c7e0e7f63bd3c5005e90c4e63617",
+    "sourceBytes": 2743412,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-39-ecureuils-prevost-320.webp",
+        "bytes": 29028,
+        "sha256": "0568c55f660e138a1be059485607983aadbf2c2ff2c0f95d1867198910d4c054"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-39-ecureuils-prevost-640.webp",
+        "bytes": 97096,
+        "sha256": "d2e431543a2c78114c8d819eac7021acb05df3f126a91277c08b8b3e8d2864de"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-39-ecureuils-prevost-1280.webp",
+        "bytes": 273646,
+        "sha256": "87b767bd6682f1849adf73759c3a0a24246cbcbb777b78811f2c32a3fe5233bc"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-39-ecureuils-prevost-1672.webp",
+        "bytes": 382728,
+        "sha256": "81dbb28aa11636882ea396970c73f08f090620110d5cf6feb5b52f40b492a880"
+      }
+    ]
+  },
+  "assets/level_art/level-40-macaques-barbarie.png": {
+    "sha256": "01c910beb4aed2e808c0c5de8b31d2a81d559afb75ae6e398964bf8a82229c2d",
+    "sourceBytes": 2804705,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-40-macaques-barbarie-320.webp",
+        "bytes": 27306,
+        "sha256": "342949addd95dd886210a3e854145c50ae74c915595e036f4daa65120b64f6e6"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-40-macaques-barbarie-640.webp",
+        "bytes": 95158,
+        "sha256": "8ed9909f9574f2caa6b34a210e2285d8fdcc08d130b53788321611f276f6d3bd"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-40-macaques-barbarie-1280.webp",
+        "bytes": 274008,
+        "sha256": "776ae2e045959bc1b1c937a7cd5f5c66117b28331b3cbddebfcc9633fbe89158"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-40-macaques-barbarie-1672.webp",
+        "bytes": 398798,
+        "sha256": "0947a806c8fb252d5a352785088f5d2361cd714c9717683c056bf6853d81573b"
+      }
+    ]
+  },
+  "assets/level_art/level-41-pantheres-neiges.png": {
+    "sha256": "58c3dcb915618d315eefba29cd591875ad8ba6be39c3b0105e9218667026a1a4",
+    "sourceBytes": 2463226,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-41-pantheres-neiges-320.webp",
+        "bytes": 22398,
+        "sha256": "a278b757aedcac664424912eb6121e1cfe7d45672e46e6223a33fde36fffdbc2"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-41-pantheres-neiges-640.webp",
+        "bytes": 69556,
+        "sha256": "f768515e11fe2f46dc73f32ee106c2ffbc9e3148b095caecdb88faf117836434"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-41-pantheres-neiges-1280.webp",
+        "bytes": 196330,
+        "sha256": "ec36c52c2f0b7d15b8caae59955e804dd7c32f0e25b50cc10d7dc8748930cf2b"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-41-pantheres-neiges-1672.webp",
+        "bytes": 275936,
+        "sha256": "8dd7be8ad40ce4b7e576952302c5ed65a7394dad3bfe4a163327ea8ea2bbea2c"
+      }
+    ]
+  },
+  "assets/level_art/level-42-guepards-plaine.png": {
+    "sha256": "2e4db55df959b5602ff4b64091ba7605b7a4611d3edfe7caeb55818feea3bade",
+    "sourceBytes": 2429502,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-42-guepards-plaine-320.webp",
+        "bytes": 18912,
+        "sha256": "6ce78f37943d03f8c3b72af5172d37d4a67b10f0b2920edb62fd38a49a7b5d2e"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-42-guepards-plaine-640.webp",
+        "bytes": 62928,
+        "sha256": "718f3ccfb35b3a1bed7c85860c6f66a5d60f3441223788f72d4ff3723be28b7e"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-42-guepards-plaine-1280.webp",
+        "bytes": 189812,
+        "sha256": "8599fe5d402930cb2d6b7e22a01a832a9c5563bdae53b8b2989dacdb52eb971f"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-42-guepards-plaine-1672.webp",
+        "bytes": 270208,
+        "sha256": "60fc34d0ea28bd1a44551cafc77f82f24812748c7b0d8adb4e904a6b8f1d6c50"
+      }
+    ]
+  },
+  "assets/level_art/level-43-guepards-course.png": {
+    "sha256": "288a84ea68f013449df0da6dad0158786457fcfa62e70b296317c54c03a8e2a8",
+    "sourceBytes": 2417554,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-43-guepards-course-320.webp",
+        "bytes": 21364,
+        "sha256": "a66a9b3f6fe2cfe1f06f7d4455678eab5d5e202580fb03175bd2c39f9f4307f2"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-43-guepards-course-640.webp",
+        "bytes": 73050,
+        "sha256": "c6aff0284f72322caa6b196e097e96be44b1fffd7af18b557225711b6ee558b5"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-43-guepards-course-1280.webp",
+        "bytes": 210008,
+        "sha256": "352c5ca0bc5130e16db2889051612dced93f7c905622cc1f49394df6a545d396"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-43-guepards-course-1672.webp",
+        "bytes": 297020,
+        "sha256": "1959ef158a09b233b42ee0d2149091a3d088f21cc3907b87285cd49c44907b87"
+      }
+    ]
+  },
+  "assets/level_art/level-44-saimiris-pudus.png": {
+    "sha256": "2ce5cda75560f42840ddd5f1f4ff72529a00cd81a624694dd5626fffefb64c8a",
+    "sourceBytes": 2842372,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-44-saimiris-pudus-320.webp",
+        "bytes": 28030,
+        "sha256": "d7003d4a4af19c6841bf36651bef8e21cc2f46e11813629e628d04221a3c3ba4"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-44-saimiris-pudus-640.webp",
+        "bytes": 101980,
+        "sha256": "e2aa9b5bbe3f92de12e4bffece03fb64145a4219c841e2fba2ae7880c082a648"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-44-saimiris-pudus-1280.webp",
+        "bytes": 295784,
+        "sha256": "1c240868f7da251513c0e432bddc9dcf800523ced5c951952a11c9aff41499ea"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-44-saimiris-pudus-1672.webp",
+        "bytes": 427614,
+        "sha256": "16ce678bb01da7a401c835b9bfc41274ed38d785d35b601af68c99c27ea20e0b"
+      }
+    ]
+  },
+  "assets/level_art/level-45-alpagas.png": {
+    "sha256": "c3ae84ece427860da7ec9781bb5604458691fe682ae2e3db5976652b796c6a80",
+    "sourceBytes": 2585824,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/level_art/level-45-alpagas-320.webp",
+        "bytes": 23462,
+        "sha256": "ea54b33cb7fa1e9c0f5bd8f6c0ce36c06c6d1329743371e21a53245eadf8ec3c"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/level_art/level-45-alpagas-640.webp",
+        "bytes": 81820,
+        "sha256": "b3bebbe1d0383dbb27e57bb3a3b9b8fde2bcbf339c3fd53550d291ec6a0fc9af"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/level_art/level-45-alpagas-1280.webp",
+        "bytes": 244210,
+        "sha256": "67637c00d065e652f9e3ccb6f71abe28aa1c99b292586e748ad3721148e478db"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/level_art/level-45-alpagas-1672.webp",
+        "bytes": 342442,
+        "sha256": "2d2f4a1145e88be36b9a56b1fdb12c88b5222e06b623365402d40633ff062172"
+      }
+    ]
+  },
+  "assets/mahjong/mahjong-cover.png": {
+    "sha256": "d2ff3d68b3c8bcf4ad3d27bd588336dfe3094952c55008e0b3c3888c1effc633",
+    "sourceBytes": 2488519,
+    "variants": [
+      {
+        "width": 320,
+        "height": 192,
+        "path": "assets/optimized/mahjong/mahjong-cover-320.webp",
+        "bytes": 27716,
+        "sha256": "593d08c676cd94b0e8dca17c130b07050ba8563643691307614757d2370f256f"
+      },
+      {
+        "width": 640,
+        "height": 384,
+        "path": "assets/optimized/mahjong/mahjong-cover-640.webp",
+        "bytes": 78232,
+        "sha256": "ff71f9f6d95027d3f032975eb6b95d085fe6ea33352ea8651458f228df25b96e"
+      },
+      {
+        "width": 1280,
+        "height": 768,
+        "path": "assets/optimized/mahjong/mahjong-cover-1280.webp",
+        "bytes": 211616,
+        "sha256": "ff4acbabb8bd0a3b736ae9112e39f63f9d2984d591b24e9055d57764f0b3c383"
+      },
+      {
+        "width": 1619,
+        "height": 972,
+        "path": "assets/optimized/mahjong/mahjong-cover-1619.webp",
+        "bytes": 284156,
+        "sha256": "a424b62223ad4becfd7ff1a72de4ab6af83c1971893b219bdade5507c0787ca5"
+      }
+    ]
+  },
+  "assets/match3/animal-atlas.png": {
+    "sha256": "1bc1577ebdeffbd9c2f744747ae0bec8a6c2f6847ec00846ff8ede6e1f0db34e",
+    "sourceBytes": 2417306,
+    "variants": [
+      {
+        "width": 1254,
+        "height": 1254,
+        "path": "assets/optimized/match3/animal-atlas-1254.webp",
+        "bytes": 1604914,
+        "sha256": "a057b6841b4a9c3c18059ece14eb852fefd9b6427a1f7906d24eea7815932662"
+      }
+    ]
+  },
+  "assets/match3/animals/addax.png": {
+    "sha256": "683430b42397d616a63aec6375a5bae33cd763979c10e43693a1939ed4574f51",
+    "sourceBytes": 91373,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/addax-256.webp",
+        "bytes": 59450,
+        "sha256": "151dcf352616c9ad08bcf88692275c68e548b7e21639d1126e4de323ccf676ce"
+      }
+    ]
+  },
+  "assets/match3/animals/alpaga.png": {
+    "sha256": "2768b625fae3fd417112dd5179e2f22883099a5b3ba83922e4377c22e9a8fa14",
+    "sourceBytes": 97011,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/alpaga-256.webp",
+        "bytes": 62452,
+        "sha256": "670a1d1d6abf97fa39ebf6aeb432bbf8de7e8e5ddbdd41d5e502362b54a26079"
+      }
+    ]
+  },
+  "assets/match3/animals/atele.png": {
+    "sha256": "1e8259d37481089b01c2872fd48d725352b7f63b56a892de29fbed76275d5776",
+    "sourceBytes": 96293,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/atele-256.webp",
+        "bytes": 61836,
+        "sha256": "a5b8c473fa8781b3b13f6dc33e5f1db702ea23329c3391e7d1fed18b9a2d545c"
+      }
+    ]
+  },
+  "assets/match3/animals/capybara.png": {
+    "sha256": "6c8957ad5f35f17e15207b680395f02c6f24bbc455799d47de178169617eefae",
+    "sourceBytes": 98058,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/capybara-256.webp",
+        "bytes": 62804,
+        "sha256": "dca192dbacc7ac4638452249bc16c1df81597d1f75e699105e930165de9e4613"
+      }
+    ]
+  },
+  "assets/match3/animals/cerf_cochon.png": {
+    "sha256": "b3c878f2e3d87caa1e6b3f3a4e1f6cad5f7e67b0408baad508964a5124d186cd",
+    "sourceBytes": 97274,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/cerf_cochon-256.webp",
+        "bytes": 65420,
+        "sha256": "9d90809323cf8a0bb29fc0a88f458a05c713bd8294acfa2e9299f82d364255f0"
+      }
+    ]
+  },
+  "assets/match3/animals/cerf_sika.png": {
+    "sha256": "ef6fd14d17cb46d16990c280c40233d560a1875f20506193c702db7207496e4c",
+    "sourceBytes": 94447,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/cerf_sika-256.webp",
+        "bytes": 61598,
+        "sha256": "9d094361201982473cd1a4b88bf7ac69fb651b3e3d8417fd3b6b78e03678bc04"
+      }
+    ]
+  },
+  "assets/match3/animals/gazelle.png": {
+    "sha256": "808282946aaf0d97679dc435304157b492a4174ec7e0de85b6c1a535f0138596",
+    "sourceBytes": 92397,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/gazelle-256.webp",
+        "bytes": 60188,
+        "sha256": "d01b4b79efc0f113d6f4e712edee43247a8ee2c2d2e33101092e7736ea214f62"
+      }
+    ]
+  },
+  "assets/match3/animals/gibbon.png": {
+    "sha256": "e6e60881993dc27631d7ccda5b4941ac62f99cb154793eed32fbbd63394598f1",
+    "sourceBytes": 100898,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/gibbon-256.webp",
+        "bytes": 65086,
+        "sha256": "5aca582a5207253ce9e65e7d5e98f25483702e46cbb23bcc15fb6e1df80fcc74"
+      }
+    ]
+  },
+  "assets/match3/animals/girafe.png": {
+    "sha256": "6cab32691a07346e6a846bf25bf8267311e4358e7c95b0a237fbe77bf3e0ff22",
+    "sourceBytes": 90116,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/girafe-256.webp",
+        "bytes": 60788,
+        "sha256": "164c21e7a20b8afbbecefe24559727499a6b62dd59ac49863db188f0c0456c9e"
+      }
+    ]
+  },
+  "assets/match3/animals/glouton.png": {
+    "sha256": "1c15b37ee9ca43c9db8e104b1e1a6107cb970f9ce5f7eb1fccafd136a2c6d3e9",
+    "sourceBytes": 95526,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/glouton-256.webp",
+        "bytes": 62632,
+        "sha256": "7bf30500f3a8d250d0e73160cb904f0e2587c6301e99677a792437d936ae3944"
+      }
+    ]
+  },
+  "assets/match3/animals/goral.png": {
+    "sha256": "992a95b4c0914f48f5ff5d1cd6730e28fe1fc3d425f516801ac628a07ef86043",
+    "sourceBytes": 97301,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/goral-256.webp",
+        "bytes": 64714,
+        "sha256": "5ee322bc5f6ba6e6dc119a2f94c22aa175c9772c25c4b0c4e46c76551ae1d205"
+      }
+    ]
+  },
+  "assets/match3/animals/guepard.png": {
+    "sha256": "faedb245a71b5eba877536ad9c0b769ebc3b2890686cdf75f1c5a8765659e4d5",
+    "sourceBytes": 96717,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/guepard-256.webp",
+        "bytes": 64350,
+        "sha256": "d8b04f274b4f4cc6beaca50f3211e3db48bf1716fc7f5c50e84f8604054b131d"
+      }
+    ]
+  },
+  "assets/match3/animals/hippopotame.png": {
+    "sha256": "730a7e329e0a0aec94c453a8b373c2b91b6a61688e4b305edcd209c649e8adea",
+    "sourceBytes": 96468,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/hippopotame-256.webp",
+        "bytes": 61650,
+        "sha256": "62008bd593d9fa7c00b4ca51cf06d914fd7540e65ecf7ccd57f421bdd0cf876c"
+      }
+    ]
+  },
+  "assets/match3/animals/kulan.png": {
+    "sha256": "9e30722d3f7a7f300cc2d40423ba8580607869dfb0eb137cdedba80a45e3c45e",
+    "sourceBytes": 94578,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/kulan-256.webp",
+        "bytes": 63264,
+        "sha256": "b62f61d65939dee03c1f644fd668f5121711b0fb6e9eb58aabe211475f31e22a"
+      }
+    ]
+  },
+  "assets/match3/animals/lemurien.png": {
+    "sha256": "349ff6b1fc839315b546046cf2f2923caf958fd05c2dcf056232a716c9ca6474",
+    "sourceBytes": 96649,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/lemurien-256.webp",
+        "bytes": 62646,
+        "sha256": "8d7e85c883c491796ddae356eb0bc1818c8d2fe6a568151becbad071d8396b44"
+      }
+    ]
+  },
+  "assets/match3/animals/lion.png": {
+    "sha256": "f2da0cb3a44f2720e15b0c1dd3d7d5823335b66290be6ffd79ea4cada46895ea",
+    "sourceBytes": 105832,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/lion-256.webp",
+        "bytes": 67790,
+        "sha256": "99b640548868fc130eac982860fb5121f32ef0c3fd409ac4a912821a28f702c5"
+      }
+    ]
+  },
+  "assets/match3/animals/loup.png": {
+    "sha256": "8f919dc6a849db8d52645128dd72a5503064fe6a05ac4a4ebdbd7c4967a470c4",
+    "sourceBytes": 103818,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/loup-256.webp",
+        "bytes": 67542,
+        "sha256": "ed5d427b06923974fa715b0954eef0a2bccd9d3fbc547e1f547c590ed8e295c9"
+      }
+    ]
+  },
+  "assets/match3/animals/loutre.png": {
+    "sha256": "c3bd32a9940dea39fa3fdf126f10fc0cc62913151cdc65560ecd0d8647a62120",
+    "sourceBytes": 99513,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/loutre-256.webp",
+        "bytes": 65416,
+        "sha256": "e3060f94f1fce068fcf62104279273fcc3b51a69ed4d890ea22b51f8cab210d0"
+      }
+    ]
+  },
+  "assets/match3/animals/markhor.png": {
+    "sha256": "cdf927ffb61b358b0999a5e347355d7357145bf09c2ab1e7e4ad3652d1a8dcdd",
+    "sourceBytes": 97850,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/markhor-256.webp",
+        "bytes": 65352,
+        "sha256": "44a82413ce19d0deb7d3a5a59064610549dca64ab32ca46b66fd9d5179ec5e1f"
+      }
+    ]
+  },
+  "assets/match3/animals/oryx.png": {
+    "sha256": "c7e8ce9aead38402d3b3bb77cbe7aec4d8515168144da259a5a7a15987455ffc",
+    "sourceBytes": 92404,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/oryx-256.webp",
+        "bytes": 60810,
+        "sha256": "806769bdacc6561a6c7f491f8333d49d88de0c1cef976e4445c1dbbdbda6ad6b"
+      }
+    ]
+  },
+  "assets/match3/animals/ours.png": {
+    "sha256": "1fc2cc1f49e2db9db5e2a59afc078c86c78dd530066659fca48939dcdb2ae833",
+    "sourceBytes": 100698,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/ours-256.webp",
+        "bytes": 64378,
+        "sha256": "de2df791d4dcc2fd2c476688e02556b61696325d0a1c9c868f08e9553bb21f1d"
+      }
+    ]
+  },
+  "assets/match3/animals/panda_roux.png": {
+    "sha256": "8ce5afb5dbf443bb04750dde49fa9d3ff351e79613566a822a17c41d5554cedc",
+    "sourceBytes": 102750,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/panda_roux-256.webp",
+        "bytes": 66872,
+        "sha256": "852cdc6afa43725a01a4fc1dc9892b083d9c94a9439e1a60c5797ed4fa13b53c"
+      }
+    ]
+  },
+  "assets/match3/animals/panthere_amour.png": {
+    "sha256": "4e70d61bd54a543677d5f9f21961ab260e3cebcefefe75f7b659b8279ce39a10",
+    "sourceBytes": 107761,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/panthere_amour-256.webp",
+        "bytes": 72988,
+        "sha256": "671e6492d96ec1075ad7906bedcb7c594245e1034d371e6ee4331ee3f22059c8"
+      }
+    ]
+  },
+  "assets/match3/animals/panthere_neiges.png": {
+    "sha256": "c4fda35f7a6cf038a0665e05283213d433c3459eb2201c81179440e2c1fae165",
+    "sourceBytes": 106074,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/panthere_neiges-256.webp",
+        "bytes": 69138,
+        "sha256": "1d6c996f3b4c35c8676e5a2a3097fe2fa23a25f59a2d88e0cbad0326e0fcb12d"
+      }
+    ]
+  },
+  "assets/match3/animals/paresseux.png": {
+    "sha256": "3997dc24c26fdcd4fe062693e821d713327cc3fa2cc779ad1a4ed33e6e7fc143",
+    "sourceBytes": 102420,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/paresseux-256.webp",
+        "bytes": 65510,
+        "sha256": "ecd41cdf772ff9d301bd5b539b4cb0d0eb9d6b29ba015ef2c4fa38807ba3314e"
+      }
+    ]
+  },
+  "assets/match3/animals/renne.png": {
+    "sha256": "f8911bede175dbea45440f585fa0c383db9372c83c5e22641267dc880ad01a2e",
+    "sourceBytes": 97330,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/renne-256.webp",
+        "bytes": 65034,
+        "sha256": "0720b7dd2faacbf09a0fe1c48ac0be4378dd4a522da9c37762e3798263635d55"
+      }
+    ]
+  },
+  "assets/match3/animals/saimiri.png": {
+    "sha256": "7da1b0b8efd1da4ae195220db3e59a4aeed206a4c89d408989fc665c530bf86e",
+    "sourceBytes": 98625,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/saimiri-256.webp",
+        "bytes": 62894,
+        "sha256": "927381071a4eb258ad36ed18a3beec5c97259cd0ae3ce0a504aada46f8c3be44"
+      }
+    ]
+  },
+  "assets/match3/animals/suricate.png": {
+    "sha256": "cde91773b2d8e769d15261a4ca43e2098207b63886c0a927216b9e70c947aff2",
+    "sourceBytes": 91639,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/suricate-256.webp",
+        "bytes": 61226,
+        "sha256": "6a603eb8c4a93bd575abadd9609fddf0fa36a7de36c41f784afe5232236ceb5c"
+      }
+    ]
+  },
+  "assets/match3/animals/tahr.png": {
+    "sha256": "0663429308f81b662614ac0d6b482ddb9dd6a545d0332b1c0b378d88506682fb",
+    "sourceBytes": 102011,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/tahr-256.webp",
+        "bytes": 64534,
+        "sha256": "8049462f8eb144cd61e81da11c81d40deb14c832a4d827447264ddf63b45397c"
+      }
+    ]
+  },
+  "assets/match3/animals/tamarin.png": {
+    "sha256": "1a8739ce6a5ffebb4f684542b5f4e6141c45b093ca60506413ab8531b2b9b74d",
+    "sourceBytes": 102616,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/tamarin-256.webp",
+        "bytes": 65888,
+        "sha256": "8bc8a9e17a9f148c9532eee3e4316b77d006178de4a7e934e41b07d0510b5767"
+      }
+    ]
+  },
+  "assets/match3/animals/tapir.png": {
+    "sha256": "1122782a9ebdf2441611e3c34bbd3ddacfc63d54a08f65825920c6ed7d30ab7d",
+    "sourceBytes": 92697,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/tapir-256.webp",
+        "bytes": 59244,
+        "sha256": "f9b81c5a57de62d11ce93ccd57cfb1aef74af86ed84264bee1e2e4f84f92fa1b"
+      }
+    ]
+  },
+  "assets/match3/animals/tigre.png": {
+    "sha256": "90ce70a7dce000e505f7ec94cca82cf9ae1edc7d12c64ff6386e1eb83d441dff",
+    "sourceBytes": 110450,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/tigre-256.webp",
+        "bytes": 72026,
+        "sha256": "418f89752f8a0e389d15f95c9b312803ef134fc5f6b90a4b30f4fc7be815267d"
+      }
+    ]
+  },
+  "assets/match3/animals/tortue.png": {
+    "sha256": "e157f14322001f65d9c4059282ef459e9f39d3aa5a7cd5f9cf7459eefec259b5",
+    "sourceBytes": 105248,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/tortue-256.webp",
+        "bytes": 66994,
+        "sha256": "47e3cf7c6fefa6ae5304667abb4fd6b8363c8194fa76d816522dfeab667a4dd1"
+      }
+    ]
+  },
+  "assets/match3/animals/urial.png": {
+    "sha256": "6d0a814765bff070a0ec9be9b8ebe3e89944fcde4578e5dc9244aefa1694bf6c",
+    "sourceBytes": 102282,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/urial-256.webp",
+        "bytes": 64440,
+        "sha256": "e00c2152cdabb538c74955939a931f3ca43dd71f40924a1a83ffb2d6a8fda47b"
+      }
+    ]
+  },
+  "assets/match3/animals/vison.png": {
+    "sha256": "95529d61200fb7f7d5529a7285420b33cfd6a310096194dafa4fcb8e8ef3c5c9",
+    "sourceBytes": 93791,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/vison-256.webp",
+        "bytes": 60922,
+        "sha256": "ab28326e739defcef078f008957dac5dad5db3ab2c4d43c875cbd474acc4555a"
+      }
+    ]
+  },
+  "assets/match3/animals/zebre.png": {
+    "sha256": "2237b406fdc76780f1962131be6650ec87a8d5a9af3cd629d4eef79cb44bb0ab",
+    "sourceBytes": 96460,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/match3/animals/zebre-256.webp",
+        "bytes": 60206,
+        "sha256": "da62c04cf088fd7354935ef50dd188767712034680dc6291964332fbc58a1709"
+      }
+    ]
+  },
+  "assets/park_map.png": {
+    "sha256": "38b80667f2a1f469c72e29dcb1a96dc0d7c26194fa6df5da72283d952c2cf375",
+    "sourceBytes": 2165828,
+    "variants": [
+      {
+        "width": 1491,
+        "height": 1055,
+        "path": "assets/optimized/park_map-1491.webp",
+        "bytes": 1531356,
+        "sha256": "49eec10e74ba7f2454cd1bc9323d3c227387a72b4ab22dfd4be71a7f1a26f4f4"
+      }
+    ]
+  },
+  "assets/sokoban/background-level-34-visons.png": {
+    "sha256": "7c9f4c5bfaf386e8c86e168c3a4fad923f58b99cc6d02fa9617de9140639c3bd",
+    "sourceBytes": 3208357,
+    "variants": [
+      {
+        "width": 320,
+        "height": 240,
+        "path": "assets/optimized/sokoban/background-level-34-visons-320.webp",
+        "bytes": 34342,
+        "sha256": "176186a7811f6a1992c0a8ca8e9a63fef2321b18b8d93790e36db694a5b5df55"
+      },
+      {
+        "width": 640,
+        "height": 480,
+        "path": "assets/optimized/sokoban/background-level-34-visons-640.webp",
+        "bytes": 139358,
+        "sha256": "00831af53a088f06606413070b798ff6a10dcbec467725c5b37e0a82d361f4d1"
+      },
+      {
+        "width": 1280,
+        "height": 960,
+        "path": "assets/optimized/sokoban/background-level-34-visons-1280.webp",
+        "bytes": 479704,
+        "sha256": "611410e4f91ddffde5a31476f972fdf298aee2fb81361a1185a2540d6beb3f7c"
+      },
+      {
+        "width": 1448,
+        "height": 1086,
+        "path": "assets/optimized/sokoban/background-level-34-visons-1448.webp",
+        "bytes": 580874,
+        "sha256": "13b6bec9abd9afbeefccd7c50c05fe78d4c18dba77372e3b9fa4f1cb1ef2b947"
+      }
+    ]
+  },
+  "assets/sokoban/board-frame-clay.png": {
+    "sha256": "1c8e23db6056b5a8b405ae99e8b866730b843fb18706efcc0d92234fd99902ca",
+    "sourceBytes": 385536,
+    "variants": [
+      {
+        "width": 1024,
+        "height": 1024,
+        "path": "assets/optimized/sokoban/board-frame-clay-1024.webp",
+        "bytes": 160992,
+        "sha256": "379429bab4448666769609dc0094b9ea8145eba9be844f8c956ffbd4edfb5e96"
+      }
+    ]
+  },
+  "assets/sokoban/board-moss-clay-1.png": {
+    "sha256": "ccca1147ab7fc4cc706a2e077bc7fd85cb831434945809d1b9bb3f5a9285bd56",
+    "sourceBytes": 506099,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-moss-clay-1-512.webp",
+        "bytes": 277868,
+        "sha256": "078d8e56c18f7cc26234974d26c8943c127ea8f911cbfada3e90cd7361044451"
+      }
+    ]
+  },
+  "assets/sokoban/board-moss-clay-2.png": {
+    "sha256": "7e9179a91bf1ea6821be854fe1e6831594f6bf9aac579da474df6b09657ac721",
+    "sourceBytes": 463078,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-moss-clay-2-512.webp",
+        "bytes": 289336,
+        "sha256": "288f682ade7306972d1976a0e897a617b46f8af6de3787dc27b9b09242d2e46f"
+      }
+    ]
+  },
+  "assets/sokoban/board-moss-clay-3.png": {
+    "sha256": "1d643c47f0fc12d9b518eae64d6a12493c0ee9ba88b222b4dd13e48d2e5ba77d",
+    "sourceBytes": 487774,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-moss-clay-3-512.webp",
+        "bytes": 291306,
+        "sha256": "d846fabc18b2f6f7ebc8f1f8c20b54155ade9417c9e5b5c364aa5ce233a63956"
+      }
+    ]
+  },
+  "assets/sokoban/board-moss-clay-4.png": {
+    "sha256": "a0e62bd0b8abbd25139972627989b34f757435f0b5d99eda7415066e9a0ac43a",
+    "sourceBytes": 457372,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-moss-clay-4-512.webp",
+        "bytes": 278004,
+        "sha256": "5a80fcdd31280bee3b9d5cdff591a40d60cb29b2adf2ad27a623f0778a39e132"
+      }
+    ]
+  },
+  "assets/sokoban/board-moss-clay-5.png": {
+    "sha256": "f2b5cbe48b4bd72fe584afe05c394af181ebd70ce2b5b7e9a759527dcb0d7d2e",
+    "sourceBytes": 523130,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-moss-clay-5-512.webp",
+        "bytes": 292442,
+        "sha256": "4c11a6277cd460647d941c7811f8800f7881ecd8449187196f5ba630e441e646"
+      }
+    ]
+  },
+  "assets/sokoban/board-moss-clay-6.png": {
+    "sha256": "c03744243c623185699f7cd2792748751930d7042ccb78276168dae5a661a6e2",
+    "sourceBytes": 486751,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-moss-clay-6-512.webp",
+        "bytes": 309872,
+        "sha256": "c238d733aaef404a4563268d747cab2eeafc9aa1860e3c1cc2cf8bcd73f6682c"
+      }
+    ]
+  },
+  "assets/sokoban/board-sand-clay-1.png": {
+    "sha256": "5b8301e29f12069cd6fa0df63e9cd391201582d1e48ee950c6470b1b71a5b7f7",
+    "sourceBytes": 393767,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-sand-clay-1-512.webp",
+        "bytes": 227502,
+        "sha256": "f9269cac026baa1b0aedc738450b4711ab4ae24603fa96b3b2812ce27ed77929"
+      }
+    ]
+  },
+  "assets/sokoban/board-sand-clay-2.png": {
+    "sha256": "15073fd8605c0f6adb8309b25d2e2f4b64ae751ba940d42d62fbbe3715a608b4",
+    "sourceBytes": 420979,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-sand-clay-2-512.webp",
+        "bytes": 242578,
+        "sha256": "217681f70aa8700363d10e5daf930fd5f7646860cdd070a5dab05b8bc24543df"
+      }
+    ]
+  },
+  "assets/sokoban/board-sand-clay-3.png": {
+    "sha256": "1828bec41504a75ec2f7bfb53c3d627c11e4894823877af4c2a84b88958ea54f",
+    "sourceBytes": 377489,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-sand-clay-3-512.webp",
+        "bytes": 217604,
+        "sha256": "a68e91a352ce0229eb6058a147a0c3ec899cc97b0745d3751d81854fdd231c28"
+      }
+    ]
+  },
+  "assets/sokoban/board-sand-clay-4.png": {
+    "sha256": "8aa429e071d417528d02b483007e9c62806f2146833692f4bf1b599007f2b851",
+    "sourceBytes": 396868,
+    "variants": [
+      {
+        "width": 512,
+        "height": 512,
+        "path": "assets/optimized/sokoban/board-sand-clay-4-512.webp",
+        "bytes": 225290,
+        "sha256": "536f47e82baf73ff2b2e766ae0234beb00914f746a53b40f1416b3539ab607c4"
+      }
+    ]
+  },
+  "assets/sokoban/cover.png": {
+    "sha256": "d0c6069b25942d162c2b03547ca996d54703fb0f2f7211665b0546cd15e153bf",
+    "sourceBytes": 2331070,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/sokoban/cover-320.webp",
+        "bytes": 24212,
+        "sha256": "459e40ba3a5cf3ff9636bbb289c9d9284c41afad6b333b9af46e7a4fb3559215"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/sokoban/cover-640.webp",
+        "bytes": 68914,
+        "sha256": "b926e6fd532678ea7c60959fe2c226da3a36facae3f5d250cf67e09c780217e3"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/sokoban/cover-1280.webp",
+        "bytes": 182024,
+        "sha256": "427b2cbfe454d303ae5a734c247d4948322366251da9b6012f6b3fea6de44264"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/sokoban/cover-1672.webp",
+        "bytes": 256096,
+        "sha256": "3d24c924a44396e0593d551f9b43e87cd176caafc3e22e9c2e7015ad7df11ff4"
+      }
+    ]
+  },
+  "assets/sokoban/feeding-spot-v2.png": {
+    "sha256": "1a74fd3d34d3e32282a83e87ff6f149d12c50b6fd9ecf0c8dc5cd4f268a7d4e2",
+    "sourceBytes": 56890,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/feeding-spot-v2-256.webp",
+        "bytes": 28874,
+        "sha256": "45ee8148aa3150bcb15907a6fd436ad205e18a880fc9f16ac0688ceba6f13c3c"
+      }
+    ]
+  },
+  "assets/sokoban/feeding-spot.png": {
+    "sha256": "1a74fd3d34d3e32282a83e87ff6f149d12c50b6fd9ecf0c8dc5cd4f268a7d4e2",
+    "sourceBytes": 56890,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/feeding-spot-v2-256.webp",
+        "bytes": 28874,
+        "sha256": "45ee8148aa3150bcb15907a6fd436ad205e18a880fc9f16ac0688ceba6f13c3c"
+      }
+    ]
+  },
+  "assets/sokoban/fence-v2.png": {
+    "sha256": "8b91f72ab7a7ca6ba58e4cecc96b2a32ef4d72978371488ae1f5dee378ce2891",
+    "sourceBytes": 97803,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/fence-v2-256.webp",
+        "bytes": 56202,
+        "sha256": "44dc00688bc6185c5855478716ba2c2415f93a39b6c250942def9368815c5bd4"
+      }
+    ]
+  },
+  "assets/sokoban/fence.png": {
+    "sha256": "8b91f72ab7a7ca6ba58e4cecc96b2a32ef4d72978371488ae1f5dee378ce2891",
+    "sourceBytes": 97803,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/fence-v2-256.webp",
+        "bytes": 56202,
+        "sha256": "44dc00688bc6185c5855478716ba2c2415f93a39b6c250942def9368815c5bd4"
+      }
+    ]
+  },
+  "assets/sokoban/food-crate-fish.png": {
+    "sha256": "d3d757977179ca2a1fa414b747a83ecaae37486d11d1cee4e7baf3cb08aaa9ca",
+    "sourceBytes": 96259,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/food-crate-fish-256.webp",
+        "bytes": 53570,
+        "sha256": "8fec1d0faf7d812abfec3a6849fd0104f69dd4879e9dbf45705783ef6e2929e9"
+      }
+    ]
+  },
+  "assets/sokoban/food-crate-fruit.png": {
+    "sha256": "97642e290b606de27ea1ca1dbc7807155b18baae08e11cb2fb42b945b596d942",
+    "sourceBytes": 78864,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/food-crate-fruit-256.webp",
+        "bytes": 54442,
+        "sha256": "cd2d2ffac0e3d7d4c6725a15faddb3d4f759817e4e85d1698aaa598edeb41db9"
+      }
+    ]
+  },
+  "assets/sokoban/food-crate-herbivore.png": {
+    "sha256": "315c4ebc843a075e51355695f67c9a30a13be3898e86ed7dae1f69c8a08a0146",
+    "sourceBytes": 95457,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/food-crate-herbivore-256.webp",
+        "bytes": 57470,
+        "sha256": "0c51be48eb00af0db2afd09c498ab6339624a4be3cb5915442c12007ea7e4756"
+      }
+    ]
+  },
+  "assets/sokoban/food-crate-meat.png": {
+    "sha256": "679631ed6608d0549314975a8ce720b8bb293fc590d02a2db4ed1d2caeaafdfa",
+    "sourceBytes": 80075,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/food-crate-meat-256.webp",
+        "bytes": 52358,
+        "sha256": "b9f48c13c2cf62ec2fb37573f67f77aa98246710480683be8bdbb13d418cf218"
+      }
+    ]
+  },
+  "assets/sokoban/food-crate-mixed.png": {
+    "sha256": "1508b79bf43403311f945ec8057c8287d1e671c20fb4f4e4c4e3b3ef0634ddb0",
+    "sourceBytes": 82249,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/food-crate-mixed-256.webp",
+        "bytes": 56880,
+        "sha256": "87fffd6e66a0631222ceb9a9a845fdb9f96b833c0bc84ac2917334daa31668c1"
+      }
+    ]
+  },
+  "assets/sokoban/food-crate.png": {
+    "sha256": "1508b79bf43403311f945ec8057c8287d1e671c20fb4f4e4c4e3b3ef0634ddb0",
+    "sourceBytes": 82249,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/food-crate-mixed-256.webp",
+        "bytes": 56880,
+        "sha256": "87fffd6e66a0631222ceb9a9a845fdb9f96b833c0bc84ac2917334daa31668c1"
+      }
+    ]
+  },
+  "assets/sokoban/grid-cell-overlay.png": {
+    "sha256": "7ecfd7fa50ca9a1cb756bcd95f8cc61a6e3bfb08649e567816fb378224bcbd46",
+    "sourceBytes": 1123,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/grid-cell-overlay-256.webp",
+        "bytes": 226,
+        "sha256": "ad0b2d67d58f2f162f62cd68a42f7a481f0cec0753bb45b4c476e497269fd95f"
+      }
+    ]
+  },
+  "assets/sokoban/keeper-east.png": {
+    "sha256": "9edea8d7feff286328d777a35302a8364d8577c9c8b4cedfb5cc8cef6886e688",
+    "sourceBytes": 46010,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/keeper-east-256.webp",
+        "bytes": 31948,
+        "sha256": "989ce3d2e25deb222db6350f9b2648200269570ace881d2eafd64f208d70c983"
+      }
+    ]
+  },
+  "assets/sokoban/keeper-north.png": {
+    "sha256": "3c2709d24ae51025a89a48b9350d6b8d860f9f00068f8c001efbdb48cf9bed7b",
+    "sourceBytes": 39303,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/keeper-north-256.webp",
+        "bytes": 25644,
+        "sha256": "96110cf16e6985fb2ee8d7cddbc234004590900dc29b7f3823fb3055dd59389f"
+      }
+    ]
+  },
+  "assets/sokoban/keeper-south.png": {
+    "sha256": "e97653c56e3b07e4f198f5b3b2e9c1ea4b2f9c2e83470758361960994091d56d",
+    "sourceBytes": 51148,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/keeper-south-256.webp",
+        "bytes": 33722,
+        "sha256": "5a9ca1cab98ad30450afab903e0db2c41e712c71882575bb229979f8187397fd"
+      }
+    ]
+  },
+  "assets/sokoban/keeper-west.png": {
+    "sha256": "f8ae0fcf946a358d86bbe7331b570c92e0e28a2a65065da556787a0cefe16b02",
+    "sourceBytes": 46162,
+    "variants": [
+      {
+        "width": 256,
+        "height": 256,
+        "path": "assets/optimized/sokoban/keeper-west-256.webp",
+        "bytes": 30552,
+        "sha256": "111c10b2d2e08ee7b58d43178739ff14b41bb5de8cc79d9cf78974ea0d572dc1"
+      }
+    ]
+  },
+  "assets/solitaire/solitaire-cover.png": {
+    "sha256": "f0683889accc773ba41ec4c05df23f7bd82aec158c7d6239e5c1f611f08bab9e",
+    "sourceBytes": 2403382,
+    "variants": [
+      {
+        "width": 320,
+        "height": 180,
+        "path": "assets/optimized/solitaire/solitaire-cover-320.webp",
+        "bytes": 24786,
+        "sha256": "6c1ef51e0159a6d86100998dec52171f178de72c05901646791c769bae61be33"
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "path": "assets/optimized/solitaire/solitaire-cover-640.webp",
+        "bytes": 70742,
+        "sha256": "a2a32218ef34281264d5595b7bbbbc88a1dce5073057537a218577f7c6cfe90a"
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "path": "assets/optimized/solitaire/solitaire-cover-1280.webp",
+        "bytes": 196276,
+        "sha256": "5b9208f1c01321793f3e1575a685aec1c7b210c3c543a720bf52c667c60be771"
+      },
+      {
+        "width": 1672,
+        "height": 941,
+        "path": "assets/optimized/solitaire/solitaire-cover-1672.webp",
+        "bytes": 286222,
+        "sha256": "7d496633341c8c26dc1c9d88d0b95985c6f720365f814ce3122021e37ee39ada"
+      }
+    ]
+  }
+}

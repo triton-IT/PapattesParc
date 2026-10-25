@@ -1,5 +1,6 @@
+import '../../../shared/game_records.dart';
+import '../../../shared/campaign_progress.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math';
 
 import '../../../shared/animal_catalog.dart';
 import '../domain/models.dart';
@@ -10,9 +11,22 @@ class SolitaireProgressStore {
   static const _animalKey = 'solitaire:backAnimal';
   static const _modeKey = 'solitaire:mode';
   final SharedPreferences _preferences;
+  late final GameRecords _records = GameRecords(_preferences);
+  late final CampaignProgress campaign = CampaignProgress(
+    _preferences,
+    'solitaire',
+    unlockedLevel: () => unlockedLevel,
+    legacyCompleted: (level) => levelBestTime(level) != null,
+  );
+  int get completedCount => campaign.completedCount;
 
-  static Future<SolitaireProgressStore> load() async =>
-      SolitaireProgressStore._(await SharedPreferences.getInstance());
+  static Future<SolitaireProgressStore> load() async {
+    final store = SolitaireProgressStore._(
+      await SharedPreferences.getInstance(),
+    );
+    await store.campaign.migrate();
+    return store;
+  }
 
   AnimalKind get backAnimal => AnimalKind.values.firstWhere(
     (animal) => animal.name == _preferences.getString(_animalKey),
@@ -30,21 +44,12 @@ class SolitaireProgressStore {
   int get unlockedLevel =>
       (_preferences.getInt('solitaire:unlockedLevel') ?? 1).clamp(1, 45);
 
-  Duration? levelBestTime(int level) {
-    final milliseconds = _preferences.getInt('solitaire:bestTime:$level');
-    return milliseconds == null ? null : Duration(milliseconds: milliseconds);
-  }
+  Duration? levelBestTime(int level) =>
+      _records.duration('solitaire:bestTime:$level');
 
-  int levelFootprints(int level) =>
-      _preferences.getInt('solitaire:footprints:$level') ?? 0;
+  int levelFootprints(int level) => campaign.reward(level);
 
-  int get totalFootprints {
-    var total = 0;
-    for (var level = 1; level <= 45; level++) {
-      total += levelFootprints(level);
-    }
-    return total;
-  }
+  int get totalFootprints => campaign.totalRewards;
 
   Duration? bestTime(SolitaireMode mode) {
     final milliseconds = _preferences.getInt('solitaire:bestTime:${mode.name}');
@@ -59,13 +64,7 @@ class SolitaireProgressStore {
 
   Future<bool> complete(SolitaireMode mode, Duration elapsed) async {
     await _preferences.setInt('solitaire:wins:${mode.name}', wins(mode) + 1);
-    final current = bestTime(mode);
-    if (current != null && current <= elapsed) return false;
-    await _preferences.setInt(
-      'solitaire:bestTime:${mode.name}',
-      elapsed.inMilliseconds,
-    );
-    return true;
+    return _records.saveDuration('solitaire:bestTime:${mode.name}', elapsed);
   }
 
   Future<bool> completeLevel(
@@ -73,20 +72,12 @@ class SolitaireProgressStore {
     Duration elapsed,
     int footprints,
   ) async {
-    final current = levelBestTime(level);
-    final newRecord = current == null || elapsed < current;
-    if (newRecord) {
-      await _preferences.setInt(
-        'solitaire:bestTime:$level',
-        elapsed.inMilliseconds,
-      );
-    }
-    if (footprints > levelFootprints(level)) {
-      await _preferences.setInt('solitaire:footprints:$level', footprints);
-    }
-    if (level < 45 && unlockedLevel <= level) {
-      await _preferences.setInt('solitaire:unlockedLevel', min(45, level + 1));
-    }
+    await campaign.complete(level);
+    final newRecord = await _records.saveDuration(
+      'solitaire:bestTime:$level',
+      elapsed,
+    );
+    await campaign.rewardAndUnlock(level, footprints);
     return newRecord;
   }
 }

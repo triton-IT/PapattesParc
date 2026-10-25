@@ -383,6 +383,44 @@ void main() {
     }
   });
 
+  testWidgets('le HUD reste compact et sans doublon sur chaque format', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final session = Match3Session(buildMatch3Campaign(levels).first, 1);
+
+    for (final size in const [
+      Size(360, 800),
+      Size(800, 1280),
+      Size(1366, 768),
+      Size(1920, 1080),
+    ]) {
+      tester.view.physicalSize = size;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildAppTheme(),
+          home: Match3Screen(
+            session: session,
+            selected: null,
+            onSelect: (_) {},
+            onSwap: (_, _) {},
+            onLevels: () {},
+            onRetry: () {},
+            onNext: null,
+          ),
+        ),
+      );
+
+      expect(find.text('NIVEAU 1'), findsOneWidget);
+      expect(find.text(session.level.stage.title), findsOneWidget);
+      expect(find.text('${session.movesLeft} coups'), findsOneWidget);
+      expect(find.text('${session.score} points'), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: '$size');
+    }
+  });
+
   test('tous les paramètres libres créent un plateau jouable', () {
     var seed = 1;
     for (final biome in LevelBiome.values) {

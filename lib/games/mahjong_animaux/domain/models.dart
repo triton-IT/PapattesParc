@@ -38,6 +38,7 @@ class MahjongLayoutDefinition {
     required this.difficulty,
     required this.positions,
     required this.speciesCount,
+    required this.challenge,
   });
 
   final String id;
@@ -45,6 +46,7 @@ class MahjongLayoutDefinition {
   final MahjongDifficulty difficulty;
   final List<MahjongPosition> positions;
   final int speciesCount;
+  final double challenge;
 
   int get tileCount => positions.length;
   int get maxLayers => positions.fold(

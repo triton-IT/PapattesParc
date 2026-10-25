@@ -1,0 +1,191 @@
+00:00 +0: loading C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart
+00:00 +0: C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart: (setUpAll)
+00:00 +0: C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:07 +1: C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart: les dix paniers restent sur le chariot
+00:10 +2: C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart: (tearDownAll)
+00:10 +2: loading C:/dev/PapattesParc/test/app/app_flow_test.dart
+00:14 +2: C:/dev/PapattesParc/test/app/app_flow_test.dart: le menu principal ouvre les jeux à campagne
+00:28 +3: C:/dev/PapattesParc/test/app/app_flow_test.dart: le solitaire mémorise sa configuration et lance les deux modes
+00:37 +4: C:/dev/PapattesParc/test/app/app_flow_test.dart: le soigneur répond au pavé, au clavier et au glissement
+00:39 +5: C:/dev/PapattesParc/test/app/app_flow_test.dart: les caisses montrent la nourriture des animaux du niveau
+00:39 +6: C:/dev/PapattesParc/test/app/app_flow_test.dart: les deux nouvelles parties libres appliquent leurs réglages
+00:43 +7: C:/dev/PapattesParc/test/app/app_flow_test.dart: la partie libre respecte taille, difficulté et résolution
+00:44 +8: C:/dev/PapattesParc/test/app/app_flow_test.dart: le bouton quitter est réservé à Windows
+00:45 +9: C:/dev/PapattesParc/test/app/app_flow_test.dart: le parcours ouvre la première mission
+00:46 +10: C:/dev/PapattesParc/test/app/app_flow_test.dart: une grille personnalisée reprend les choix du joueur
+00:46 +11: C:/dev/PapattesParc/test/app/app_flow_test.dart: les limites personnalisées bloquent les choix impossibles
+00:47 +12: C:/dev/PapattesParc/test/app/app_flow_test.dart: l’accueil remplit les quatre formats de référence
+00:48 +13: C:/dev/PapattesParc/test/app/app_flow_test.dart: la première observation prépare puis affiche le refuge
+00:48 +14: C:/dev/PapattesParc/test/app/app_flow_test.dart: les limites du parcours et les missions verrouillées sont claires
+00:49 +15: C:/dev/PapattesParc/test/app/app_flow_test.dart: le dernier niveau débloqué est sélectionné au lancement
+00:49 +16: C:/dev/PapattesParc/test/app/app_flow_test.dart: le choix de musique est mémorisé
+00:49 +17: C:/dev/PapattesParc/test/app/app_flow_test.dart: le choix des effets sonores est mémorisé séparément
+00:50 +18: C:/dev/PapattesParc/test/app/app_flow_test.dart: le plateau accepte appui long, clic droit et clavier
+00:50 +19: C:/dev/PapattesParc/test/app/app_flow_test.dart: les résultats réussite et échec gardent leurs actions
+00:50 +20: C:/dev/PapattesParc/test/app/app_flow_test.dart: le retour Android conserve ou abandonne la partie à la demande
+00:51 +21: C:/dev/PapattesParc/test/app/app_flow_test.dart: le retour est bloqué pendant une opération en cours
+00:52 +22: C:/dev/PapattesParc/test/app/app_flow_test.dart: les grands plateaux sont visibles et permettent le zoom
+00:55 +23: C:/dev/PapattesParc/test/app/app_flow_test.dart: un clic glissé ne désaxe pas le mahjong
+00:55 +24: C:/dev/PapattesParc/test/app/app_flow_test.dart: les aides et les repères animaux sont accessibles
+00:56 +25: loading C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart
+00:57 +25: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: (setUpAll)
+00:57 +25: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 360x800
+00:58 +26: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 800x1280
+00:59 +27: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 1366x768
+01:01 +28: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 1920x1080
+01:05 +29: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: (tearDownAll)
+01:05 +29: loading C:/dev/PapattesParc/test/app/mahjong_visual_regression_test.dart
+01:06 +29: C:/dev/PapattesParc/test/app/mahjong_visual_regression_test.dart: (setUpAll)
+01:07 +29: C:/dev/PapattesParc/test/app/mahjong_visual_regression_test.dart: références visuelles du mahjong
+01:26 +30: C:/dev/PapattesParc/test/app/mahjong_visual_regression_test.dart: (tearDownAll)
+01:27 +30: loading C:/dev/PapattesParc/test/app/menu_visual_regression_test.dart
+01:28 +30: C:/dev/PapattesParc/test/app/menu_visual_regression_test.dart: (setUpAll)
+01:28 +30: C:/dev/PapattesParc/test/app/menu_visual_regression_test.dart: références visuelles du menu
+01:30 +31: C:/dev/PapattesParc/test/app/menu_visual_regression_test.dart: (tearDownAll)
+01:30 +31: loading C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart
+01:31 +31: C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart: (setUpAll)
+01:31 +31: C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: FlutterError:<Golden "../goldens/numberlink-mission-360x800.png": Pixel test failed,
+0.24%, 697px diff detected.
+          Failure feedback can be found at /C:/dev/PapattesParc/test/app/failures>
+Size(360.0, 800.0)
+
+When the exception was thrown, this was the stack:
+#4      _pump (file:///C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart:134:3)
+<asynchronous suspension>
+#5      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart:97:7)
+<asynchronous suspension>
+#6      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#7      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart line 134
+The test description was:
+  références visuelles des sentiers sauvages
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:35 +31 -1: C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages [E]
+  Test failed. See exception logs above.
+  The test description was: références visuelles des sentiers sauvages
+  
+01:35 +31 -1: C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart: (tearDownAll)
+01:35 +31 -1: loading C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart
+01:36 +31 -1: C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart: (setUpAll)
+01:36 +31 -1: C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart: références visuelles du solitaire
+01:56 +32 -1: C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart: la carte reste prioritaire sur un écran court
+01:56 +33 -1: C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart: (tearDownAll)
+01:56 +33 -1: loading C:/dev/PapattesParc/test/app/visual_regression_test.dart
+01:57 +33 -1: C:/dev/PapattesParc/test/app/visual_regression_test.dart: (setUpAll)
+01:57 +33 -1: C:/dev/PapattesParc/test/app/visual_regression_test.dart: références visuelles responsive
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: null
+  Actual: FlutterError:<Golden "../goldens/repas-mission-360x800.png": Pixel test failed, 47.30%,
+136230px diff detected.
+          Failure feedback can be found at /C:/dev/PapattesParc/test/app/failures>
+Size(360.0, 800.0)
+
+When the exception was thrown, this was the stack:
+#4      _pump (file:///C:/dev/PapattesParc/test/app/visual_regression_test.dart:409:3)
+<asynchronous suspension>
+#5      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/visual_regression_test.dart:335:7)
+<asynchronous suspension>
+#6      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#7      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/dev/PapattesParc/test/app/visual_regression_test.dart line 409
+The test description was:
+  références visuelles responsive
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:09 +33 -2: C:/dev/PapattesParc/test/app/visual_regression_test.dart: références visuelles responsive [E]
+  Test failed. See exception logs above.
+  The test description was: références visuelles responsive
+  
+02:09 +33 -2: C:/dev/PapattesParc/test/app/visual_regression_test.dart: (tearDownAll)
+02:09 +33 -2: loading C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart
+02:09 +33 -2: C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart: un groupe visible rejoint seulement une zone compatible
+02:10 +34 -2: C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart: les 45 mélanges possèdent une solution de référence valide
+02:10 +35 -2: C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart: un indice suit la solution connue et reste limité à trois
+02:10 +36 -2: C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart: la progression conserve le meilleur nombre de déplacements
+02:10 +37 -2: loading C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart
+02:11 +37 -2: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: les 45 plateaux sont pairs, déterministes et jouables
+02:20 +38 -2: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: les difficultés libres produisent des parties plus complexes
+02:24 +39 -2: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: une tuile bloquée est refusée et une paire libre est retirée
+02:24 +40 -2: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: trois mélanges au maximum modifient les empreintes
+02:24 +41 -2: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: campagne et records libres restent séparés
+02:24 +42 -2: loading C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart
+02:25 +42 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les 45 niveaux démarrent sans alignement et avec un coup possible
+02:25 +43 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: un échange invalide ne consomme pas de coup
+02:25 +44 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: un carré crée un éclaireur
+02:25 +45 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les lignes de 6 et 7 créent leurs cadeaux distincts
+02:25 +46 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: deux alignements indépendants créent deux bonus
+02:25 +47 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: une ligne de 6 prime sur une intersection superposée
+02:25 +48 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les familles de combinaisons amplifient leurs zones
+02:25 +49 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les zones ignorent les cases inactives et ne suppriment pas les paniers
+02:25 +50 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les éclaireurs ciblent chaque type d’objectif
+02:25 +51 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: patte et bonus transforment le plateau sans boucle
+02:25 +52 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les feuilles bloquent leur case et partent par un alignement voisin
+02:25 +53 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: chaque objectif nomme les obstacles à retirer
+02:28 +54 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: le HUD reste compact et sans doublon sur chaque format
+02:30 +55 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: tous les paramètres libres créent un plateau jouable
+02:30 +56 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: un échange valide déclenche la résolution complète
+02:30 +57 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les cascades exposent chaque progression avant le total final
+02:30 +58 -2: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: la progression match-3 reste séparée et conserve le meilleur score
+02:30 +59 -2: loading C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart
+02:31 +59 -2: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: les cinq tempéraments couvrent les 45 missions
+02:31 +60 -2: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: les 45 missions sont jouables sans hasard
+02:32 +61 -2: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: le certificat mène à une victoire complète
+02:32 +62 -2: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: une défaite ne révèle pas les autres animaux
+02:32 +63 -2: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: la génération experte respecte le budget de performance
+02:32 +64 -2: loading C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart
+02:33 +64 -2: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: les déplacements, poussées, blocages et annulations restent cohérents
+02:33 +65 -2: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: une caisse ne peut pas en pousser une autre
+02:33 +66 -2: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: les empreintes suivent le nombre de poussées de référence
+02:33 +67 -2: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: les 45 niveaux sont valides et atteignables au nombre de poussées annoncé
+02:33 +68 -2: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: la progression reste séparée et conserve le meilleur résultat
+02:33 +69 -2: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: la partie libre génère chaque format avec une solution certifiée
+02:34 +70 -2: loading C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart
+02:35 +70 -2: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: les 45 niveaux sont distincts, couvrants et certifiés uniques
+02:40 +71 -2: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: les tracés, blocages et rétractions conduisent à la victoire
+02:40 +72 -2: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: la difficulté augmente fortement dans chaque palier
+02:40 +73 -2: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: les indices restent visuels et déterminent les empreintes
+02:40 +74 -2: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: la souris, le tapotement et le clavier tracent les sentiers
+02:41 +75 -2: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: les 63 configurations libres restent certifiées et reproductibles
+02:41 +76 -2: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: la progression conserve le record et reste isolée
+02:42 +77 -2: loading C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart
+02:42 +77 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: les 45 missions sont déterministes et réalisables
+02:53 +78 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: les empreintes dépendent uniquement des recyclages
+02:53 +79 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la donne contient les 52 cartes une seule fois dans les deux modes
+02:53 +80 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la pioche respecte le mode, le recyclage et l’annulation
+02:53 +81 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: un déplacement légal est réversible et un déplacement illégal refusé
+02:53 +82 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: un double-clic place un roi dans la première colonne libre
+02:54 +83 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la finition sûre envoie les quatre rois vers les fondations
+02:54 +84 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la finition automatique reste visible jusqu’à la dernière carte
+02:54 +85 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: l’indice nomme la carte source et la destination en fondation
+02:54 +86 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: une pile visible vers une colonne vide n’est pas un indice
+02:54 +87 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: l’indice distingue la source verte de la destination jaune
+02:56 +88 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la défausse révèle la carte dessous pendant le déplacement
+02:57 +89 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: le résultat de campagne propose les actions du parcours
+02:58 +90 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: les préférences et records restent séparés par mode
+02:58 +91 -2: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la campagne conserve ses records séparément de la partie libre
+02:58 +92 -2: loading C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart
+02:58 +92 -2: C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart: les 45 missions sont déterministes, valides et uniques
+02:59 +93 -2: C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart: placements, notes, gomme et indices conduisent à la victoire
+02:59 +94 -2: C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart: tous les paramètres libres créent une grille unique
+02:59 +95 -2: C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart: progression, meilleurs résultats et autres sauvegardes sont séparés
+02:59 +96 -2: Some tests failed.
+
+Failing tests:
+  C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+  C:/dev/PapattesParc/test/app/visual_regression_test.dart: références visuelles responsive

@@ -1,17 +1,21 @@
+import '../../../shared/board_camera.dart';
+import '../../../shared/artwork.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../shared/animal_background.dart';
 import '../../../shared/animal_catalog.dart';
 import '../../../shared/animal_colors.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
+import '../../../shared/game_stage_layout.dart';
 import '../domain/sudoku_session.dart';
 
 class SudokuScreen extends StatelessWidget {
   const SudokuScreen({
+    this.elapsed,
     required this.session,
     required this.selectedIndex,
     required this.noteMode,
@@ -52,104 +56,64 @@ class SudokuScreen extends StatelessWidget {
   final VoidCallback? onNewGame;
   final VoidCallback? onConfigure;
 
+  final ValueListenable<Duration>? elapsed;
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xfffff4dc),
-    body: AnimalBackground(
-      asset: session.level.stage.artAsset!,
-      child: SafeArea(
-        child: Stack(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final wide =
-                    constraints.maxWidth >= 900 &&
-                    constraints.maxWidth > constraints.maxHeight;
-                final board = SudokuBoard(
-                  session: session,
-                  selectedIndex: selectedIndex,
-                  wrongIndex: wrongIndex,
-                  onSelect: onSelectCell,
-                );
-                final panel = _GamePanel(
-                  session: session,
-                  noteMode: noteMode,
-                  selectedIndex: selectedIndex,
-                  wide: wide,
-                  isFreeGame: isFreeGame,
-                  onSelectAnimal: onSelectAnimal,
-                  onToggleNotes: onToggleNotes,
-                  onClear: onClear,
-                  onHint: onHint,
-                );
-                if (wide) {
-                  return Row(
-                    children: [
-                      Expanded(child: board),
-                      SizedBox(width: 360, child: panel),
-                    ],
-                  );
-                }
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(64, 10, 64, 0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${isFreeGame ? 'Partie libre' : 'Niveau ${session.level.number}'} · '
-                              '${session.level.size} × ${session.level.size}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
-                          Text(
-                            formatDuration(session.elapsed),
-                            style: const TextStyle(fontWeight: FontWeight.w900),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(child: board),
-                    panel,
-                  ],
-                );
-              },
-            ),
-            Positioned(
-              left: 12,
-              top: 12,
-              child: IconButton.filledTonal(
-                key: const Key('sudoku-back'),
-                tooltip: 'Retour',
-                onPressed: onBack,
-                icon: const Icon(Icons.arrow_back_rounded),
-              ),
-            ),
-            const Positioned(
-              right: 12,
-              top: 12,
-              child: GameHelpButton(kind: GameHelpKind.sudoku),
-            ),
-            if (finished)
-              Positioned.fill(
-                child: _ResultOverlay(
-                  session: session,
-                  newRecord: newRecord,
-                  isFreeGame: isFreeGame,
-                  onReplay: onReplay,
-                  onLevels: onLevels,
-                  onNext: onNext,
-                  onNewGame: onNewGame,
-                  onConfigure: onConfigure,
-                ),
-              ),
-          ],
+  Widget build(BuildContext context) => GameStageLayout(
+    background: ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
+    eyebrow: 'SUDOKU DES ANIMAUX',
+    title:
+        '${isFreeGame ? 'Partie libre' : 'Niveau ${session.level.number}'} · '
+        '${session.level.size} × ${session.level.size}',
+    backKey: const Key('sudoku-back'),
+    onBack: onBack,
+    helpKind: GameHelpKind.sudoku,
+    metrics: [
+      GameStageMetric(
+        icon: Icons.timer_rounded,
+        elapsed: elapsed,
+        label: formatDuration(session.elapsed),
+      ),
+      GameStageMetric(
+        icon: Icons.pets_rounded,
+        label: '${session.footprints} empreinte(s)',
+      ),
+    ],
+    builder: (context, layout) => GameStageSplit(
+      wide: layout.isLandscape,
+      board: BoardCamera(
+        child: SudokuBoard(
+          session: session,
+          selectedIndex: selectedIndex,
+          wrongIndex: wrongIndex,
+          onSelect: onSelectCell,
         ),
       ),
+      panel: _GamePanel(
+        session: session,
+        noteMode: noteMode,
+        selectedIndex: selectedIndex,
+        onSelectAnimal: onSelectAnimal,
+        onToggleNotes: onToggleNotes,
+        onClear: onClear,
+        onHint: onHint,
+      ),
     ),
+    overlays: [
+      if (finished)
+        Positioned.fill(
+          child: _ResultOverlay(
+            session: session,
+            newRecord: newRecord,
+            isFreeGame: isFreeGame,
+            onReplay: onReplay,
+            onLevels: onLevels,
+            onNext: onNext,
+            onNewGame: onNewGame,
+            onConfigure: onConfigure,
+          ),
+        ),
+    ],
   );
 }
 
@@ -269,7 +233,7 @@ class _SudokuCell extends StatelessWidget {
                 ? _Notes(animals: level.animals, values: session.notes[index])
                 : Padding(
                     padding: EdgeInsets.all(level.size == 9 ? 2 : 5),
-                    child: Image.asset(animal!.asset, fit: BoxFit.contain),
+                    child: ArtworkImage(animal!.asset, fit: BoxFit.contain),
                   ),
           ),
         ),
@@ -292,7 +256,7 @@ class _Notes extends StatelessWidget {
     children: [
       for (var index = 0; index < animals.length; index++)
         values.contains(index)
-            ? Image.asset(animals[index].asset, fit: BoxFit.contain)
+            ? ArtworkImage(animals[index].asset, fit: BoxFit.contain)
             : const SizedBox.shrink(),
     ],
   );
@@ -303,8 +267,6 @@ class _GamePanel extends StatelessWidget {
     required this.session,
     required this.noteMode,
     required this.selectedIndex,
-    required this.wide,
-    required this.isFreeGame,
     required this.onSelectAnimal,
     required this.onToggleNotes,
     required this.onClear,
@@ -314,115 +276,73 @@ class _GamePanel extends StatelessWidget {
   final SudokuSession session;
   final bool noteMode;
   final int? selectedIndex;
-  final bool wide;
-  final bool isFreeGame;
   final ValueChanged<int> onSelectAnimal;
   final VoidCallback onToggleNotes;
   final VoidCallback onClear;
   final VoidCallback onHint;
 
   @override
-  Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.surface,
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (wide) ...[
-            const Text(
-              'SUDOKU DES ANIMAUX',
-              style: TextStyle(
-                color: AppColors.muted,
-                fontWeight: FontWeight.w900,
+  Widget build(BuildContext context) => GameStagePanel(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 5,
+          runSpacing: 5,
+          children: [
+            for (var index = 0; index < session.level.animals.length; index++)
+              _AnimalButton(
+                animal: session.level.animals[index],
+                index: index,
+                enabled: selectedIndex != null,
+                onTap: () => onSelectAnimal(index),
               ),
-            ),
-            Text(
-              '${isFreeGame ? 'Partie libre' : 'Niveau ${session.level.number}'} · '
-              '${session.level.size} × ${session.level.size}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
           ],
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 5,
-            runSpacing: 5,
-            children: [
-              for (var index = 0; index < session.level.animals.length; index++)
-                _AnimalButton(
-                  animal: session.level.animals[index],
-                  index: index,
-                  enabled: selectedIndex != null,
-                  onTap: () => onSelectAnimal(index),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  key: const Key('sudoku-notes'),
-                  onPressed: selectedIndex == null ? null : onToggleNotes,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: noteMode
-                        ? AppColors.sun.withValues(alpha: .65)
-                        : null,
-                    minimumSize: const Size(40, 46),
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                  ),
-                  icon: const Icon(Icons.edit_note_rounded),
-                  label: const Text('NOTES'),
-                ),
+        ),
+        const SizedBox(height: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton.tonalIcon(
+              key: const Key('sudoku-notes'),
+              onPressed: selectedIndex == null ? null : onToggleNotes,
+              style: FilledButton.styleFrom(
+                backgroundColor: noteMode
+                    ? AppColors.sun.withValues(alpha: .65)
+                    : null,
+                minimumSize: const Size(40, 46),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
               ),
-              const SizedBox(width: 5),
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  key: const Key('sudoku-clear'),
-                  onPressed: selectedIndex == null ? null : onClear,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(40, 46),
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                  ),
-                  icon: const Icon(Icons.backspace_rounded),
-                  label: const Text('GOMME'),
-                ),
+              icon: const Icon(Icons.edit_note_rounded),
+              label: const Text('NOTES'),
+            ),
+            const SizedBox(width: 5),
+            FilledButton.tonalIcon(
+              key: const Key('sudoku-clear'),
+              onPressed: selectedIndex == null ? null : onClear,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(40, 46),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
               ),
-              const SizedBox(width: 5),
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  key: const Key('sudoku-hint'),
-                  onPressed: session.hintsRemaining == 0 ? null : onHint,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(40, 46),
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                  ),
-                  icon: const Icon(Icons.lightbulb_rounded),
-                  label: Text('INDICE ${session.hintsRemaining}/3'),
-                ),
+              icon: const Icon(Icons.backspace_rounded),
+              label: const Text('GOMME'),
+            ),
+            const SizedBox(width: 5),
+            FilledButton.tonalIcon(
+              key: const Key('sudoku-hint'),
+              onPressed: session.hintsRemaining == 0 ? null : onHint,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(40, 46),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
               ),
-            ],
-          ),
-          if (wide) ...[
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  formatDuration(session.elapsed),
-                  style: const TextStyle(fontWeight: FontWeight.w900),
-                ),
-                Text(
-                  '${session.footprints} empreinte(s)',
-                  style: const TextStyle(fontWeight: FontWeight.w900),
-                ),
-              ],
+              icon: const Icon(Icons.lightbulb_rounded),
+              label: Text('INDICE ${session.hintsRemaining}/3'),
             ),
           ],
-        ],
-      ),
+        ),
+      ],
     ),
   );
 }
@@ -460,7 +380,7 @@ class _AnimalButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: AppColors.deep, width: 1.5),
           ),
-          child: Image.asset(animal.asset, fit: BoxFit.contain),
+          child: ArtworkImage(animal.asset, fit: BoxFit.contain),
         ),
       ),
     ),
@@ -492,7 +412,7 @@ class _ResultOverlay extends StatelessWidget {
   Widget build(BuildContext context) => ColoredBox(
     key: const Key('sudoku-result-overlay'),
     color: const Color(0xaa173a31),
-    child: Center(
+    child: GameResultViewport(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
         child: Card(

@@ -36,6 +36,7 @@ class SudokuLevelDefinition {
     required this.animals,
     required this.solution,
     required this.puzzle,
+    this.needsGeneration = false,
   });
 
   final ParkStage stage;
@@ -45,6 +46,7 @@ class SudokuLevelDefinition {
   final List<AnimalKind> animals;
   final List<int> solution;
   final List<int> puzzle;
+  final bool needsGeneration;
 
   int get number => stage.number;
   int get clueCount => puzzle.where((value) => value >= 0).length;

@@ -1,3 +1,4 @@
+import '../support/visible_artwork.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,7 +12,10 @@ import 'package:papatte_parc/games/repas_animaux/data/repas_animaux_progress_sto
 import 'package:papatte_parc/games/sentiers_sauvages/data/numberlink_progress_store.dart';
 import 'package:papatte_parc/games/solitaire_animaux/data/solitaire_progress_store.dart';
 import 'package:papatte_parc/games/sudoku_animaux/data/sudoku_progress_store.dart';
+import 'package:papatte_parc/games/familles_du_parc/data/animal_sort_progress_store.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
+import 'package:papatte_parc/shared/artwork.dart';
+import 'package:papatte_parc/shared/game_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -33,6 +37,7 @@ void main() {
     final sudoku = await SudokuProgressStore.load();
     final repas = await RepasAnimauxProgressStore.load();
     final numberlink = await NumberlinkProgressStore.load();
+    final animalSort = await AnimalSortProgressStore.load();
     for (final size in _sizes) {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = size;
@@ -48,6 +53,7 @@ void main() {
             sudokuStore: sudoku,
             repasStore: repas,
             numberlinkStore: numberlink,
+            animalSortStore: animalSort,
             musicEnabled: true,
             effectsEnabled: true,
             onSelect: (_) {},
@@ -58,6 +64,17 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        final context = tester.element(find.byType(Scaffold));
+        for (final path in [
+          'assets/park_map.png',
+          ...gameCatalog.map((entry) => entry.artAsset),
+        ]) {
+          await precacheArtwork(ArtworkResolver.provider(path), context);
+        }
+      });
+      await tester.pumpAndSettle();
+      await loadVisibleArtwork(tester);
       expect(tester.takeException(), isNull, reason: '$size');
       await expectLater(
         find.byType(Scaffold),
@@ -68,6 +85,7 @@ void main() {
 }
 
 const _sizes = [
+  Size(800, 360),
   Size(360, 800),
   Size(800, 1280),
   Size(1366, 768),

@@ -1,5 +1,5 @@
 name: papatte_parc
-description: Jeu de déduction Papatte Parc, porté de Unity vers Flutter.
+description: Huit jeux de réflexion et de patience dans un parc animalier illustré.
 publish_to: none
 version: 1.0.0+1
 
@@ -7,9 +7,11 @@ environment:
   sdk: ^3.12.2
 
 dependencies:
+  cupertino_icons: 1.0.9
   audioplayers: ^6.8.1
   flutter:
     sdk: flutter
+  web: 1.1.1
   meta: ^1.18.0
   shared_preferences: ^2.5.3
 
@@ -22,14 +24,16 @@ flutter:
   uses-material-design: true
   assets:
     - assets/audio/
-    - assets/park_map.png
-    - assets/level_art/
-    - assets/animal_markers/
-    - assets/match3/
-    - assets/match3/animals/
-    - assets/mahjong/
-    - assets/solitaire/
-    - assets/sokoban/
+    - assets/optimized/
+    - assets/optimized/level_art/
+    - assets/optimized/animal_markers/
+    - assets/optimized/match3/
+    - assets/optimized/match3/animals/
+    - assets/optimized/mahjong/
+    - assets/optimized/solitaire/
+    - assets/optimized/sokoban/
+    - assets/optimized/food_sort/
+    - assets/optimized/food_sort/ui/
   fonts:
     - family: Nunito
       fonts:

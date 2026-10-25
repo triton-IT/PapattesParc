@@ -1,0 +1,244 @@
+00:00 +0: loading C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart
+00:00 +0: C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart: (setUpAll)
+00:00 +0: C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+00:06 +1: C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart: les dix paniers restent sur le chariot
+00:08 +2: C:/dev/PapattesParc/test/app/animal_sort_visual_regression_test.dart: (tearDownAll)
+00:08 +2: loading C:/dev/PapattesParc/test/app/app_flow_test.dart
+00:09 +2: C:/dev/PapattesParc/test/app/app_flow_test.dart: le menu principal ouvre les jeux à campagne
+00:26 +3: C:/dev/PapattesParc/test/app/app_flow_test.dart: le solitaire mémorise sa configuration et lance les deux modes
+00:38 +4: C:/dev/PapattesParc/test/app/app_flow_test.dart: le soigneur répond au pavé, au clavier et au glissement
+00:38 +5: C:/dev/PapattesParc/test/app/app_flow_test.dart: les caisses montrent la nourriture des animaux du niveau
+00:39 +6: C:/dev/PapattesParc/test/app/app_flow_test.dart: les deux nouvelles parties libres appliquent leurs réglages
+00:41 +7: C:/dev/PapattesParc/test/app/app_flow_test.dart: la partie libre respecte taille, difficulté et résolution
+00:41 +8: C:/dev/PapattesParc/test/app/app_flow_test.dart: le bouton quitter est réservé à Windows
+00:42 +9: C:/dev/PapattesParc/test/app/app_flow_test.dart: le parcours ouvre la première mission
+00:43 +10: C:/dev/PapattesParc/test/app/app_flow_test.dart: une grille personnalisée reprend les choix du joueur
+00:44 +11: C:/dev/PapattesParc/test/app/app_flow_test.dart: les limites personnalisées bloquent les choix impossibles
+00:44 +12: C:/dev/PapattesParc/test/app/app_flow_test.dart: l’accueil remplit les quatre formats de référence
+00:45 +13: C:/dev/PapattesParc/test/app/app_flow_test.dart: la première observation prépare puis affiche le refuge
+00:46 +14: C:/dev/PapattesParc/test/app/app_flow_test.dart: les missions verrouillées restent visibles dans la liste
+00:46 +15: C:/dev/PapattesParc/test/app/app_flow_test.dart: le dernier niveau débloqué est sélectionné au lancement
+00:47 +16: C:/dev/PapattesParc/test/app/app_flow_test.dart: le choix de musique est mémorisé
+
+Warning: A call to tap() with finder "Found 1 widget with text "Musique": [
+  Text("Musique", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(624.0, 44.0)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#27b1b relayoutBoundary=up40
+The hit test result at that offset is: HitTestResult(RenderPointerListener#eb6e8@Offset(160.0, 28.0), RenderSemanticsAnnotations#7118c@Offset(160.0, 28.0), RenderMouseRegion#14057@Offset(160.0, 28.0), RenderSemanticsAnnotations#93a2c@Offset(160.0, 28.0), RenderSemanticsAnnotations#c41a5@Offset(160.0, 28.0), RenderMergeSemantics#3898e@Offset(160.0, 28.0), RenderAnimatedOpacity#eb9f6@Offset(160.0, 28.0), _RenderMenuItem#aee5e@Offset(160.0, 28.0), RenderListBody#6aecd@Offset(160.0, 28.0), RenderPadding#6a896@Offset(160.0, 36.0), _RenderSingleChildViewport#732da@Offset(160.0, 36.0), RenderIgnorePointer#8ccb6@Offset(160.0, 36.0), RenderSemanticsAnnotations#4c1da@Offset(160.0, 36.0), RenderPointerListener#ef72d@Offset(160.0, 36.0), RenderSemanticsGestureHandler#6d956@Offset(160.0, 36.0), RenderPointerListener#9858b@Offset(160.0, 36.0), _RenderScrollSemantics#63110@Offset(160.0, 36.0), RenderClipRect#2ac5c@Offset(160.0, 36.0), RenderSemanticsAnnotations#67aae@Offset(160.0, 36.0), RenderIntrinsicWidth#d3b29@Offset(160.0, 36.0), RenderConstrainedBox#81bf9@Offset(160.0, 36.0), RenderPositionedBox#1a0ad@Offset(160.0, 36.0), _RenderInkFeatures#3fd20@Offset(160.0, 36.0), RenderCustomPaint#a141e@Offset(160.0, 36.0), RenderPhysicalShape#60799@Offset(160.0, 36.0), RenderAnimatedOpacity#e1cc9@Offset(160.0, 36.0), RenderCustomSingleChildLayoutBox#20672@Offset(624.0, 44.0), _RenderLayoutBuilder#a988c@Offset(624.0, 44.0), RenderRepaintBoundary#874bd@Offset(624.0, 44.0), RenderIgnorePointer#11346@Offset(624.0, 44.0), RenderRepaintBoundary#3bdc5@Offset(624.0, 44.0), RenderSemanticsAnnotations#75c26@Offset(624.0, 44.0), RenderOffstage#4f5bc@Offset(624.0, 44.0), RenderSemanticsAnnotations#c445b@Offset(624.0, 44.0), _RenderTheater#6cfb1@Offset(624.0, 44.0), RenderAbsorbPointer#f9d8e@Offset(624.0, 44.0), RenderPointerListener#7ca5f@Offset(624.0, 44.0), RenderSemanticsAnnotations#346d1@Offset(624.0, 44.0), RenderPointerListener#07db4@Offset(624.0, 44.0), RenderIgnorePointer#8f130@Offset(624.0, 44.0), RenderSemanticsAnnotations#2096b@Offset(624.0, 44.0), RenderSemanticsAnnotations#a7ae2@Offset(624.0, 44.0), RenderSemanticsAnnotations#9b38a@Offset(624.0, 44.0), RenderTapRegionSurface#6138f@Offset(624.0, 44.0), RenderSemanticsAnnotations#f2a3c@Offset(624.0, 44.0), RenderSemanticsAnnotations#2dcd9@Offset(624.0, 44.0), HitTestEntry<HitTestTarget>#2d6c3(_ReusableRenderView#9823a), HitTestEntry<HitTestTarget>#be672(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/app_flow_test.dart:703:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+00:47 +17: C:/dev/PapattesParc/test/app/app_flow_test.dart: le choix des effets sonores est mémorisé séparément
+
+Warning: A call to tap() with finder "Found 1 widget with text "Effets sonores": [
+  Text("Effets sonores", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(624.0, 100.0)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#11223 relayoutBoundary=up40
+The hit test result at that offset is: HitTestResult(RenderPointerListener#f26dd@Offset(160.0, 28.0), RenderSemanticsAnnotations#8f2f3@Offset(160.0, 28.0), RenderMouseRegion#1fabf@Offset(160.0, 28.0), RenderSemanticsAnnotations#ad218@Offset(160.0, 28.0), RenderSemanticsAnnotations#62ae0@Offset(160.0, 28.0), RenderMergeSemantics#52632@Offset(160.0, 28.0), RenderAnimatedOpacity#74bcb@Offset(160.0, 28.0), _RenderMenuItem#36dfe@Offset(160.0, 28.0), RenderListBody#b1640@Offset(160.0, 84.0), RenderPadding#248b8@Offset(160.0, 92.0), _RenderSingleChildViewport#8e998@Offset(160.0, 92.0), RenderIgnorePointer#e61e1@Offset(160.0, 92.0), RenderSemanticsAnnotations#d5b52@Offset(160.0, 92.0), RenderPointerListener#4e20a@Offset(160.0, 92.0), RenderSemanticsGestureHandler#10c3e@Offset(160.0, 92.0), RenderPointerListener#08a54@Offset(160.0, 92.0), _RenderScrollSemantics#fdaa9@Offset(160.0, 92.0), RenderClipRect#9d0c8@Offset(160.0, 92.0), RenderSemanticsAnnotations#efbb9@Offset(160.0, 92.0), RenderIntrinsicWidth#1f45f@Offset(160.0, 92.0), RenderConstrainedBox#97776@Offset(160.0, 92.0), RenderPositionedBox#7588a@Offset(160.0, 92.0), _RenderInkFeatures#5764c@Offset(160.0, 92.0), RenderCustomPaint#33098@Offset(160.0, 92.0), RenderPhysicalShape#abdab@Offset(160.0, 92.0), RenderAnimatedOpacity#8fe39@Offset(160.0, 92.0), RenderCustomSingleChildLayoutBox#da3d6@Offset(624.0, 100.0), _RenderLayoutBuilder#7561f@Offset(624.0, 100.0), RenderRepaintBoundary#756fa@Offset(624.0, 100.0), RenderIgnorePointer#9ba07@Offset(624.0, 100.0), RenderRepaintBoundary#7004f@Offset(624.0, 100.0), RenderSemanticsAnnotations#998c5@Offset(624.0, 100.0), RenderOffstage#bf620@Offset(624.0, 100.0), RenderSemanticsAnnotations#09f24@Offset(624.0, 100.0), _RenderTheater#12631@Offset(624.0, 100.0), RenderAbsorbPointer#fc821@Offset(624.0, 100.0), RenderPointerListener#01d27@Offset(624.0, 100.0), RenderSemanticsAnnotations#701ba@Offset(624.0, 100.0), RenderPointerListener#a1bef@Offset(624.0, 100.0), RenderIgnorePointer#9fd01@Offset(624.0, 100.0), RenderSemanticsAnnotations#61c2f@Offset(624.0, 100.0), RenderSemanticsAnnotations#e09d5@Offset(624.0, 100.0), RenderSemanticsAnnotations#6b527@Offset(624.0, 100.0), RenderTapRegionSurface#defae@Offset(624.0, 100.0), RenderSemanticsAnnotations#e84a6@Offset(624.0, 100.0), RenderSemanticsAnnotations#7d979@Offset(624.0, 100.0), HitTestEntry<HitTestTarget>#29f77(_ReusableRenderView#9823a), HitTestEntry<HitTestTarget>#db1aa(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/app_flow_test.dart:719:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+
+Warning: A call to tap() with finder "Found 1 widget with text "Musique": [
+  Text("Musique", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(624.0, 44.0)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#b6ed9 relayoutBoundary=up40
+The hit test result at that offset is: HitTestResult(RenderPointerListener#ee710@Offset(160.0, 28.0), RenderSemanticsAnnotations#8e97c@Offset(160.0, 28.0), RenderMouseRegion#b4c55@Offset(160.0, 28.0), RenderSemanticsAnnotations#36900@Offset(160.0, 28.0), RenderSemanticsAnnotations#7ced6@Offset(160.0, 28.0), RenderMergeSemantics#606b3@Offset(160.0, 28.0), RenderAnimatedOpacity#306f1@Offset(160.0, 28.0), _RenderMenuItem#c2865@Offset(160.0, 28.0), RenderListBody#277d1@Offset(160.0, 28.0), RenderPadding#07b79@Offset(160.0, 36.0), _RenderSingleChildViewport#7beeb@Offset(160.0, 36.0), RenderIgnorePointer#828da@Offset(160.0, 36.0), RenderSemanticsAnnotations#0aacf@Offset(160.0, 36.0), RenderPointerListener#fd3dc@Offset(160.0, 36.0), RenderSemanticsGestureHandler#5b4ce@Offset(160.0, 36.0), RenderPointerListener#d073d@Offset(160.0, 36.0), _RenderScrollSemantics#583c1@Offset(160.0, 36.0), RenderClipRect#594a9@Offset(160.0, 36.0), RenderSemanticsAnnotations#ed596@Offset(160.0, 36.0), RenderIntrinsicWidth#90010@Offset(160.0, 36.0), RenderConstrainedBox#72706@Offset(160.0, 36.0), RenderPositionedBox#e3d67@Offset(160.0, 36.0), _RenderInkFeatures#f4f3d@Offset(160.0, 36.0), RenderCustomPaint#d47c5@Offset(160.0, 36.0), RenderPhysicalShape#b96e0@Offset(160.0, 36.0), RenderAnimatedOpacity#79ad5@Offset(160.0, 36.0), RenderCustomSingleChildLayoutBox#3056a@Offset(624.0, 44.0), _RenderLayoutBuilder#24bcf@Offset(624.0, 44.0), RenderRepaintBoundary#3c09d@Offset(624.0, 44.0), RenderIgnorePointer#4e78c@Offset(624.0, 44.0), RenderRepaintBoundary#0315f@Offset(624.0, 44.0), RenderSemanticsAnnotations#63fcf@Offset(624.0, 44.0), RenderOffstage#62ff2@Offset(624.0, 44.0), RenderSemanticsAnnotations#d6658@Offset(624.0, 44.0), _RenderTheater#12631@Offset(624.0, 44.0), RenderAbsorbPointer#fc821@Offset(624.0, 44.0), RenderPointerListener#01d27@Offset(624.0, 44.0), RenderSemanticsAnnotations#701ba@Offset(624.0, 44.0), RenderPointerListener#a1bef@Offset(624.0, 44.0), RenderIgnorePointer#9fd01@Offset(624.0, 44.0), RenderSemanticsAnnotations#61c2f@Offset(624.0, 44.0), RenderSemanticsAnnotations#e09d5@Offset(624.0, 44.0), RenderSemanticsAnnotations#6b527@Offset(624.0, 44.0), RenderTapRegionSurface#defae@Offset(624.0, 44.0), RenderSemanticsAnnotations#e84a6@Offset(624.0, 44.0), RenderSemanticsAnnotations#7d979@Offset(624.0, 44.0), HitTestEntry<HitTestTarget>#767ec(_ReusableRenderView#9823a), HitTestEntry<HitTestTarget>#de85c(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/dev/PapattesParc/test/app/app_flow_test.dart:728:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+00:48 +18: C:/dev/PapattesParc/test/app/app_flow_test.dart: le plateau accepte appui long, clic droit et clavier
+00:49 +19: C:/dev/PapattesParc/test/app/app_flow_test.dart: les résultats réussite et échec gardent leurs actions
+00:49 +20: C:/dev/PapattesParc/test/app/app_flow_test.dart: le retour Android conserve ou abandonne la partie à la demande
+00:50 +21: C:/dev/PapattesParc/test/app/app_flow_test.dart: le retour est bloqué pendant une opération en cours
+00:53 +22: C:/dev/PapattesParc/test/app/app_flow_test.dart: les grands plateaux sont visibles et permettent le zoom
+00:57 +23: C:/dev/PapattesParc/test/app/app_flow_test.dart: un clic glissé ne désaxe pas le mahjong
+00:57 +24: C:/dev/PapattesParc/test/app/app_flow_test.dart: les aides et les repères animaux sont accessibles
+00:59 +25: loading C:/dev/PapattesParc/test/app/free_game_accessibility_test.dart
+01:00 +25: C:/dev/PapattesParc/test/app/free_game_accessibility_test.dart: free configurations remain accessible at text 200% Size(320.0, 568.0)
+01:07 +26: C:/dev/PapattesParc/test/app/free_game_accessibility_test.dart: free configurations remain accessible at text 200% Size(800.0, 360.0)
+01:11 +27: C:/dev/PapattesParc/test/app/free_game_accessibility_test.dart: free configurations remain accessible at text 200% Size(1024.0, 600.0)
+01:16 +28: loading C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart
+01:17 +28: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: (setUpAll)
+01:17 +28: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 800x360
+01:20 +29: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 360x800
+01:20 +30: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 800x1280
+01:23 +31: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 1366x768
+01:25 +32: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: références des parties libres 1920x1080
+01:30 +33: C:/dev/PapattesParc/test/app/free_game_visual_regression_test.dart: (tearDownAll)
+01:30 +33: loading C:/dev/PapattesParc/test/app/mahjong_visual_regression_test.dart
+01:32 +33: C:/dev/PapattesParc/test/app/mahjong_visual_regression_test.dart: (setUpAll)
+01:32 +33: C:/dev/PapattesParc/test/app/mahjong_visual_regression_test.dart: références visuelles du mahjong
+02:01 +34: C:/dev/PapattesParc/test/app/mahjong_visual_regression_test.dart: (tearDownAll)
+02:01 +34: loading C:/dev/PapattesParc/test/app/menu_visual_regression_test.dart
+02:02 +34: C:/dev/PapattesParc/test/app/menu_visual_regression_test.dart: (setUpAll)
+02:02 +34: C:/dev/PapattesParc/test/app/menu_visual_regression_test.dart: références visuelles du menu
+02:07 +35: C:/dev/PapattesParc/test/app/menu_visual_regression_test.dart: (tearDownAll)
+02:07 +35: loading C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart
+02:08 +35: C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart: (setUpAll)
+02:08 +35: C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+02:29 +36: C:/dev/PapattesParc/test/app/numberlink_visual_regression_test.dart: (tearDownAll)
+02:29 +36: loading C:/dev/PapattesParc/test/app/responsive_layout_test.dart
+02:30 +36: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(320.0, 568.0) text 1.0 and keep playable boards
+03:11 +37: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(320.0, 568.0) text 1.5 and keep playable boards
+03:38 +38: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(320.0, 568.0) text 2.0 and keep playable boards
+03:59 +39: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(568.0, 320.0) text 1.0 and keep playable boards
+04:29 +40: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(568.0, 320.0) text 1.5 and keep playable boards
+04:41 +41: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(568.0, 320.0) text 2.0 and keep playable boards
+04:48 +42: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(800.0, 360.0) text 1.0 and keep playable boards
+04:54 +43: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(800.0, 360.0) text 1.5 and keep playable boards
+05:02 +44: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(800.0, 360.0) text 2.0 and keep playable boards
+05:08 +45: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(390.0, 844.0) text 1.0 and keep playable boards
+05:14 +46: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(390.0, 844.0) text 1.5 and keep playable boards
+05:20 +47: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(390.0, 844.0) text 2.0 and keep playable boards
+05:26 +48: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(844.0, 390.0) text 1.0 and keep playable boards
+05:31 +49: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(844.0, 390.0) text 1.5 and keep playable boards
+05:38 +50: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(844.0, 390.0) text 2.0 and keep playable boards
+05:46 +51: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(611.0, 896.0) text 1.0 and keep playable boards
+05:54 +52: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(611.0, 896.0) text 1.5 and keep playable boards
+06:01 +53: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(611.0, 896.0) text 2.0 and keep playable boards
+06:09 +54: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(1024.0, 600.0) text 1.0 and keep playable boards
+06:17 +55: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(1024.0, 600.0) text 1.5 and keep playable boards
+06:23 +56: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(1024.0, 600.0) text 2.0 and keep playable boards
+06:28 +57: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(1024.0, 768.0) text 1.0 and keep playable boards
+06:35 +58: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(1024.0, 768.0) text 1.5 and keep playable boards
+06:42 +59: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(1024.0, 768.0) text 2.0 and keep playable boards
+06:49 +60: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(900.0, 900.0) text 1.0 and keep playable boards
+06:54 +61: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(900.0, 900.0) text 1.5 and keep playable boards
+06:59 +62: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(900.0, 900.0) text 2.0 and keep playable boards
+07:03 +63: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(2560.0, 1080.0) text 1.0 and keep playable boards
+07:10 +64: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(2560.0, 1080.0) text 1.5 and keep playable boards
+07:17 +65: C:/dev/PapattesParc/test/app/responsive_layout_test.dart: eight games fit Size(2560.0, 1080.0) text 2.0 and keep playable boards
+07:24 +66: loading C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart
+07:25 +66: C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart: (setUpAll)
+07:25 +66: C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart: références visuelles du solitaire
+07:46 +67: C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart: la carte reste prioritaire sur un écran court
+07:47 +68: C:/dev/PapattesParc/test/app/solitaire_visual_regression_test.dart: (tearDownAll)
+07:47 +68: loading C:/dev/PapattesParc/test/app/visual_regression_test.dart
+07:48 +68: C:/dev/PapattesParc/test/app/visual_regression_test.dart: (setUpAll)
+07:48 +68: C:/dev/PapattesParc/test/app/visual_regression_test.dart: références visuelles responsive
+08:30 +69: C:/dev/PapattesParc/test/app/visual_regression_test.dart: (tearDownAll)
+08:30 +69: loading C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart
+08:31 +69: C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart: un groupe visible rejoint seulement une zone compatible
+08:31 +70: C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart: les 45 mélanges possèdent une solution de référence valide
+08:31 +71: C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart: un indice suit la solution connue et reste limité à trois
+08:31 +72: C:/dev/PapattesParc/test/games/familles_du_parc/animal_sort_functional_test.dart: la progression conserve le meilleur nombre de déplacements
+08:31 +73: loading C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart
+08:32 +73: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: les difficultés libres produisent des parties plus complexes
+08:35 +74: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: une tuile bloquée est refusée et une paire libre est retirée
+08:35 +75: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: trois mélanges au maximum modifient les empreintes
+08:35 +76: C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart: campagne et records libres restent séparés
+08:35 +77: loading C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart
+08:36 +77: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les 45 niveaux démarrent sans alignement et avec un coup possible
+08:36 +78: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: un échange invalide ne consomme pas de coup
+08:36 +79: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: un carré crée un éclaireur
+08:36 +80: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les lignes de 6 et 7 créent leurs cadeaux distincts
+08:36 +81: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: deux alignements indépendants créent deux bonus
+08:36 +82: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: une ligne de 6 prime sur une intersection superposée
+08:36 +83: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les familles de combinaisons amplifient leurs zones
+08:36 +84: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les zones ignorent les cases inactives et ne suppriment pas les paniers
+08:36 +85: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les éclaireurs ciblent chaque type d’objectif
+08:36 +86: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: patte et bonus transforment le plateau sans boucle
+08:36 +87: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les feuilles bloquent leur case et partent par un alignement voisin
+08:36 +88: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: chaque objectif nomme les obstacles à retirer
+08:39 +89: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: le HUD reste compact et sans doublon sur chaque format
+08:40 +90: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: tous les paramètres libres créent un plateau jouable
+08:40 +91: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: un échange valide déclenche la résolution complète
+08:40 +92: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: les cascades exposent chaque progression avant le total final
+08:40 +93: C:/dev/PapattesParc/test/games/pattes_friandises/match3_functional_test.dart: la progression match-3 reste séparée et conserve le meilleur score
+08:40 +94: loading C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart
+08:41 +94: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: les cinq tempéraments couvrent les 45 missions
+08:41 +95: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: les 45 missions sont jouables sans hasard
+08:41 +96: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: le certificat mène à une victoire complète
+08:41 +97: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: une défaite ne révèle pas les autres animaux
+08:41 +98: C:/dev/PapattesParc/test/games/refuge/functional_game_test.dart: la génération experte respecte le budget de performance
+08:42 +99: loading C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart
+08:42 +99: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: les déplacements, poussées, blocages et annulations restent cohérents
+08:43 +100: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: une caisse ne peut pas en pousser une autre
+08:43 +101: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: les empreintes suivent le nombre de poussées de référence
+08:43 +102: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: les 45 niveaux sont valides et atteignables au nombre de poussées annoncé
+08:43 +103: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: la progression reste séparée et conserve le meilleur résultat
+08:43 +104: C:/dev/PapattesParc/test/games/repas_animaux/repas_animaux_functional_test.dart: la partie libre génère chaque format avec une solution certifiée
+08:43 +105: loading C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart
+08:44 +105: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: les 45 niveaux sont distincts, couvrants et certifiés uniques
+08:49 +106: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: les tracés, blocages et rétractions conduisent à la victoire
+08:49 +107: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: la difficulté augmente fortement dans chaque palier
+08:49 +108: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: les indices restent visuels et déterminent les empreintes
+08:49 +109: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: la souris, le tapotement et le clavier tracent les sentiers
+08:51 +110: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: les 63 configurations libres restent certifiées et reproductibles
+08:51 +111: C:/dev/PapattesParc/test/games/sentiers_sauvages/numberlink_functional_test.dart: la progression conserve le record et reste isolée
+08:51 +112: loading C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart
+08:51 +112: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: les 45 missions sont déterministes et réalisables
+09:01 +113: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: les empreintes dépendent uniquement des recyclages
+09:01 +114: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la donne contient les 52 cartes une seule fois dans les deux modes
+09:01 +115: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la pioche respecte le mode, le recyclage et l’annulation
+09:01 +116: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: un déplacement légal est réversible et un déplacement illégal refusé
+09:01 +117: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: un double-clic place un roi dans la première colonne libre
+09:01 +118: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la finition sûre envoie les quatre rois vers les fondations
+09:01 +119: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la finition automatique reste visible jusqu’à la dernière carte
+09:01 +120: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: l’indice nomme la carte source et la destination en fondation
+09:01 +121: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: une pile visible vers une colonne vide n’est pas un indice
+09:01 +122: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: l’indice distingue la source verte de la destination jaune
+09:03 +123: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la défausse révèle la carte dessous pendant le déplacement
+09:04 +124: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: le résultat de campagne propose les actions du parcours
+09:04 +125: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: les préférences et records restent séparés par mode
+09:04 +126: C:/dev/PapattesParc/test/games/solitaire_animaux/functional_game_test.dart: la campagne conserve ses records séparément de la partie libre
+09:04 +127: loading C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart
+09:05 +127: C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart: les 45 missions sont déterministes, valides et uniques
+09:05 +128: C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart: placements, notes, gomme et indices conduisent à la victoire
+09:05 +129: C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart: tous les paramètres libres créent une grille unique
+09:05 +130: C:/dev/PapattesParc/test/games/sudoku_animaux/sudoku_functional_test.dart: progression, meilleurs résultats et autres sauvegardes sont séparés
+09:05 +131: loading C:/dev/PapattesParc/test/shared/board_camera_test.dart
+09:06 +131: C:/dev/PapattesParc/test/shared/board_camera_test.dart: zoom, touch navigation and recenter preserve one finger play
+09:07 +132: C:/dev/PapattesParc/test/shared/board_camera_test.dart: a mouse can pan an enlarged board
+09:07 +133: C:/dev/PapattesParc/test/shared/board_camera_test.dart: Repas camera gestures never move the keeper
+09:07 +134: loading C:/dev/PapattesParc/test/shared/campaign_selection_test.dart
+09:08 +134: C:/dev/PapattesParc/test/shared/campaign_selection_test.dart: the list selects before play and a completed campaign shows 100%
+09:09 +135: loading C:/dev/PapattesParc/test/shared/runtime_contract_test.dart
+09:10 +135: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: record policies preserve better values, zero records and separate keys
+09:10 +136: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: migration preserves records, recognizes final victory and remains idempotent
+09:10 +137: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: artwork selects bounded variants without changing logical asset IDs
+09:10 +138: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: Sudoku metadata stays lightweight and background puzzle matches reference
+09:10 +139: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: prepared Mahjong preserves tiles, solutions, and subsequent RNG stream
+09:10 +140: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: Refuge and Repas results survive worker serialization
+09:10 +141: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: cancelled generation cannot install a late result
+09:10 +142: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: clock excludes background time and resumes automatically
+09:10 +143: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: a delayed action stays suspended until automatic resume
+09:10 +144: C:/dev/PapattesParc/test/shared/runtime_contract_test.dart: a prepared level is only delivered when the app becomes active
+09:10 +145: All tests passed!

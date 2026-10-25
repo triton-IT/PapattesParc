@@ -1,3 +1,4 @@
+import 'artwork.dart';
 import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
@@ -34,7 +35,7 @@ class FreeGameScaffold extends StatelessWidget {
             child: Transform.scale(
               scale: wide ? 1.28 : 1.2,
               alignment: wide ? Alignment.centerRight : Alignment.bottomCenter,
-              child: Image.asset(
+              child: ArtworkImage(
                 backgroundAsset,
                 key: backgroundKey,
                 fit: BoxFit.cover,
@@ -168,6 +169,7 @@ class FreeGameDropdown<T> extends StatelessWidget {
                 iconEnabledColor: Colors.white,
                 underline: const Divider(color: Color(0xffe3eee8)),
                 style: const TextStyle(
+                  fontFamily: 'Nunito',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -235,7 +237,10 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) => Row(
+    builder: (context, constraints) => Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      spacing: 8,
+      runSpacing: 8,
       children: [
         if (constraints.maxWidth < 430)
           IconButton.filledTonal(
@@ -251,7 +256,6 @@ class _Header extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_rounded),
             label: const Text('Parcours'),
           ),
-        const Spacer(),
         const DecoratedBox(
           decoration: BoxDecoration(
             color: AppColors.sun,
@@ -260,15 +264,18 @@ class _Header extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.tune_rounded, color: AppColors.deep, size: 20),
                 SizedBox(width: 7),
-                Text(
-                  'PARTIE LIBRE',
-                  style: TextStyle(
-                    color: AppColors.deep,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: .8,
+                Flexible(
+                  child: Text(
+                    'PARTIE LIBRE',
+                    style: TextStyle(
+                      color: AppColors.deep,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: .8,
+                    ),
                   ),
                 ),
               ],

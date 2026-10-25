@@ -1,14 +1,17 @@
+import '../../../shared/board_camera.dart';
+import '../../../shared/artwork.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../shared/animal_background.dart';
 import '../../../shared/animal_catalog.dart';
 import '../../../shared/animal_colors.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
+import '../../../shared/game_stage_layout.dart';
 import '../domain/models.dart';
 import '../domain/numberlink_session.dart';
 
@@ -17,6 +20,7 @@ typedef NumberlinkTraceCallback =
 
 class NumberlinkScreen extends StatelessWidget {
   const NumberlinkScreen({
+    this.elapsed,
     required this.session,
     required this.finished,
     required this.newRecord,
@@ -51,82 +55,65 @@ class NumberlinkScreen extends StatelessWidget {
   final VoidCallback? onNewGame;
   final VoidCallback? onConfigure;
 
+  final ValueListenable<Duration>? elapsed;
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xfffff4dc),
-    body: AnimalBackground(
-      asset: session.level.stage.artAsset!,
-      child: SafeArea(
-        child: Stack(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final wide =
-                    constraints.maxWidth >= 900 &&
-                    constraints.maxWidth > constraints.maxHeight;
-                final board = NumberlinkBoard(
-                  session: session,
-                  enabled: !finished,
-                  onBegin: onBegin,
-                  onTrace: onTrace,
-                  onEndTrace: onEndTrace,
-                );
-                final panel = _GamePanel(
-                  session: session,
-                  wide: wide,
-                  isFreeGame: isFreeGame,
-                  onHint: onHint,
-                  onRestart: onRestart,
-                );
-                if (wide) {
-                  return Row(
-                    children: [
-                      Expanded(child: board),
-                      SizedBox(width: 350, child: panel),
-                    ],
-                  );
-                }
-                return Column(
-                  children: [
-                    const SizedBox(height: 58),
-                    Expanded(child: board),
-                    panel,
-                  ],
-                );
-              },
-            ),
-            Positioned(
-              left: 12,
-              top: 12,
-              child: IconButton.filledTonal(
-                key: const Key('numberlink-back'),
-                tooltip: 'Retour',
-                onPressed: onBack,
-                icon: const Icon(Icons.arrow_back_rounded),
-              ),
-            ),
-            const Positioned(
-              right: 12,
-              top: 12,
-              child: GameHelpButton(kind: GameHelpKind.numberlink),
-            ),
-            if (finished)
-              Positioned.fill(
-                child: _ResultOverlay(
-                  session: session,
-                  newRecord: newRecord,
-                  isFreeGame: isFreeGame,
-                  onReplay: onReplay,
-                  onLevels: onLevels,
-                  onNext: onNext,
-                  onNewGame: onNewGame,
-                  onConfigure: onConfigure,
-                ),
-              ),
-          ],
+  Widget build(BuildContext context) => GameStageLayout(
+    background: ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
+    eyebrow: 'SENTIERS SAUVAGES',
+    title:
+        '${isFreeGame ? 'Partie libre' : 'Niveau ${session.level.number}'} · '
+        '${session.level.size} × ${session.level.size}',
+    backKey: const Key('numberlink-back'),
+    onBack: onBack,
+    helpKind: GameHelpKind.numberlink,
+    metrics: [
+      GameStageMetric(
+        icon: Icons.timer_outlined,
+        label: formatDuration(session.elapsed),
+      ),
+      GameStageMetric(
+        icon: Icons.route_rounded,
+        label: '${session.completedPairs}/${session.level.pairCount}',
+      ),
+      GameStageMetric(
+        icon: Icons.grid_4x4_rounded,
+        label: '${session.remainingCells} libres',
+      ),
+    ],
+    builder: (context, layout) => GameStageSplit(
+      wide: layout.isLandscape,
+      board: BoardCamera(
+        child: NumberlinkBoard(
+          session: session,
+          enabled: !finished,
+          onBegin: onBegin,
+          onTrace: onTrace,
+          onEndTrace: onEndTrace,
         ),
       ),
+      panel: _GamePanel(
+        session: session,
+        wide: layout.isLandscape,
+        onHint: onHint,
+        onRestart: onRestart,
+      ),
     ),
+    overlays: [
+      if (finished)
+        Positioned.fill(
+          child: _ResultOverlay(
+            session: session,
+            newRecord: newRecord,
+            isFreeGame: isFreeGame,
+            onReplay: onReplay,
+            onLevels: onLevels,
+            onNext: onNext,
+            onNewGame: onNewGame,
+            onConfigure: onConfigure,
+          ),
+        ),
+    ],
   );
 }
 
@@ -199,8 +186,11 @@ class _NumberlinkBoardState extends State<NumberlinkBoard> {
                 key: const Key('numberlink-board'),
                 behavior: HitTestBehavior.opaque,
                 onTapUp: widget.enabled
-                    ? (details) =>
-                          _tap(_positionAt(details.localPosition, side))
+                    ? (details) {
+                        if (!BoardCamera.isNavigating(context)) {
+                          _tap(_positionAt(details.localPosition, side));
+                        }
+                      }
                     : null,
                 onPanDown: widget.enabled
                     ? (details) {
@@ -211,10 +201,17 @@ class _NumberlinkBoardState extends State<NumberlinkBoard> {
                         );
                       }
                     : null,
-                onPanStart: widget.enabled ? (_) => _startDrag() : null,
+                onPanStart: widget.enabled
+                    ? (_) {
+                        if (!BoardCamera.isNavigating(context)) _startDrag();
+                      }
+                    : null,
                 onPanUpdate: widget.enabled
-                    ? (details) =>
-                          _drag(_positionAt(details.localPosition, side))
+                    ? (details) {
+                        if (!BoardCamera.isNavigating(context)) {
+                          _drag(_positionAt(details.localPosition, side));
+                        }
+                      }
                     : null,
                 onPanEnd: widget.enabled ? (_) => _finishDrag() : null,
                 onPanCancel: widget.enabled ? _finishDrag : null,
@@ -492,17 +489,17 @@ class _Endpoint extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(2),
         child: animal
-            ? Image.asset(pair.animal.asset, fit: BoxFit.contain)
+            ? ArtworkImage(pair.animal.asset, fit: BoxFit.contain)
             : Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(pair.animal.asset, fit: BoxFit.contain),
+                  ArtworkImage(pair.animal.asset, fit: BoxFit.contain),
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: FractionallySizedBox(
                       widthFactor: .85,
                       heightFactor: .55,
-                      child: Image.asset(
+                      child: ArtworkImage(
                         'assets/sokoban/fence-v2.png',
                         fit: BoxFit.contain,
                       ),
@@ -623,142 +620,62 @@ class _GamePanel extends StatelessWidget {
   const _GamePanel({
     required this.session,
     required this.wide,
-    required this.isFreeGame,
     required this.onHint,
     required this.onRestart,
   });
 
   final NumberlinkSession session;
   final bool wide;
-  final bool isFreeGame;
   final VoidCallback onHint;
   final VoidCallback onRestart;
 
   @override
-  Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.surface.withValues(alpha: .96),
-    child: Padding(
-      padding: EdgeInsets.all(wide ? 18 : 12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (wide) ...[
-            const Text(
-              'SENTIERS SAUVAGES',
-              style: TextStyle(
-                color: AppColors.muted,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .8,
-              ),
-            ),
-            Text(
-              '${isFreeGame ? 'Partie libre' : 'Niveau ${session.level.number}'} · '
-              '${session.level.size} × ${session.level.size}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Relie chaque animal à son enclos et remplis la grille.',
-            ),
-            const SizedBox(height: 16),
-          ],
-          Row(
-            children: [
-              _Stat(
-                icon: Icons.timer_outlined,
-                value: formatDuration(session.elapsed),
-                label: 'temps',
-              ),
-              _Stat(
-                icon: Icons.route_rounded,
-                value: '${session.completedPairs}/${session.level.pairCount}',
-                label: 'sentiers',
-              ),
-              _Stat(
-                icon: Icons.grid_4x4_rounded,
-                value: '${session.remainingCells}',
-                label: 'cases libres',
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  key: const Key('numberlink-hint'),
-                  onPressed: session.hintsRemaining == 0 ? null : onHint,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(40, 48),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                  ),
-                  icon: const Icon(Icons.lightbulb_rounded),
-                  label: Text('INDICE ${session.hintsRemaining}/3'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  key: const Key('numberlink-restart'),
-                  onPressed: onRestart,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(40, 48),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                  ),
-                  icon: const Icon(Icons.restart_alt_rounded),
-                  label: const Text('RECOMMENCER'),
-                ),
-              ),
-            ],
-          ),
-          if (session.completedPairs == session.level.pairCount &&
-              session.remainingCells > 0) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Encore ${session.remainingCells} case(s) à couvrir : '
-              'reprends un sentier.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.muted,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ],
-          if (wide) ...[
-            const SizedBox(height: 12),
-            Text(
-              '${session.footprints} empreinte(s) disponible(s)',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.w800),
-            ),
-          ],
-        ],
-      ),
-    ),
-  );
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat({required this.icon, required this.value, required this.label});
-
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Expanded(
+  Widget build(BuildContext context) => GameStagePanel(
     child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Icon(icon, color: AppColors.primary, size: 20),
-        const SizedBox(height: 3),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: AppColors.muted, fontSize: 11),
+        if (wide) ...[
+          const Text('Relie chaque animal à son enclos et remplis la grille.'),
+          const SizedBox(height: 12),
+        ],
+        GameStageCommands(
+          children: [
+            FilledButton.tonalIcon(
+              key: const Key('numberlink-hint'),
+              onPressed: session.hintsRemaining == 0 ? null : onHint,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(40, 48),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              icon: const Icon(Icons.lightbulb_rounded),
+              label: Text('INDICE ${session.hintsRemaining}/3'),
+            ),
+            FilledButton.tonalIcon(
+              key: const Key('numberlink-restart'),
+              onPressed: onRestart,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(40, 48),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              icon: const Icon(Icons.restart_alt_rounded),
+              label: const Text('REJOUER'),
+            ),
+          ],
         ),
+        if (session.completedPairs == session.level.pairCount &&
+            session.remainingCells > 0) ...[
+          const SizedBox(height: 8),
+          Text(
+            'Encore ${session.remainingCells} case(s) à couvrir : '
+            'reprends un sentier.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.muted,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
       ],
     ),
   );
@@ -789,7 +706,7 @@ class _ResultOverlay extends StatelessWidget {
   Widget build(BuildContext context) => ColoredBox(
     key: const Key('numberlink-result-overlay'),
     color: const Color(0xaa173a31),
-    child: Center(
+    child: GameResultViewport(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
         child: Card(
