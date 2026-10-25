@@ -33,7 +33,6 @@ class RepasLevelSelectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mission = levels[store.unlockedLevel - 1];
     return CampaignLevelSelectScreen(
       title: 'LE REPAS DES ANIMAUX',
       tagline: 'Observe · Planifie · Nourris',
@@ -42,27 +41,37 @@ class RepasLevelSelectScreen extends StatelessWidget {
       keyPrefix: 'repas',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
+      completedCount: store.completedCount,
       progressLabel: 'REPAS DISTRIBUÉS',
-      missionTitle: mission.stage.title,
-      missionSubtitle: mission.stage.species,
-      missionArtAsset: mission.stage.artAsset!,
-      missionStats: [
-        CampaignMissionStat(
-          Icons.grid_view_rounded,
-          '${mission.width} × ${mission.height}',
-          'grille',
-        ),
-        CampaignMissionStat(
-          Icons.inventory_2_rounded,
-          '${mission.initialCrates.length}',
-          'caisses',
-        ),
-        CampaignMissionStat(
-          Icons.workspace_premium_rounded,
-          '${store.totalFootprints} / 135',
-          'empreintes',
-        ),
-      ],
+      missionBuilder: (index) {
+        final mission = levels[index];
+        return CampaignMission(
+          completed: store.campaign.isCompleted(index + 1),
+          title: mission.stage.title,
+          subtitle: mission.stage.species,
+          artAsset: mission.stage.artAsset!,
+          stats: [
+            CampaignMissionStat(
+              Icons.grid_view_rounded,
+              '${mission.width} × ${mission.height}',
+              'grille',
+            ),
+            CampaignMissionStat(
+              Icons.inventory_2_rounded,
+              '${mission.initialCrates.length}',
+              'caisses',
+            ),
+            CampaignMissionStat(
+              Icons.workspace_premium_rounded,
+              '${store.totalFootprints} / 135',
+              'empreintes',
+            ),
+          ],
+          bestResult: store.bestPushes(index + 1) == null
+              ? 'Aucun record'
+              : '${store.bestPushes(index + 1)} poussées',
+        );
+      },
       labelBuilder: (index) => levels[index].stage.title,
       musicEnabled: musicEnabled,
       effectsEnabled: effectsEnabled,

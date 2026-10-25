@@ -1,0 +1,914 @@
+[
+  {
+    "file": "animal-sort-max-1366x768.png",
+    "previous_sha256": "b19501d93105b03bc35884f611f48f8ed53f56a88d8b3960c04fc279eaddb2f7",
+    "reviewed_sha256": "9914973980e3e777e7be67d25487afc6a865b4f53b22dc2d451dbbfa00037497",
+    "reason": "Dix paniers accessibles et proportions du chariot adaptees."
+  },
+  {
+    "file": "animal-sort-max-360x800.png",
+    "previous_sha256": "835e41e20c3cee067b609df1ee71266906213fefd44b27f3324badc94ca5c09f",
+    "reviewed_sha256": "b3fe9fed16e2bf0788c56768977380e291103e53c8d52666f8c7192574f14239",
+    "reason": "Dix paniers accessibles et proportions du chariot adaptees."
+  },
+  {
+    "file": "animal-sort-mission-1366x768.png",
+    "previous_sha256": "5e8cdf83fbe93dfffa00713787818297e0d3504f869b5c39c7153c411cec2c2f",
+    "reviewed_sha256": "8d6bc6ddeca2819ad2e5e7c467d09c95b13dd54e362acd3fa53b52008d0aab7b",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "animal-sort-mission-1920x1080.png",
+    "previous_sha256": "ba2c7dfdbe8720d8cfb2f932f080855a0d682d0780bbf837200767511a7eb6bb",
+    "reviewed_sha256": "c8e3792e0f32a1bea428ec0cc6d7ded73b9d4296693ed369b698786c4d83f88d",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "animal-sort-mission-360x800.png",
+    "previous_sha256": "584227c6d01994b7bb5c6fa0a2bbb0ae8ecdf1108a8a563b9f8fa397f41d52cf",
+    "reviewed_sha256": "9554bfece3f7a39aee5bfe73ab673385d12366c4d1e265b7eb7cc184c230ede4",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "animal-sort-mission-800x1280.png",
+    "previous_sha256": "ae8da806cd9e8969438bcb7e1fdd522a66e35ceb9fa5935f711c0d6ac811fd17",
+    "reviewed_sha256": "7bbfe12a51a6b83413bd2e7d5ee2521117576b93a6581275183cb039f4e6fa49",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "animal-sort-mission-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "5f9dfff7ea510bb6a7a4e936ca83fa9b35d3860698cb44f35f19ea70b471f0a9",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "custom-1366x768.png",
+    "previous_sha256": "c4e9d4b41041876c28d029e3d54c7edb1c4c8da005221cea1bdd267beb7bafc0",
+    "reviewed_sha256": "cd44da874d75de329e06cca85887446f42d613749516e97b6ba7bbe765114a5b",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "custom-1920x1080.png",
+    "previous_sha256": "e3bf9f49d3c8e043c5d2f36a9b4d13b03a0371e84936c9a6944cf52bbd9cdc1e",
+    "reviewed_sha256": "815a4ca5b682e563f70adb6a1c4d340cb88d23a3dc562b08fd0ada705049ec60",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "custom-360x800.png",
+    "previous_sha256": "3bae811659843762221ac35c99763281c464a006b7f3c0ce637fb126cadc4c6d",
+    "reviewed_sha256": "da1663d18df4553eaeeaa4eae88734d6cabfbeae2dfc76814524496d6eb105c0",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "custom-800x1280.png",
+    "previous_sha256": "1f372793af85162515328fd5ba8c81f1baae919b3fe8a55ec3bafa5cce897600",
+    "reviewed_sha256": "c4f2dfd8703b1a38d88835130eeafd335c30ca0b1a67f7f2bf543e0eb9aa7d9a",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "custom-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "8a81800b5297586f80cd92a80bed8067ef6f7d265036ab24dd1725e799ff6e55",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "home-1366x768.png",
+    "previous_sha256": "5d2d3d03be0d2f7c5403a3ef19681daeba1c803086c9757947bd974e850d0468",
+    "reviewed_sha256": "2f013012f14dd96ea895926d682d588eb9f444eabe5ed7b0ce7e0db4d4b8db4f",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "home-1920x1080.png",
+    "previous_sha256": "cfa8261eb25fad135008a6ce38a302865632824f9d630c42a3eb7efa153793c2",
+    "reviewed_sha256": "b253f5e9d5bc240d1c52ba2cb39ebd43b8799b15a96cdc4593b5fe5dd5594d9e",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "home-360x800.png",
+    "previous_sha256": "25184d6539b271d4801b825c28e3fc8fc6e5bc2c0ef8f5a7479996daaaf33ddf",
+    "reviewed_sha256": "c7e87aa5b9939f2af2688992b05620dc3de1cfd0f252ace94e26cf04cb80d7a6",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "home-800x1280.png",
+    "previous_sha256": "509a06c8b9f3392cd933b06ce875f85ded053ab0513b8bb0c5737166451ea379",
+    "reviewed_sha256": "ab5b5af281966cfa5ca955c2d12347478bb1bbf8590d6bfea610a3ef1fc0099e",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "home-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "a52e58858ae4387fd74b987ee9ecc237f727fa9e8783c2d89c89076af20bf7de",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "mahjong-custom-1366x768.png",
+    "previous_sha256": "f202497219b2d184146c33649563669f0ff3aef012b9ed7c7642dd2c31eb48c0",
+    "reviewed_sha256": "d27edcd3c7cea261903e79f04f48982750737635a8e5f5ca78b51882a75823f5",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "mahjong-custom-1920x1080.png",
+    "previous_sha256": "3a7804495eb6f5f108d9b16ec9972e6edda1b930c65d80a9753c9d36b499ea40",
+    "reviewed_sha256": "f4fe97aeefeea91f60b457314f876430aac5c044fc51295ce86e7da3226fecd5",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "mahjong-custom-360x800.png",
+    "previous_sha256": "a4bc6b0b3b38f1384be53c467412c61735c73808ab149a0044890f3283c44a43",
+    "reviewed_sha256": "a0a2243e9ea670e0fb5a49b92ec8323ccc936e37e7d9290494168ea913bf856d",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "mahjong-custom-800x1280.png",
+    "previous_sha256": "10d1806d1c7dbfcfa46b4d0231b3eb2d7932d6f29210684042d9329456f49ed6",
+    "reviewed_sha256": "45a12b156470595da0c5e44dc344bcf667c97d1adcc4e935e31b12b25e92fc56",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "mahjong-custom-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "103ace468f55401f2305e9864b986fe057a962a80c4201d105e414c5ef54e619",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "mahjong-levels-1366x768.png",
+    "previous_sha256": "aaa0088ab55baca0d3418c13cddd993ce102246dba0919fcd61e1a5801fe4830",
+    "reviewed_sha256": "16cb5a61f207db0c4f74dc390d2d7659e10a9f5253c1535302ae76f380c6da70",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "mahjong-levels-1920x1080.png",
+    "previous_sha256": "05d5ac0748306939be06e18f0e9facc1682eea8d46c129a6a961ec62ba533290",
+    "reviewed_sha256": "c1a51d2486f4caaa408cb6889751622ed0856f8dcccbdc86e8270e00e1a9c35b",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "mahjong-levels-360x800.png",
+    "previous_sha256": "0ade31e05a703d1566f5e9b702563bd108c69adc8cc5f65c2531480b111e2f54",
+    "reviewed_sha256": "b06109342076d10c36a941b861a763089fc538636c575c1ec24315710153b6b6",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "mahjong-levels-800x1280.png",
+    "previous_sha256": "66bb60e31a9e5f95c6e2374dc35360ee49be188b2e0676ab7910949dc97c5b4a",
+    "reviewed_sha256": "6165048c588d58df223856d965da98ea73fa7232bc98b3dda6f1dd45de10a97d",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "mahjong-levels-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "e26157bf5bf5fe61f8cfbfbd64d0d50286f174ad25a72bc196272b80ebc0a855",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "mahjong-mission-1366x768.png",
+    "previous_sha256": "ad218905a4c43a61cb75b4d9414b7193e2336ce0f3fafb522fd753a64df82501",
+    "reviewed_sha256": "ee793817b32519e316db20974e456d73113ac6540be995fd7bcbf48a813e499e",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mahjong-mission-1920x1080.png",
+    "previous_sha256": "5b4a5365a358b8658495fd9085f407ec1a9a8e3c92bd9cdbf6a9e9e1ed60b220",
+    "reviewed_sha256": "5d61af3adcc46597414c7f377c8faa0dae2f6158778f36880c6dd9a94cc8670c",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mahjong-mission-360x800.png",
+    "previous_sha256": "0b6ce1d10e457ba4606d83d529094d1cb3bfdd61f6970272a4d4dbcdb8824611",
+    "reviewed_sha256": "cd0e8e17874ec7ec2eeb64c5179f5c5cfeb22f569ffef4eb2a1a6c19d1e3ec81",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mahjong-mission-800x1280.png",
+    "previous_sha256": "0a0aaf484944269266b7626668f278d310aed40044d5058b1a6f8217962aef7e",
+    "reviewed_sha256": "857b5b43ca5443fd67dc930441d29515241419043e3df47410c3be22149adf9d",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mahjong-mission-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "11a01ae3fa09bd0eb39f1ee89ec3a7f22582a96103e10dc326436896233eabf8",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mahjong-result-1366x768.png",
+    "previous_sha256": "82229515b812022e7df57384224a0705faadd59124c3d903b3c31039fdc8934a",
+    "reviewed_sha256": "28eb0af82cf08daa6be854ffc6efffd6e57c65ca8e9db013a8c20c753ea1c83f",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "mahjong-result-1920x1080.png",
+    "previous_sha256": "7822c4711cc05088a3d8d7673efe2ab004796a8bbebd6e0473d0f14be52cddb6",
+    "reviewed_sha256": "066bf06c01baf11e444bb3230e3715f11aa42af6e8e24227bbea1e59acc153fb",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "mahjong-result-360x800.png",
+    "previous_sha256": "2241c096ece191a42d6f1bfd83779b0b5cacd74f49a2720be5def8373b8f20ff",
+    "reviewed_sha256": "223f96dcb28b6187a5c3a0511e7cf8829b047975a051765573c40da2cd4cc494",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "mahjong-result-800x1280.png",
+    "previous_sha256": "a3432d5f67ed99a4fe559500e76b0f94b46371f67086fe725fe559c0f911cc3d",
+    "reviewed_sha256": "009ca5b50a5b7bec3f4d1e2a78271e5474cff1db01e06deb9acb9052d4ee04b0",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "mahjong-result-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "e066c84c4656c61042936c40a1666c43168e4df6ef41dd190a679233400971da",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "match3-custom-1366x768.png",
+    "previous_sha256": "2f1fe8f3a012d73997eaae5106bc8eced821f64453de084c2100d2dc456a0909",
+    "reviewed_sha256": "fffb9fe0198bd77b0cd4c00490b07faa67d4f4479da89afa9b81350b81a91538",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "match3-custom-1920x1080.png",
+    "previous_sha256": "ace81979c66dd187428543b9db46c32f97f14f5ec60d93bbe8c7235d217867b1",
+    "reviewed_sha256": "306a28fc59bc8f16eb0bdecc3711b238208f16dc439edc66305d9aa3800f7682",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "match3-custom-360x800.png",
+    "previous_sha256": "d3d4b57761ed6b43eeb72aec1415d48b273aeb2e3948a1a74abba3487b5ec2d0",
+    "reviewed_sha256": "045e429af1f26f1644583910fa03978d74e95ebba19346f4bdb6ee698570f35f",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "match3-custom-800x1280.png",
+    "previous_sha256": "ac75a391514fc34d2b81cb525ebf7ee754c16d854b3bc90968dae08f8e4d3ee9",
+    "reviewed_sha256": "88398b5ce85f9fe0c31ec79dc8830e37d85043fd51198a82691151c9df749b9f",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "match3-custom-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "f1ee21a412d8b362161c7c164e76b788037a54ab8299b8a497f1946256aab347",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "match3-levels-1366x768.png",
+    "previous_sha256": "65bef0ee28e93b530ad00b9f2508257ec76a6d120ea776788ae586b119c56e6d",
+    "reviewed_sha256": "2de563908a9042d6b6d6327b40cdf8eba49bbb7dd49b927263245325b1e540c0",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "match3-levels-1920x1080.png",
+    "previous_sha256": "1a73f154d1c42ed575110a6f95bc3333735cdd2707f6737542b0170a69342296",
+    "reviewed_sha256": "19181bcc10648f3d0b7fb444661b2cdabeff8c9ccbe0e889953809b7739ebc78",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "match3-levels-360x800.png",
+    "previous_sha256": "46543e96d4c27b5d869800ace07be5e4127fe84471b2f9fccd07bc02f94de4d7",
+    "reviewed_sha256": "c8b4b4512924991a48ca745c51c5b25b1dd04b98960fda26c5e3f14a6ed5f530",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "match3-levels-800x1280.png",
+    "previous_sha256": "f6cdf57f8e0ccaa7413c5c1ea771872abfff4cc6efb73923eb0e7fa8c29e16b9",
+    "reviewed_sha256": "3e0955565c97af931b661ab585c6721799369ab6242e464cc55c79aa5595cd43",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "match3-levels-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "78b8935f5abb1bb20245c3ccbf8c0985cfe8ab2e581359a2d5c7260bdd13b9a4",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "match3-mission-1366x768.png",
+    "previous_sha256": "bc28a5907a7fca73242a0094b8cc8797b37648f87ec12ecb5320d0c2eaba9bae",
+    "reviewed_sha256": "df36b1c5ab728a3a787acf0f2a9063b12f9091fffbb3cfa9f91ec20ad3955b45",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "match3-mission-1920x1080.png",
+    "previous_sha256": "fcfeece5c54d21511fb3c593cfff03b9e3e21e96bddc5ea029b9e1e5e95a41ff",
+    "reviewed_sha256": "c3175744e1a72baa1d1903db3d1bb7c76a346618497c745f2767432b39e61f0f",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "match3-mission-360x800.png",
+    "previous_sha256": "be2181473102c4c962053beee480e1315ab967b7b28dbc45bbadfee2e40cdf27",
+    "reviewed_sha256": "a54a30e3ac74b18e11b8f2cc359e3d125864a9b992078545668d8e1eee2e3859",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "match3-mission-800x1280.png",
+    "previous_sha256": "34effd7e1e7f65a5e1e8738820a684d1a349f17e2e50794da02ad653e92e9e4b",
+    "reviewed_sha256": "0d64733ecbaa0367a052b07e63813d686da01b5bd365189944566515205ece92",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "match3-mission-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "a004cfc31e32f90c3c612647608d67f730ff209d0a8ffe6fd0721e975e92bc0d",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "match3-result-1366x768.png",
+    "previous_sha256": "6786fb270b2c5fd79c0855a1de8b4b914606303f767e7555efe63b7de80e291b",
+    "reviewed_sha256": "02f06dee462d1f34cc25d6b7297a726b7c0588bbc563a0a2ea73ff6ca890ecf3",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "match3-result-1920x1080.png",
+    "previous_sha256": "6c528788a59f47d8b4a3a23040bfc56146bb786d474e24c5aa22258bc31a59bb",
+    "reviewed_sha256": "b1bc603246e979ae2f8cdca224b1a3241b72354e9f2682c4e2bbb8105771a4a8",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "match3-result-360x800.png",
+    "previous_sha256": "bc4a9e7042bfb70338dbfea716de9d4ff0fa5ca24af85dd4c669e6bcce6a4472",
+    "reviewed_sha256": "a434e4f05db575035f078aa48109315d220e07679d0c7cacf840bf444edf000e",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "match3-result-800x1280.png",
+    "previous_sha256": "b4ca97a7950a4a7796ceb9dcf1171c04e92adc7d8d9b4d2720c696c45b7a6ae3",
+    "reviewed_sha256": "603799e054906811d47cc89a4f916abf2079218d0b717ef669a7350db2f5425e",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "match3-result-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "a12f58de7fe19359287ae186b3241605ffb94a6caf7cec5a5b544143d49e8b1e",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "menu-progress-1366x768.png",
+    "previous_sha256": "a7e6b39f6d78a42e43a6ac441ff5b615753fb1dc0491a046c901d94c151c1d4a",
+    "reviewed_sha256": "489e1c722269ab428eece879a330642ce6109beec903532bcb554d7672e60b61",
+    "reason": "Catalogue huit jeux, progression terminee et vignettes optimisees chargees."
+  },
+  {
+    "file": "menu-progress-1920x1080.png",
+    "previous_sha256": "965bbba7b24ca2209ca977deffb502873e1764b1fdd77c122ae40eb6d5f782f7",
+    "reviewed_sha256": "7533ffc29dc580b3ab6f629f5388c5d8b11f259f7b4f341b0b29c5e2f0f8aab1",
+    "reason": "Catalogue huit jeux, progression terminee et vignettes optimisees chargees."
+  },
+  {
+    "file": "menu-progress-360x800.png",
+    "previous_sha256": "1de548ee2268a802b6d8989b80c1d5daa77ab461085f26b4d3780965fa8e4dde",
+    "reviewed_sha256": "d4dfca6ca3574beab504980fe3afdff2e1a77d2653c406e65e18dfd3e712ae5a",
+    "reason": "Catalogue huit jeux, progression terminee et vignettes optimisees chargees."
+  },
+  {
+    "file": "menu-progress-800x1280.png",
+    "previous_sha256": "752433bea5b36138383b173b0b2bb4d34c318bbef52ff5553b51cc12f364d326",
+    "reviewed_sha256": "3a222b57c7dd132e8aab0c63490c01ca71a6ad65aa4bb9047b7a9c89f26acccb",
+    "reason": "Catalogue huit jeux, progression terminee et vignettes optimisees chargees."
+  },
+  {
+    "file": "menu-progress-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "19ccd3fd718da0450c459d31b97e524a13c9a4608be6e523a645752bf9f357c3",
+    "reason": "Catalogue huit jeux, progression terminee et vignettes optimisees chargees."
+  },
+  {
+    "file": "mission-1366x768.png",
+    "previous_sha256": "5a71ec8cfb8e319ad93709a89b509dfa78afdd6ffef46842b5fefb256ba35fe6",
+    "reviewed_sha256": "6b71e36227f8c145584d476c3502745e518b11aad59f8c9c3275b21dc5d43f54",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mission-1920x1080.png",
+    "previous_sha256": "8faaa1509ee136ee2a1a914105198c96d9e2158cc6c1a7ef4d958b2079afc1e4",
+    "reviewed_sha256": "79ba3f9ab0e692ac13da88d20fabf87b2939f041c212ed6aa222cdd94ecebd11",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mission-360x800.png",
+    "previous_sha256": "8672ef21d71252f26621181dbb76019d5ec7efddfc192943de0dee6cb5c4f8f6",
+    "reviewed_sha256": "1e5d4fbee5c6bea62f769f56d5644574c6982845762fa2f60dc8d18cfe493616",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mission-800x1280.png",
+    "previous_sha256": "4f6fe9120beff276a4caac3028d3997b8a9382ad45d68f88f80e43728f1cc0c4",
+    "reviewed_sha256": "d9bc0ac57e61080fe96aee8736cff1fca330196366b10064d54a77a0806a8ca0",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "mission-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "afbc5e3dad11e0ec2db5372dc12632818445b054a4a90bc0ee72ee667bff5e82",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "numberlink-custom-1366x768.png",
+    "previous_sha256": "b76ad9f3b66f995f7977429c56bc8a62aa74b7d4edc770ac318db41e14094ec4",
+    "reviewed_sha256": "bbdd6db7ada37049d515e1735cbb0c6a0217bc93fc3bfbcff0399205d0c8fafc",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "numberlink-custom-1920x1080.png",
+    "previous_sha256": "d200c86cf2f8fce69945e90c13d08aee8c0f9e86a7e489ca0697037550d81a28",
+    "reviewed_sha256": "493d4e414d1c69416d9dbb7bc8caeee44c5c383c692b7c9bb8a8ac5bc8cf8395",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "numberlink-custom-360x800.png",
+    "previous_sha256": "5224befce2e4e764990531874e03c50c3673aae86336e3946b29f46361303476",
+    "reviewed_sha256": "057a897f899a60781eab0e668c431b0350c0bb2c2db9ad2b362959907017e880",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "numberlink-custom-800x1280.png",
+    "previous_sha256": "9eedb703f931c16472b4ac2270ab17bafef70ad367090370bb0d0a0e53fdc8dd",
+    "reviewed_sha256": "e1f558dd790942d61bb213e0419ee111f3dce11b166f5e9bcd544fd4ccea5429",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "numberlink-custom-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "906f0c4e95c568bcaad92fd9927c4d9235aa8f63815ccf7ccf72aa327610d38e",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "numberlink-levels-1366x768.png",
+    "previous_sha256": "e6fd449f5f069a15b78fd23b23b88a2b29ec5f88ad59cd178597791e2d4ed045",
+    "reviewed_sha256": "fda4987248ceb6e03005d4a9c8cb286b63327fe0f51027152311713fd00d957a",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "numberlink-levels-1920x1080.png",
+    "previous_sha256": "5791958f2cb9b10f12d433974f923c7d0a2d695c254a89175ab60652c9a157b4",
+    "reviewed_sha256": "a20eef9d4ff5a5ea7eb57773fe809148e15c6d78155919d49fe0978e60f707c7",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "numberlink-levels-360x800.png",
+    "previous_sha256": "946affc7c6bd8e6b637b87e40367940f148faab806f35611ed7454ac9f81329b",
+    "reviewed_sha256": "6feae1fc34d7593f87ff60dab6e5a968bee55e5f89ecdf6e268eff8d1068eb70",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "numberlink-levels-800x1280.png",
+    "previous_sha256": "d82dd75c69765ec7911fffa3dcbaa72fd9ac02d357227d45151c278554acb1ae",
+    "reviewed_sha256": "765296c4735a7683f4a634068b8c728d576662a116b8586098ae104470ccf28b",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "numberlink-levels-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "2ddc2008e25a8199a8ae05f6fa20c56cbee73e9562d68bc3b5c4725d122e36e1",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "numberlink-mission-1366x768.png",
+    "previous_sha256": "8a7016e2d7945e503ecc8bc26b9bfbca2401f61b320e8255cc11de7a8ec184e9",
+    "reviewed_sha256": "66fc499baa9cd476eb16d867849520230eb06f9282432164d399b5ffdc26a58d",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "numberlink-mission-1920x1080.png",
+    "previous_sha256": "0cd0994d80e3ea4067664177e1ae2c148bcd020493df0e015679f78a6b3e6b27",
+    "reviewed_sha256": "654e7c72d0960678641d5781db0ffab5e432cb76a970af37582bfa4a2304cfa6",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "numberlink-mission-360x800.png",
+    "previous_sha256": "bb5384a988007cbbc3c82d0462233b1ffbb8c47cd934f7aa89c97f132905efb1",
+    "reviewed_sha256": "61040c207f75cfde4be894b4057881d4bf84501dae8586442b20a17c0617abdd",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "numberlink-mission-800x1280.png",
+    "previous_sha256": "7eda88f6aae3b3a143796c6e02a8a5d7938da376351d620a9a4c1fde3756d44a",
+    "reviewed_sha256": "43b4c7d71227d2c8d85c2f24bf945171173810570ce33e52732f2f4ac09b2159",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "numberlink-mission-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "aac645786029de206b3ff4b985ee23d866114e91f028ef1f64321b862b5c54d4",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "numberlink-result-1366x768.png",
+    "previous_sha256": "60df610f12ad2332e9079789602831cc67cdffe8d1fc5a4e629998188184b4b6",
+    "reviewed_sha256": "c47e5f33fb7378b4e5ef85c4097cddbd90e69dc6a84a7c5e60ef4ca69c5e5481",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "numberlink-result-1920x1080.png",
+    "previous_sha256": "874ee1840b43693552a64bde01630b2723ee5a2b73f54d4bd66b03b646ab4ab0",
+    "reviewed_sha256": "a44feb01c0b865d343c2f3d0a007eaaf939501cdefb078615b0f5bee39c85006",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "numberlink-result-360x800.png",
+    "previous_sha256": "8961970ba574cf75565ce4cf583425f530fe9026b61d203c6c242e461f031da5",
+    "reviewed_sha256": "ce6ab8a436ac8fc80d96b467d0d436aaebf9ea7ba622612d4cc28d0d2639eb8c",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "numberlink-result-800x1280.png",
+    "previous_sha256": "abf9e9919208ec18dc870ec4c1ccfe79c3569252728a474f42247ac70809e38c",
+    "reviewed_sha256": "46501ddd264f42e286330282f3feb19c0db8e1a4b6cb055827de41cce3bf37db",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "numberlink-result-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "d93183c96fd068dea41558b1895a8d473bf9f965fdf441a5c18b9f353a8796e0",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "repas-custom-1366x768.png",
+    "previous_sha256": "904fcc22fb3cb43bbd8cd6224564ef2145d315d1b17d50d4f7b8dd1c0cbb4fa8",
+    "reviewed_sha256": "5ac437f4b2ae50a54cda145b6075314f144746926bd242140ecd7f7cea88ad67",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "repas-custom-1920x1080.png",
+    "previous_sha256": "87f082ab4eeea7b1965d0f4b0f423d887a5d55279999ccdd720cb23e5c2b6de1",
+    "reviewed_sha256": "19efe53ed2cb4cad65402d24b1ec090202283b572b932148988e6541a79eedea",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "repas-custom-360x800.png",
+    "previous_sha256": "9dfe37c7b1f8eb1cc22f65698d2589155a2b470044da85d94adaf57ef533e531",
+    "reviewed_sha256": "7c5aa34a9c6d1159dd8f203d82fdf2dda4ca14b7930550a1cf5834e42e61aac3",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "repas-custom-800x1280.png",
+    "previous_sha256": "fc5a8514c46bc8e0b2733462a7da8923ac5d393cffcd3084d7a42a3d08b78d2d",
+    "reviewed_sha256": "9bf594e39a6a9156c20bf6551100f15e1f01be5c090fd59290f8b853b30370fa",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "repas-custom-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "8ac1c25575ae301a90150231fd60a8c5d7806545c0956a584a689a5336a2784a",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "repas-levels-1366x768.png",
+    "previous_sha256": "cc025c771a675fa3f2fe777e0d1457c1df334aaac529056ae9d2bfe15b07297d",
+    "reviewed_sha256": "07f118eb0372f41a6fcf8f278e3299da1830f4b78fb3f88b0cdfac40e35f1c80",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "repas-levels-1920x1080.png",
+    "previous_sha256": "ae850505164b9162ce1f02fa6bfd20c94a3fecc8a25064e8ebaced5fc6d08785",
+    "reviewed_sha256": "751379fff4e6f1695790a134305200efe158b743bc3e95e3d9cb40348243c2b6",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "repas-levels-360x800.png",
+    "previous_sha256": "d8834609e7c18c0a624e1c33d2bf9e52e99612b51b03d3540dcdc03b9e2a7605",
+    "reviewed_sha256": "79ef6e5b7b629c263e0468e0abff81f7fd30eed16b3d4c400c1fcd3424575654",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "repas-levels-800x1280.png",
+    "previous_sha256": "2aba2cb93e7a606b38f523eccb433653562c1cf8cb5988060686e456bcf19ee8",
+    "reviewed_sha256": "a653675f8a22e95e75e81270fa1ee3bfa3275628ca58675710e6d44d481e3a09",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "repas-levels-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "1a58ceb96d2f883c3cc5f0de0d55ed7b21fcb0abde4984a6953d995c1cb41c37",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "repas-mission-1366x768.png",
+    "previous_sha256": "2915dfd395ca995cd3974e54b1814d4c73d1a3b31411debcce2e38b216d5649c",
+    "reviewed_sha256": "3fdeb6052d3cd5bb3c93d988e15c7be8c890cbe707e8fd5dc7c162ff56c64e0b",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "repas-mission-1920x1080.png",
+    "previous_sha256": "60ddd10a75eee92e872e9275e95384d791421eb2b571e68a4e3ba561726bb480",
+    "reviewed_sha256": "91e90a8f732211d8972af2468c52712fcee071088fea084ff3f05d85921be4db",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "repas-mission-360x800.png",
+    "previous_sha256": "fc2130d9524fe4c02ead0accf7b21083783058f89cf2d80fdb5ddcd15441300d",
+    "reviewed_sha256": "860f8c06bb44b2d3952140048b72edfb1f0a1f0e876c6a9998ffd7bd6aeff63d",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "repas-mission-800x1280.png",
+    "previous_sha256": "d4816ee66acffb3ba3e57bc276b07015cfe022231e22f91a0a4baa2fff3b6666",
+    "reviewed_sha256": "386fa77a4fa4a75cfad711330318d4251c8e1346b0fe356e38092017b0971233",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "repas-mission-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "d71bd436d371825ad1cc0bd4c2b77b4367433c39b9b2540e266ce3fd5c62e134",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "repas-result-1366x768.png",
+    "previous_sha256": "99a7a3087b7c0607731a5361ce067052340ee685cd58119dfaccb36473014db6",
+    "reviewed_sha256": "763a511a7b636434dd9d82f3c2bd7a35cbabcb07635ca34e06fc87bbd9bfa66f",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "repas-result-1920x1080.png",
+    "previous_sha256": "2cd2a2d6a93bc87af45fc8047a8ed1e0c9272ceb94e231a15a29061cca48960c",
+    "reviewed_sha256": "e308e415da287a384c65dbb079e4fb27eaaac6467272bad78daf061aaa73c4a8",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "repas-result-360x800.png",
+    "previous_sha256": "d7fbe1830e8fb3e32182ddbf7d96bb06fbeba1fed807d8d01c19617cd5b5092d",
+    "reviewed_sha256": "4bccd1afd6b2db742d3530648b1f9cf415ef45953458a711766ca685aa4fcc17",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "repas-result-800x1280.png",
+    "previous_sha256": "57cd1fbfccf197a350e51838f68589ce481f649163a74872d789d2cb655aaa41",
+    "reviewed_sha256": "1a40d360fb5530dc8a3961af85ec44faf8cbd11d16a766545f6aad4ffb02274c",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "repas-result-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "c81055ff63debce9e36b9eb14b815ae419c9fd75f8e29505d0eaabc9e4a04731",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "result-1366x768.png",
+    "previous_sha256": "e74cf9e46f10ceb412d2d13c83913a74ce1d03d40bcb8ff69e750ebf339109d8",
+    "reviewed_sha256": "1e7eb11496211d9f70d41322a4eade2e61cec5627ed5c959309a143512a8c322",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "result-1920x1080.png",
+    "previous_sha256": "3bf6bed259d6e7f6952b56733dd19b5252737b6275ca4268c8533b44d86a18f1",
+    "reviewed_sha256": "1d1aeb26d76e6bae59ab08da1eb4765947feaa9897b8cb89d4336b42a4ba6365",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "result-360x800.png",
+    "previous_sha256": "2d9d58b02f6f0141f0335a4afce84ed3b7b4fdf5d73b1ff9458e8fe3fef7f5d3",
+    "reviewed_sha256": "ac174ca0484e65f1a4e230d1e93adf0a0798083cb925b77c147b30daf5e9b6e4",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "result-800x1280.png",
+    "previous_sha256": "a017b54090eec124a51bce374e39b2d8d79359e106cf1b3ddfc4289a268ab9ea",
+    "reviewed_sha256": "725c18fa546081c31a0411569e7a0aea05bcc5b87da821f4d189f45be54dcf8b",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "result-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "6e9133b66e34d02ab0b35a0cb867af61e80b379aaab50f4fc274aa2ff639cf74",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "solitaire-campaign-game-1366x768.png",
+    "previous_sha256": "0599f155d2cc14485db59d1cdad6aeb23c1b134970fbecd34ce026e076445637",
+    "reviewed_sha256": "fe1b33bcfd6fabf966573e96797d4058c1a710794b537ffd764edc8acad7e2d1",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "solitaire-campaign-game-1920x1080.png",
+    "previous_sha256": "92691b9bf3a8286b90c96e2be5e890a2268474ec3188f5ee295425ba1785bf68",
+    "reviewed_sha256": "631640e24771a57f9ed61e4963735afda97f5c7dc9a3d411ee622e66d26e681b",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "solitaire-campaign-game-360x800.png",
+    "previous_sha256": "4e0c7ed9b56583c9dd706f1f7477a9a73e54658b2df87f5f35a508d1deeca4c1",
+    "reviewed_sha256": "2189e8acb8f9deaa888c0bcd58be2b601374e43b7859fb7552736d9dbf37833b",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "solitaire-campaign-game-800x1280.png",
+    "previous_sha256": "58af805771b33dacd97c5e092a876963835985e8f54249ea4a68e38e0f44c984",
+    "reviewed_sha256": "28394d75b255ffc48b336dfbd6415d255eb0742f5b7f5fecf18ca3e0dcb036f4",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "solitaire-campaign-game-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "b8983c9594d78784c926109019d874a04a60fa48a4bf237186c8a01f05113663",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "solitaire-campaign-result-1366x768.png",
+    "previous_sha256": "04fe5ef8c85f9ebb311a6883b4f2941fb76540a66cb6d1de74fe0b67dd45b8ef",
+    "reviewed_sha256": "7d2718ae3938b54e18f39459bd23330f4c7f1b0b3537de4ca3e9fd4d85f7e663",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "solitaire-campaign-result-1920x1080.png",
+    "previous_sha256": "45f31ff2df98c2783cdd820c53158754dc4a3ccf0db2cf67c77062fdcbfac8f7",
+    "reviewed_sha256": "261b936b3da2fb61a35b2c08164d38e09809a275a579d84142e7e6591cf9ba5c",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "solitaire-campaign-result-360x800.png",
+    "previous_sha256": "86893fb40fa417f28f0910b2b977e5ba9ef9b35a79b9717253c5ff89c1defa61",
+    "reviewed_sha256": "7535e75e3ea6cb57090a92ea83bad4fbd392281a4ffd8bd1d2a6c1cb03afe995",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "solitaire-campaign-result-800x1280.png",
+    "previous_sha256": "3788566754be55fab84c25b31feb6c20a420578e778040a6d574ebd4427d2c7e",
+    "reviewed_sha256": "6770e4b22162e22a621926ebf788b6d6473910ad3c3ea9c5c8a7398cc0a796cc",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "solitaire-campaign-result-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "7862d8b5d2ff61da208ebaae722a247f8383c6cb97e072e34d007179aae751e5",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "solitaire-free-setup-1366x768.png",
+    "previous_sha256": "49090ebd92c74f30dd6791341b9bcc0a098730de1842975ed15cee4af5761411",
+    "reviewed_sha256": "970e4b83c52286af0e1b81de6ae25c4694efbb348e41d39e3fb5721b3177c8f7",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "solitaire-free-setup-1920x1080.png",
+    "previous_sha256": "737f2451f4ec770697b0b0a2a3d6917b0351497b48527b5dd597b5262b5a8f82",
+    "reviewed_sha256": "14bd223ebc76b5927a26f90c33da87d9fdd9bb8dd480a1d99b9b3930555cd04c",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "solitaire-free-setup-360x800.png",
+    "previous_sha256": "794702f5e1faea988726b28a99e614147bbead906c5ffd0dcba8dfd8d6b8cbf7",
+    "reviewed_sha256": "8d288e480aeb557831c84693c41d8b7f717fd32ee87191e1dce4d7af86eeeb67",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "solitaire-free-setup-800x1280.png",
+    "previous_sha256": "cdb392ed8e439a3bbf54361d8329fe31b2e908f2c5f5f88580eeeeacad54509d",
+    "reviewed_sha256": "2241776eb84ed0c845beccdc44c50bbc376256d289820e4afa3f1971447a66a8",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "solitaire-free-setup-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "50b09e68f0bdf0c20b35e6aa213e5d0fc473cf88d1060a1348070e93f863b1aa",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "solitaire-levels-1366x768.png",
+    "previous_sha256": "6254ca53b21350b5b6ecd23698723fd4f8075f2e7333bdc36b9d673586d820ea",
+    "reviewed_sha256": "6bb897302663546a2826589f3cd0b1e6da831c4026b3a3b1108a3613a7496564",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "solitaire-levels-1920x1080.png",
+    "previous_sha256": "e1f5e050e41f72dcc0c90a1ac0d1c1fa68fd0a5887c82b01a4cfa858d76a313f",
+    "reviewed_sha256": "5ad2dd5e4a24a735369e6697a59cb65c3755e8e8f4fb3fe07088d91bf5b00c5c",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "solitaire-levels-360x800.png",
+    "previous_sha256": "38045be71f113a496cdcb46cb9c2c634cdd3cda838beb7fe851aaf51f50306de",
+    "reviewed_sha256": "f094782ad3a17e73b803f9b8c9654c65f3554fd8a28cd29d68f1adb6c93aa7f7",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "solitaire-levels-800x1280.png",
+    "previous_sha256": "0a0abc2eb5ab9fab4fe475632fa9319674e30c2773fefd08abaae228d61e6bfa",
+    "reviewed_sha256": "aec0d37e05c1f06d051d4be2364543181ae0f90800f244feaf412ade0a995894",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "solitaire-levels-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "6e82367a3b1cd20fea88cbe1277ac59815998e7eb564865859777ec395e90e51",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "sudoku-custom-1366x768.png",
+    "previous_sha256": "d817e7531d94addec3434176aca8ce3181d7b2b907b8f824c69451e1d3817cbc",
+    "reviewed_sha256": "09194ba6a9e288f65a3ce56f074eb6321f0793816ea129bd8df4b80e0e44b1e0",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "sudoku-custom-1920x1080.png",
+    "previous_sha256": "8d9208cb03cd8bf9ea892e71a353310ce0bba522cd7a83a8f5168feca142d800",
+    "reviewed_sha256": "8761d8ca7f7a7646e2d6e2aa8a227e2bf2fcf9c80b545813cfc34ee3eb58a4d0",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "sudoku-custom-360x800.png",
+    "previous_sha256": "c94b027f1953f845d7d636231b8e37127770eea3dd23325789c0cb7e774843ca",
+    "reviewed_sha256": "9c1115879dc2889d2606d720bd6e04798f880f15e328aea8a9e21a86567e8c25",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "sudoku-custom-800x1280.png",
+    "previous_sha256": "f7fdc0e1548c5c0dfa79fed92a0c7a391f4cedc6b165f2c32d62c76ce2044c26",
+    "reviewed_sha256": "bf27adc2349a3fdd75ce8416209ba6393aec50113b0d55080e91c63052997951",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "sudoku-custom-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "698b1ee7753efcd1d2c77faab486e5f6e8913b9dab173813e6ae00b7c86287dc",
+    "reason": "Configuration defilable, cibles 48px, texte Nunito charge et en-tete adaptable."
+  },
+  {
+    "file": "sudoku-levels-1366x768.png",
+    "previous_sha256": "5484d33ba287bebf8cfab0cb065d315f67d9be8810131550b55c8ac3166133d2",
+    "reviewed_sha256": "3bed60bb51cbd06a2141ce1c0f574e21b4a114f685a2496cab40e7f32727aaa1",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "sudoku-levels-1920x1080.png",
+    "previous_sha256": "47d2d49390c6c23a1a501fe4acde26d9a1912cadbb637ce797d5147bd5cc3ffd",
+    "reviewed_sha256": "abc0af235689a6ba3d12281f758372678719d482cd6cc1eb36779d54d3b7b845",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "sudoku-levels-360x800.png",
+    "previous_sha256": "cf0885fcd5eae65e83793132f9f435f974981eef4fd0e4fa7b9c61048eb54c2b",
+    "reviewed_sha256": "f607983271e8bd177b3655a4c7d097601e2c16369d9dfc248a328d09321c2f8f",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "sudoku-levels-800x1280.png",
+    "previous_sha256": "b3fa512f440e00c1884f224cb277567c871a490dd49b22f125cea8f2559b8c6c",
+    "reviewed_sha256": "6225424fa1abf014094f5dc692cd985d625e76fba9923f8bb264d87c2460823f",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "sudoku-levels-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "7f707045b98bef9bbcf711c3f84867a8b02e672e35fba2cf9a36918201144bad",
+    "reason": "Carte commune, camera conservee, marqueurs 48px, regroupement et fiche avec lancement explicite."
+  },
+  {
+    "file": "sudoku-mission-1366x768.png",
+    "previous_sha256": "31a18cc24b4ae5bc3357988ad49d1da4d9a240d0f97db7764bdc046ca99984d8",
+    "reviewed_sha256": "f0816d89fdebc51faf41d80b20f7d7fd6ef9cf46885f000cff9bd789f9d8e590",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "sudoku-mission-1920x1080.png",
+    "previous_sha256": "c61587fe2191cd745eed7b755e4099cf956b28b1899e1e6b700a9e8cb28484fd",
+    "reviewed_sha256": "841691deab23bf2b4d29c7015e511bba25ad2674a480b359a1c6d1819676aedd",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "sudoku-mission-360x800.png",
+    "previous_sha256": "7c38cfd4a4a2cbc4721ca60b18b0d7906e0e40d83f84453e94e9ea220277dfde",
+    "reviewed_sha256": "d797b739b949cfcce3fb71b54550d7affbaeec1031e14011a3c058dde7189f08",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "sudoku-mission-800x1280.png",
+    "previous_sha256": "ec432ec19ba16bd345d0bf0473d58a976f4c90975a902386d11e0d593386645c",
+    "reviewed_sha256": "1b798cf29440a4dcb246ab5d50a02da64dfef7b70accd5e280d517526c0aa3d0",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "sudoku-mission-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "e0032d61c624b79dda22561e22dcb177bd02cb2b3538c7b8caa7306c16d9d6ad",
+    "reason": "HUD mesure, proportions du plateau, commandes et camera adaptees; illustrations visibles chargees."
+  },
+  {
+    "file": "sudoku-result-1366x768.png",
+    "previous_sha256": "abd40a99073c98578fbb299834ab232e93e606c9e92d742942b22f49643bc6a0",
+    "reviewed_sha256": "1a971fd8fedb2683582edfb2758419b336bcbc35f3435913a9a474f585c339a5",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "sudoku-result-1920x1080.png",
+    "previous_sha256": "f4d2746fd3f7ab59f0b2871df798ee536c184c74ea7ebfca84286dd158a41113",
+    "reviewed_sha256": "05f0e62bedc3f033acb42a826fb2dd3edc4d98c2d9df8475a65affb0ac38e4f7",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "sudoku-result-360x800.png",
+    "previous_sha256": "a94aea7c0c74501dfc3b7f1eaf874a2d814476bfc86cb12f1acaae749dc06651",
+    "reviewed_sha256": "f81a614294a58a0a0779511b3da1fef16d63e822a43df091a07226ef51ebc484",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "sudoku-result-800x1280.png",
+    "previous_sha256": "8a5e819abd192650b07d4b3dfaee62c3734800c13f3f1dede921b40d3343db8d",
+    "reviewed_sha256": "fab6dbdef293a50aa0a2604abaa7efb484548aaaea701c39be0874d9c4577193",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  },
+  {
+    "file": "sudoku-result-800x360.png",
+    "previous_sha256": null,
+    "reviewed_sha256": "6512757cc9492e37d5c5b1de3165058ea07cdbc945181481ad34e0f17cab6087",
+    "reason": "HUD commun mesure, resultat defilable, actions conservees."
+  }
+]

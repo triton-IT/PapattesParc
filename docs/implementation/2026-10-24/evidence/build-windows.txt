@@ -1,0 +1,2 @@
+Building Windows application...                                   115,6s
+√ Built build\windows\x64\runner\Release\papatte_parc.exe

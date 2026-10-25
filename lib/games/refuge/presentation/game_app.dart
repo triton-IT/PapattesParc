@@ -1,3 +1,7 @@
+import '../../../shared/generation_service.dart';
+import '../../../shared/generation_overlay.dart';
+import '../../../shared/settings_store.dart';
+import '../../../shared/game_activity.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -5,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data/progress_store.dart';
-import '../domain/board_generator.dart';
 import '../domain/game_session.dart';
 import '../domain/levels.dart';
 import '../domain/models.dart';
@@ -22,9 +25,15 @@ const _applicationChannel = MethodChannel('papatte_parc/application');
 enum _Screen { home, custom, playing, generating, finished }
 
 class RefugeGameFlow extends StatefulWidget {
-  const RefugeGameFlow({required this.store, required this.onExit, super.key});
+  const RefugeGameFlow({
+    required this.store,
+    required this.onExit,
+    this.settings,
+    super.key,
+  });
 
   final ProgressStore store;
+  final SettingsStore? settings;
   final VoidCallback onExit;
 
   @override
@@ -32,14 +41,14 @@ class RefugeGameFlow extends StatefulWidget {
 }
 
 class _RefugeGameFlowState extends State<RefugeGameFlow> {
+  final GenerationService _generation = GenerationService();
   _Screen _screen = _Screen.home;
   late int _selectedLevelIndex;
   int _generationNonce = 0;
   GameSession? _session;
   GeneratedBoard? _board;
   LevelDefinition? _level;
-  Timer? _timer;
-  DateTime? _lastTick;
+  late final ActiveGameClock _clock;
   bool _newRecord = false;
   late final GameAudio _audio;
   late bool _musicEnabled;
@@ -49,30 +58,32 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   void initState() {
     super.initState();
     _selectedLevelIndex = widget.store.unlockedLevel - 1;
-    _musicEnabled = widget.store.musicEnabled;
-    _effectsEnabled = widget.store.effectsEnabled;
+    _musicEnabled =
+        (widget.settings?.musicEnabled ?? widget.store.musicEnabled);
+    _effectsEnabled =
+        (widget.settings?.effectsEnabled ?? widget.store.effectsEnabled);
     _audio = GameAudio(
       musicEnabled: _musicEnabled,
       effectsEnabled: _effectsEnabled,
     );
     unawaited(_audio.initialize());
-    _timer = Timer.periodic(const Duration(milliseconds: 100), (_) => _tick());
+    _clock = ActiveGameClock(
+      onTick: (delta) {
+        if (_session?.status != GameStatus.running) {
+          return _session?.elapsed ?? Duration.zero;
+        }
+        _session!.tick(delta);
+        return _session!.elapsed;
+      },
+    );
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _generation.dispose();
+    _clock.dispose();
     unawaited(_audio.dispose());
     super.dispose();
-  }
-
-  void _tick() {
-    final now = DateTime.now();
-    final previous = _lastTick;
-    _lastTick = now;
-    if (previous == null || _session?.status != GameStatus.running) return;
-    _session!.tick(now.difference(previous));
-    if (mounted) setState(() {});
   }
 
   void _startSelectedLevel() {
@@ -80,7 +91,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
     unawaited(_audio.playLevel(_level!.temperament));
     _board = null;
     _session = GameSession(_level!.config);
-    _lastTick = DateTime.now();
+    _clock.reset();
     setState(() => _screen = _Screen.playing);
   }
 
@@ -94,11 +105,12 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
     unawaited(_audio.playLevel(level.temperament));
     _board = null;
     _session = GameSession(level.config);
-    _lastTick = DateTime.now();
+    _clock.reset();
     setState(() => _screen = _Screen.playing);
   }
 
   Future<void> _reveal(CellPosition position) async {
+    _clock.flush();
     if (_screen != _Screen.playing) return;
     if (_session!.status == GameStatus.waitingFirstMove) {
       await _generateBoard(position);
@@ -112,6 +124,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   Future<void> _toggleFlag(CellPosition position) async {
+    _clock.flush();
     if (_screen != _Screen.playing) return;
     if (_session!.status == GameStatus.waitingFirstMove) {
       unawaited(_audio.playEffect(SoundEffect.blocked));
@@ -140,10 +153,18 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
     final config = _level!.config;
     final seed =
         DateTime.now().millisecondsSinceEpoch + ++_generationNonce * 7919;
-    final board = await compute(
-      generateBoard,
-      BoardGenerationRequest(config, firstMove, seed),
-    );
+    GeneratedBoard? board;
+    try {
+      board = await _generation.refuge(config, firstMove, seed);
+    } on StaleGeneration {
+      return;
+    } catch (_) {
+      if (mounted) {
+        _showHome();
+        _toast('Ce refuge ne peut pas être préparé. Réessaie.');
+      }
+      return;
+    }
     if (!mounted) return;
     if (board == null) {
       _showHome();
@@ -153,7 +174,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
     _board = board;
     _session!.prepare(board, practice: false);
     unawaited(_audio.playEffect(SoundEffect.reveal));
-    _lastTick = DateTime.now();
+    _clock.reset();
     setState(() => _screen = _Screen.playing);
     await _refreshAfterMove();
   }
@@ -184,14 +205,14 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   void _replaySameBoard() {
     _session = GameSession(_level!.config)
       ..prepare(_board!, practice: !_level!.isCustom);
-    _lastTick = DateTime.now();
+    _clock.reset();
     setState(() => _screen = _Screen.playing);
   }
 
   void _replayNewBoard() {
     _board = null;
     _session = GameSession(_level!.config);
-    _lastTick = DateTime.now();
+    _clock.reset();
     setState(() => _screen = _Screen.playing);
   }
 
@@ -201,6 +222,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   void _showHome() {
+    _generation.cancel();
     if (_level != null && !_level!.isCustom) {
       _selectedLevelIndex = _level!.number - 1;
     }
@@ -211,14 +233,16 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   Future<void> _toggleMusic() async {
     final enabled = !_musicEnabled;
     setState(() => _musicEnabled = enabled);
-    await widget.store.setMusicEnabled(enabled);
+    await (widget.settings?.setMusicEnabled(enabled) ??
+        widget.store.setMusicEnabled(enabled));
     await _audio.setMusicEnabled(enabled);
   }
 
   Future<void> _toggleEffects() async {
     final enabled = !_effectsEnabled;
     setState(() => _effectsEnabled = enabled);
-    await widget.store.setEffectsEnabled(enabled);
+    await (widget.settings?.setEffectsEnabled(enabled) ??
+        widget.store.setEffectsEnabled(enabled));
     _audio.setEffectsEnabled(enabled);
   }
 
@@ -267,7 +291,10 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GenerationBoundary(service: _generation, child: _buildContents(context));
+
+  Widget _buildContents(BuildContext context) {
     if (_screen == _Screen.home) {
       return _handleBack(
         widget.onExit,
@@ -302,6 +329,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
     return _handleBack(
       _requestGameBack,
       GameScreen(
+        elapsed: _clock,
         level: _level!,
         session: _session!,
         generating: _screen == _Screen.generating,

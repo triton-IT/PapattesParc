@@ -47,3 +47,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated Web worker and local Android signing material
+/web/generation_worker.js*
+/android/key.properties
+*.jks
+*.keystore

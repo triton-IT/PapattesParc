@@ -1,9 +1,11 @@
+import '../../../shared/game_gesture_target.dart';
+import '../../../shared/artwork.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/app_theme.dart';
-import '../../../shared/animal_background.dart';
 import '../../../shared/animal_colors.dart';
+import '../../../shared/app_theme.dart';
 import '../../../shared/game_help.dart';
+import '../../../shared/game_stage_layout.dart';
 import '../domain/match3_session.dart';
 import '../domain/models.dart';
 
@@ -44,97 +46,77 @@ class Match3Screen extends StatelessWidget {
   final VoidCallback? onBack;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xfffff4dc),
-    body: AnimalBackground(
-      asset: session.level.stage.artAsset!,
-      child: SafeArea(
-        child: Stack(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final wide =
-                    constraints.maxWidth >= 900 &&
-                    constraints.maxWidth > constraints.maxHeight;
-                final board = Match3Board(
-                  session: session,
-                  displayed: displayed,
-                  clearing: clearing,
-                  inputEnabled: inputEnabled,
-                  selected: selected,
-                  onSelect: onSelect,
-                  onSwap: onSwap,
-                );
-                final panel = _MissionPanel(
-                  session: session,
-                  displayed: displayed,
-                );
-                if (wide) {
-                  return Row(
-                    children: [
-                      Expanded(child: board),
-                      SizedBox(width: 330, child: panel),
-                    ],
-                  );
-                }
-                return Column(
-                  children: [
-                    _CompactHeader(
-                      session: session,
-                      onLevels: onBack ?? onLevels,
-                    ),
-                    Expanded(child: board),
-                    panel,
-                  ],
-                );
-              },
-            ),
-            Positioned(
-              left: 12,
-              top: 12,
-              child: IconButton.filledTonal(
-                key: const Key('match3-back-to-levels'),
-                tooltip: 'Retour aux niveaux',
-                onPressed: onBack ?? onLevels,
-                icon: const Icon(Icons.arrow_back_rounded),
-              ),
-            ),
-            const Positioned(
-              right: 12,
-              top: 12,
-              child: GameHelpButton(kind: GameHelpKind.match3),
-            ),
-            if (!inputEnabled)
-              Positioned(
-                top: 64,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Chip(
-                    key: const Key('match3-resolving'),
-                    avatar: const Icon(Icons.auto_awesome_rounded, size: 18),
-                    label: Text(
-                      cascade > 1 ? 'CASCADE ×$cascade' : 'ALIGNEMENT',
-                    ),
-                  ),
-                ),
-              ),
-            if (showResult ?? session.status != Match3Status.playing)
-              Positioned.fill(
-                child: _ResultOverlay(
-                  session: session,
-                  onLevels: onLevels,
-                  onRetry: onRetry,
-                  onNext: onNext,
-                  isFreeGame: isFreeGame,
-                  onConfigure: onConfigure,
-                ),
-              ),
-          ],
-        ),
+  Widget build(BuildContext context) => GameStageLayout(
+    background: ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
+    eyebrow: 'NIVEAU ${session.level.number}',
+    title: session.level.stage.title,
+    backKey: const Key('match3-back-to-levels'),
+    onBack: onBack ?? onLevels,
+    helpKind: GameHelpKind.match3,
+    metrics: [
+      GameStageMetric(
+        icon: Icons.touch_app_rounded,
+        label: '${session.movesLeft} coups',
       ),
+      GameStageMetric(
+        icon: Icons.stars_rounded,
+        label: '${displayed?.score ?? session.score} points',
+      ),
+    ],
+    builder: (context, layout) => GameStageSplit(
+      wide: layout.isLandscape,
+      board: _board,
+      panel: _objectives,
     ),
+    overlays: [
+      if (!inputEnabled)
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Chip(
+              key: const Key('match3-resolving'),
+              avatar: const Icon(
+                Icons.auto_awesome_rounded,
+                size: 18,
+                color: Colors.white,
+              ),
+              label: Text(cascade > 1 ? 'CASCADE ×$cascade' : 'ALIGNEMENT'),
+              labelStyle: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+              backgroundColor: Colors.white.withValues(alpha: .14),
+              side: BorderSide(color: Colors.white.withValues(alpha: .22)),
+            ),
+          ),
+        ),
+      if (showResult ?? session.status != Match3Status.playing)
+        Positioned.fill(
+          child: _ResultOverlay(
+            session: session,
+            onLevels: onLevels,
+            onRetry: onRetry,
+            onNext: onNext,
+            isFreeGame: isFreeGame,
+            onConfigure: onConfigure,
+          ),
+        ),
+    ],
   );
+
+  Widget get _board => Match3Board(
+    session: session,
+    displayed: displayed,
+    clearing: clearing,
+    inputEnabled: inputEnabled,
+    selected: selected,
+    onSelect: onSelect,
+    onSwap: onSwap,
+  );
+
+  Widget get _objectives => _Objectives(session: session, displayed: displayed);
 }
 
 class Match3Board extends StatefulWidget {
@@ -177,7 +159,8 @@ class _Match3BoardState extends State<Match3Board> {
   }
 
   @override
-  Widget build(BuildContext context) => Center(
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.center,
     child: Padding(
       padding: const EdgeInsets.all(14),
       child: AspectRatio(
@@ -223,7 +206,7 @@ class _Match3BoardState extends State<Match3Board> {
                   curve: Curves.easeOutCubic,
                   builder: (context, offset, child) =>
                       FractionalTranslation(translation: offset, child: child),
-                  child: GestureDetector(
+                  child: GameGestureTarget(
                     onTap: widget.inputEnabled && snapshot.isActive
                         ? () => widget.onSelect(position)
                         : null,
@@ -367,7 +350,7 @@ class _Match3Cell extends StatelessWidget {
                         Icons.shopping_basket_rounded,
                         color: Color(0xffb56736),
                       )
-                    : Image.asset(
+                    : ArtworkImage(
                         tile.animal.asset,
                         fit: BoxFit.contain,
                         errorBuilder: (_, _, _) => CircleAvatar(
@@ -469,122 +452,35 @@ class _BlockerOverlay extends StatelessWidget {
   };
 }
 
-class _CompactHeader extends StatelessWidget {
-  const _CompactHeader({required this.session, required this.onLevels});
-
-  final Match3Session session;
-  final VoidCallback onLevels;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(64, 10, 12, 0),
-    child: Row(
-      children: [
-        Expanded(
-          child: Text(
-            '${session.level.number} · ${session.level.stage.title}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ),
-        const Icon(Icons.touch_app_rounded, size: 19),
-        const SizedBox(width: 4),
-        Text(
-          '${session.movesLeft}',
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-      ],
-    ),
-  );
-}
-
-class _MissionPanel extends StatelessWidget {
-  const _MissionPanel({required this.session, required this.displayed});
+class _Objectives extends StatelessWidget {
+  const _Objectives({required this.session, required this.displayed});
 
   final Match3Session session;
   final Match3BoardSnapshot? displayed;
 
   @override
-  Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.surface,
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'NIVEAU ${session.level.number}',
-            style: const TextStyle(
-              color: AppColors.muted,
-              fontWeight: FontWeight.w900,
+  Widget build(BuildContext context) => GameStagePanel(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < session.level.goals.length; i++)
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: i == session.level.goals.length - 1 ? 0 : 6,
+            ),
+            child: _GoalLine(
+              goal: session.level.goals[i],
+              blockerKinds: session.level.blockers
+                  .map((blocker) => blocker.kind)
+                  .toSet(),
+              progress: displayed?.goalProgress[i] ?? session.goalProgress(i),
+              color: session.level.goals[i].animal == null
+                  ? AppColors.primary
+                  : animalHaloColor(session.level.goals[i].animal!),
             ),
           ),
-          Text(
-            session.level.stage.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _Metric(
-                icon: Icons.touch_app_rounded,
-                label: '${session.movesLeft} coups',
-              ),
-              _Metric(
-                icon: Icons.stars_rounded,
-                label: '${displayed?.score ?? session.score} points',
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          for (var i = 0; i < session.level.goals.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 7),
-              child: _GoalLine(
-                goal: session.level.goals[i],
-                blockerKinds: session.level.blockers
-                    .map((blocker) => blocker.kind)
-                    .toSet(),
-                progress: displayed?.goalProgress[i] ?? session.goalProgress(i),
-                color: session.level.goals[i].animal == null
-                    ? AppColors.primary
-                    : animalHaloColor(session.level.goals[i].animal!),
-              ),
-            ),
-        ],
-      ),
-    ),
-  );
-}
-
-class _Metric extends StatelessWidget {
-  const _Metric({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: const Color(0xfffff4dc),
-      borderRadius: BorderRadius.circular(6),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 19, color: AppColors.primary),
-          const SizedBox(width: 6),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w900)),
-        ],
-      ),
+      ],
     ),
   );
 }
@@ -612,24 +508,33 @@ class _GoalLine extends StatelessWidget {
           height: 28,
           padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          child: Image.asset(goal.animal!.asset),
+          child: ArtworkImage(goal.animal!.asset),
         )
       else
-        Icon(_icon, color: AppColors.primary, size: 20),
+        Icon(_icon, color: Colors.white, size: 20),
       const SizedBox(width: 8),
       Expanded(
-        child: Text(
-          _label,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w800),
-        ),
-      ),
-      Text(
-        '$progress / ${goal.target}',
-        style: TextStyle(
-          color: progress >= goal.target ? AppColors.success : AppColors.deep,
-          fontWeight: FontWeight.w900,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                shadows: [Shadow(color: Color(0x66000000), blurRadius: 5)],
+              ),
+            ),
+            Text(
+              '$progress / ${goal.target}',
+              style: TextStyle(
+                color: progress >= goal.target ? AppColors.sun : Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
         ),
       ),
     ],
@@ -681,7 +586,7 @@ class _ResultOverlay extends StatelessWidget {
     return ColoredBox(
       key: const Key('match3-result-overlay'),
       color: const Color(0x990f2f26),
-      child: Center(
+      child: GameResultViewport(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
           child: Card(

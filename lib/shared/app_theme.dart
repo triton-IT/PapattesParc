@@ -1,13 +1,21 @@
+import 'artwork.dart';
 import 'package:flutter/material.dart';
 
 import 'park_catalog.dart';
+
+abstract final class AppGeometry {
+  static const touchTarget = 48.0;
+  static const gutter = 8.0;
+  static const panelPadding = 14.0;
+  static const panelRadius = 20.0;
+}
 
 abstract final class AppColors {
   static const background = Color(0xffeaf8f3);
   static const surface = Color(0xfffffdf5);
   static const deep = Color(0xff245b4a);
   static const primary = Color(0xff2f6d5b);
-  static const success = Color(0xff48a868);
+  static const success = Color(0xff287c45);
   static const sun = Color(0xffffd166);
   static const danger = Color(0xffee6c62);
   static const muted = Color(0xff8d6e63);
@@ -82,7 +90,7 @@ ThemeData buildAppTheme() {
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
     ),
-    focusColor: Colors.white,
+    focusColor: AppColors.primary.withValues(alpha: .25),
     hoverColor: Colors.white.withValues(alpha: .16),
   );
 }
@@ -175,7 +183,7 @@ class LevelBackdrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (level.artAsset != null) {
-      return Image.asset(
+      return ArtworkImage(
         level.artAsset!,
         key: const Key('level-art'),
         fit: BoxFit.cover,

@@ -5,7 +5,7 @@ import '../../../shared/park_catalog.dart';
 import 'models.dart';
 
 List<SudokuLevelDefinition> buildSudokuCampaign(List<ParkStage> stages) => [
-  for (final stage in stages) _buildLevel(stage),
+  for (final stage in stages) buildSudokuLevel(stage),
 ];
 
 SudokuLevelDefinition buildFreeSudokuLevel(
@@ -48,7 +48,7 @@ int countSudokuSolutions(SudokuLevelDefinition level) => _countSolutions(
   level.boxHeight,
 );
 
-SudokuLevelDefinition _buildLevel(ParkStage stage) {
+SudokuLevelDefinition buildSudokuLevel(ParkStage stage) {
   final tier = (stage.number - 1) ~/ 15;
   final size = [4, 6, 9][tier];
   final boxWidth = [2, 3, 3][tier];
@@ -233,3 +233,23 @@ int _bitCount(int value) {
   }
   return count;
 }
+
+List<SudokuLevelDefinition> buildSudokuCampaignMetadata(
+  List<ParkStage> stages,
+) => [
+  for (final stage in stages)
+    SudokuLevelDefinition(
+      stage: stage,
+      size: [4, 6, 9][(stage.number - 1) ~/ 15],
+      boxWidth: [2, 3, 3][(stage.number - 1) ~/ 15],
+      boxHeight: [2, 2, 3][(stage.number - 1) ~/ 15],
+      animals: _animals(
+        stage,
+        [4, 6, 9][(stage.number - 1) ~/ 15],
+        stage.number * 104729,
+      ),
+      solution: const [],
+      puzzle: const [],
+      needsGeneration: true,
+    ),
+];

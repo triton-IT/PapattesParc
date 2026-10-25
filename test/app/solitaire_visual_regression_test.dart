@@ -1,3 +1,5 @@
+import '../support/visible_artwork.dart';
+import 'package:papatte_parc/shared/artwork.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -94,9 +96,39 @@ void main() {
       );
     }
   }, skip: !Platform.isWindows);
+
+  testWidgets('la carte reste prioritaire sur un écran court', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final progress = await SolitaireProgressStore.load();
+    final campaign = buildSolitaireCampaign(park.levels);
+    const size = Size(611, 896);
+
+    await _pump(
+      tester,
+      size,
+      SolitaireLevelSelectScreen(
+        levels: campaign,
+        store: progress,
+        musicEnabled: true,
+        effectsEnabled: true,
+        onBack: () {},
+        onPlay: (_) {},
+        onCustom: () {},
+        onToggleMusic: () {},
+        onToggleEffects: () {},
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byKey(const Key('solitaire-level-grid'))).height,
+      greaterThan(size.height * .6),
+    );
+    expect(find.text('JOUER'), findsOneWidget);
+  });
 }
 
 const _sizes = [
+  Size(800, 360),
   Size(360, 800),
   Size(800, 1280),
   Size(1366, 768),
@@ -112,19 +144,22 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
   await tester.pumpWidget(MaterialApp(theme: buildAppTheme(), home: screen));
   for (final animal in AnimalKind.values) {
     await tester.runAsync(
-      () => precacheImage(
-        AssetImage(animal.asset),
+      () => precacheArtwork(
+        ArtworkResolver.provider(animal.asset),
         tester.element(find.byType(MaterialApp)),
       ),
     );
   }
   await tester.runAsync(
-    () => precacheImage(
-      const AssetImage('assets/level_art/level-01-suricates-porcs-epics.png'),
+    () => precacheArtwork(
+      ArtworkResolver.provider(
+        'assets/level_art/level-01-suricates-porcs-epics.png',
+      ),
       tester.element(find.byType(MaterialApp)),
     ),
   );
   await tester.pumpAndSettle();
+  await loadVisibleArtwork(tester);
   expect(tester.takeException(), isNull, reason: '$size');
 }
 

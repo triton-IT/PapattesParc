@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../../shared/park_catalog.dart';
 
 enum RepasDirection { north, east, south, west }
@@ -31,6 +33,14 @@ class RepasPosition {
   int get hashCode => Object.hash(x, y);
 }
 
+class RepasBoardBounds {
+  const RepasBoardBounds(this.origin, this.width, this.height);
+
+  final RepasPosition origin;
+  final int width;
+  final int height;
+}
+
 enum RepasStatus { playing, won }
 
 enum RepasMoveResult { blocked, moved, pushed, won }
@@ -40,6 +50,7 @@ class RepasLevelDefinition {
     required this.stage,
     required this.rows,
     required this.parPushes,
+    this.backgroundAsset,
     this.referenceSolution = const [],
   }) : width = rows.fold(
          0,
@@ -79,6 +90,7 @@ class RepasLevelDefinition {
   final ParkStage stage;
   final List<String> rows;
   final int parPushes;
+  final String? backgroundAsset;
   final List<RepasDirection> referenceSolution;
   final int width;
   final int height;
@@ -89,4 +101,17 @@ class RepasLevelDefinition {
   late RepasPosition initialKeeper;
 
   int get number => stage.number;
+  String get resolvedBackgroundAsset => backgroundAsset ?? stage.artAsset!;
+
+  RepasBoardBounds get boardBounds {
+    final left = floor.map((position) => position.x).reduce(min);
+    final top = floor.map((position) => position.y).reduce(min);
+    final right = floor.map((position) => position.x).reduce(max);
+    final bottom = floor.map((position) => position.y).reduce(max);
+    return RepasBoardBounds(
+      RepasPosition(left, top),
+      right - left + 1,
+      bottom - top + 1,
+    );
+  }
 }

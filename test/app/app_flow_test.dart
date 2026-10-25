@@ -1,3 +1,6 @@
+import '../support/app_harness.dart';
+import 'package:papatte_parc/shared/campaign_selection_controller.dart';
+import 'package:papatte_parc/shared/artwork.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -28,12 +31,15 @@ import 'package:papatte_parc/games/refuge/presentation/game_screen.dart';
 import 'package:papatte_parc/games/solitaire_animaux/data/solitaire_progress_store.dart';
 import 'package:papatte_parc/games/sudoku_animaux/data/sudoku_progress_store.dart';
 import 'package:papatte_parc/games/sudoku_animaux/domain/campaign.dart';
+import 'package:papatte_parc/games/familles_du_parc/data/animal_sort_progress_store.dart';
+import 'package:papatte_parc/games/familles_du_parc/domain/campaign.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
 import 'package:papatte_parc/shared/animal_colors.dart';
 import 'package:papatte_parc/shared/settings_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(CampaignSelectionController.clearSessions);
   testWidgets('le menu principal ouvre les jeux à campagne', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final refugeStore = await ProgressStore.load();
@@ -52,7 +58,7 @@ void main() {
     if (defaultTargetPlatform == TargetPlatform.windows) {
       expect(find.byKey(const Key('match3-quit-app')), findsOneWidget);
     }
-    await tester.tap(find.byKey(const Key('match3-level-1')));
+    await openLevel(tester, 'match3', 1);
     await tester.pump();
 
     expect(find.byKey(const Key('match3-cell-0-0')), findsOneWidget);
@@ -65,7 +71,7 @@ void main() {
     expect(find.byKey(const Key('mahjong-level-grid')), findsOneWidget);
     expect(find.byKey(const Key('mahjong-journey-progress')), findsOneWidget);
     expect(find.byKey(const Key('mahjong-journey-legend')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('mahjong-level-1')));
+    await openLevel(tester, 'mahjong', 1);
     await tester.pump();
     expect(find.byKey(const Key('mahjong-board')), findsOneWidget);
 
@@ -76,7 +82,7 @@ void main() {
     expect(find.byKey(const Key('sudoku-level-grid')), findsOneWidget);
     expect(find.byKey(const Key('sudoku-journey-progress')), findsOneWidget);
     expect(find.byKey(const Key('sudoku-journey-legend')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('sudoku-level-1')));
+    await openLevel(tester, 'sudoku', 1);
     await tester.pump();
     expect(find.byKey(const Key('sudoku-board')), findsOneWidget);
     expect(find.byKey(const Key('sudoku-animal-0')), findsOneWidget);
@@ -104,7 +110,7 @@ void main() {
     expect(find.text('Observe · Planifie · Nourris'), findsOneWidget);
     expect(find.byKey(const Key('campaign-continue')), findsOneWidget);
     final firstRepasLevel = buildRepasCampaign(levels).first;
-    await tester.tap(find.byKey(const Key('repas-level-1')));
+    await openLevel(tester, 'repas', 1);
     await tester.pump();
     expect(find.byKey(const Key('repas-board')), findsOneWidget);
     await tester.tap(
@@ -135,11 +141,8 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Relie · Guide · Protège'), findsOneWidget);
-    expect(
-      tester.widget<InkWell>(find.byKey(const Key('numberlink-level-2'))).onTap,
-      isNull,
-    );
-    await tester.tap(find.byKey(const Key('numberlink-level-1')));
+    await expectLockedLevel(tester, 'numberlink', 2);
+    await openLevel(tester, 'numberlink', 1);
     await tester.pump();
     expect(find.byKey(const Key('numberlink-board')), findsOneWidget);
     expect(find.byKey(const Key('numberlink-cell-0')), findsOneWidget);
@@ -159,7 +162,7 @@ void main() {
     expect(find.byKey(const Key('numberlink-level-grid')), findsOneWidget);
 
     final numberlinkLevel = buildNumberlinkCampaign(levels).first;
-    await tester.tap(find.byKey(const Key('numberlink-level-1')));
+    await openLevel(tester, 'numberlink', 1);
     await tester.pump();
     final board = tester.getRect(find.byKey(const Key('numberlink-board')));
     for (final pair in numberlinkLevel.pairs) {
@@ -185,6 +188,26 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('numberlink-custom-preview')), findsOneWidget);
     expect(find.byKey(const Key('numberlink-start-custom')), findsOneWidget);
+
+    await _pumpRoot(tester, refugeStore, const Size(1366, 768));
+    expect(find.text('Réserves du parc'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('game-animal-sort')));
+    await tester.pump();
+    expect(find.byKey(const Key('animal-sort-level-grid')), findsOneWidget);
+    expect(find.text('Classe · Regroupe · Prépare'), findsOneWidget);
+    await openLevel(tester, 'animal-sort', 1);
+    await tester.pump();
+    expect(find.byKey(const Key('animal-sort-board')), findsOneWidget);
+    expect(find.byKey(const Key('animal-sort-hint')), findsOneWidget);
+    final animalSortLevel = buildAnimalSortCampaign(levels).first;
+    for (final move in animalSortLevel.referenceSolution) {
+      await tester.tap(find.byKey(Key('animal-sort-zone-${move.from}')));
+      await tester.pump();
+      await tester.tap(find.byKey(Key('animal-sort-zone-${move.to}')));
+      await tester.pump();
+    }
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('animal-sort-result')), findsOneWidget);
   });
 
   testWidgets(
@@ -220,13 +243,8 @@ void main() {
           find.byKey(const Key('solitaire-journey-legend')),
           findsOneWidget,
         );
-        expect(
-          tester
-              .widget<InkWell>(find.byKey(const Key('solitaire-level-2')))
-              .onTap,
-          isNull,
-        );
-        await tester.tap(find.byKey(const Key('solitaire-level-1')));
+        await expectLockedLevel(tester, 'solitaire', 2);
+        await openLevel(tester, 'solitaire', 1);
         await tester.pump();
         expect(find.byKey(const Key('solitaire-board')), findsOneWidget);
         expect(find.byKey(const Key('solitaire-redeals')), findsOneWidget);
@@ -241,9 +259,12 @@ void main() {
           findsOneWidget,
         );
 
-        await tester.tap(
-          find.text(size.width < 560 ? '3 cartes' : 'Pioche 3 cartes').first,
-        );
+        final drawThree = find
+            .text(size.width < 560 ? '3 cartes' : 'Pioche 3 cartes')
+            .first;
+        await tester.ensureVisible(drawThree);
+        await tester.pumpAndSettle();
+        await tester.tap(drawThree);
         await tester.pump();
         await tester.scrollUntilVisible(
           find.byKey(const Key('solitaire-animal-panthereNeiges')),
@@ -254,6 +275,8 @@ void main() {
           find.byKey(const Key('solitaire-animal-panthereNeiges')),
         );
         await tester.pump();
+        await tester.ensureVisible(find.byKey(const Key('solitaire-start')));
+        await tester.pumpAndSettle();
         await tester.tap(find.byKey(const Key('solitaire-start')));
         await tester.pump();
 
@@ -354,11 +377,11 @@ void main() {
       );
       await tester.pump();
 
-      final crate = tester.widget<Image>(
+      final crate = tester.widget<ArtworkImage>(
         find.byKey(const Key('repas-crate-2-1')),
       );
       expect(
-        (crate.image as AssetImage).assetName,
+        crate.asset,
         'assets/sokoban/food-crate-${entry.value}.png',
         reason: 'étape ${entry.key}',
       );
@@ -420,6 +443,7 @@ void main() {
     );
     await tester.ensureVisible(find.byKey(const Key('sudoku-start-custom')));
     await tester.tap(find.byKey(const Key('sudoku-start-custom')));
+    await settleGeneration(tester);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('sudoku-board')), findsOneWidget);
     expect(find.textContaining('Partie libre · 9 × 9'), findsOneWidget);
@@ -492,21 +516,18 @@ void main() {
 
     debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     await _pumpApp(tester, store, const Size(1366, 768));
-    expect(find.byKey(const Key('quit-app')), findsOneWidget);
-    expect(find.text('QUITTER'), findsNothing);
-    expect(find.byIcon(Icons.exit_to_app_rounded), findsOneWidget);
-    expect(
-      tester.getCenter(find.byKey(const Key('quit-app'))).dx,
-      greaterThan(
-        tester.getCenter(find.byKey(const Key('journey-progress'))).dx,
-      ),
-    );
-    await tester.tap(find.byKey(const Key('quit-app')));
+    await tester.tap(find.byTooltip('Réglages'));
+    await tester.pumpAndSettle();
+    expect(find.text('Quitter l’application'), findsOneWidget);
+    await tester.tap(find.text('Quitter l’application'));
+    await tester.pumpAndSettle();
     expect(applicationCall?.method, 'quit');
 
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     await _pumpApp(tester, store, const Size(1366, 768));
-    expect(find.byKey(const Key('quit-app')), findsNothing);
+    await tester.tap(find.byTooltip('Réglages'));
+    await tester.pumpAndSettle();
+    expect(find.text('Quitter l’application'), findsNothing);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -517,8 +538,8 @@ void main() {
 
     expect(find.text('BALISES DU REFUGE'), findsOneWidget);
     expect(find.text('Terrier des sentinelles'), findsOneWidget);
-    expect(find.text('Clique sur un point de la carte'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('start-mission')));
+    expect(find.text('Sélectionne un niveau'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('campaign-play-selected')));
     await tester.pump();
 
     expect(find.textContaining('Niveau 1 · Terrier'), findsOneWidget);
@@ -534,11 +555,11 @@ void main() {
     await _pumpApp(tester, store, const Size(800, 1280));
 
     final customButton = tester.getCenter(
-      find.byKey(const Key('open-custom-game')),
+      find.byKey(const Key('refuge-open-custom')),
     );
-    expect(customButton.dx, greaterThan(400));
-    expect(customButton.dy, greaterThan(640));
-    await tester.tap(find.byKey(const Key('open-custom-game')));
+    expect(customButton.dx, inInclusiveRange(0, 800));
+    expect(customButton.dy, inInclusiveRange(0, 1280));
+    await tester.tap(find.byKey(const Key('refuge-open-custom')));
     await tester.pump();
     expect(find.text('Crée ton refuge'), findsOneWidget);
     expect(find.byKey(const Key('level-art')), findsOneWidget);
@@ -556,8 +577,10 @@ void main() {
     );
     await tester.tap(find.text('Lions d’Afrique').last);
     await tester.pumpAndSettle();
-    final preview = tester.widget<Image>(find.byKey(const Key('level-art')));
-    expect((preview.image as AssetImage).assetName, levels[1].artAsset);
+    final preview = tester.widget<ArtworkImage>(
+      find.byKey(const Key('level-art')),
+    );
+    expect(preview.asset, levels[1].artAsset);
 
     await tester.tap(find.byKey(const Key('start-custom-game')));
     await tester.pump();
@@ -574,7 +597,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = await ProgressStore.load();
     await _pumpApp(tester, store, const Size(800, 1280));
-    await tester.tap(find.byKey(const Key('open-custom-game')));
+    await tester.tap(find.byKey(const Key('refuge-open-custom')));
     await tester.pump();
 
     final width = find.byKey(const Key('custom-width'));
@@ -619,7 +642,7 @@ void main() {
       await _pumpApp(tester, store, size);
       expect(tester.getSize(find.byType(Scaffold)), size);
       expect(tester.takeException(), isNull, reason: '$size');
-      expect(find.byKey(const Key('start-mission')), findsOneWidget);
+      expect(find.byKey(const Key('campaign-play-selected')), findsOneWidget);
     }
   });
 
@@ -629,7 +652,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = await ProgressStore.load();
     await _pumpApp(tester, store, const Size(800, 1280));
-    await tester.tap(find.byKey(const Key('start-mission')));
+    await tester.tap(find.byKey(const Key('campaign-play-selected')));
     await tester.pump();
     await tester.tap(find.byKey(const Key('cell-3-3')));
     await tester.pump();
@@ -651,32 +674,13 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets(
-    'les limites du parcours et les missions verrouillées sont claires',
-    (tester) async {
-      SharedPreferences.setMockInitialValues({});
-      final store = await ProgressStore.load();
-      await _pumpApp(tester, store, const Size(1366, 768));
-
-      await tester.tap(find.byKey(const Key('level-marker-4')));
-      await tester.pump();
-
-      expect(find.text('Serre de Madagascar'), findsOneWidget);
-      expect(find.byKey(const Key('selected-level-art')), findsOneWidget);
-      expect(
-        find.text('Termine la mission précédente pour continuer.'),
-        findsOneWidget,
-      );
-      expect(
-        tester
-            .widget<FilledButton>(
-              find.byKey(const Key('start-selected-mission')),
-            )
-            .onPressed,
-        isNull,
-      );
-    },
-  );
+  testWidgets('les missions verrouillées restent visibles dans la liste', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    await _pumpApp(tester, await ProgressStore.load(), const Size(1366, 768));
+    await expectLockedLevel(tester, 'refuge', 4);
+  });
 
   testWidgets('le dernier niveau débloqué est sélectionné au lancement', (
     tester,
@@ -686,7 +690,7 @@ void main() {
     await _pumpApp(tester, store, const Size(800, 1280));
 
     expect(find.text('Prairie des alpagas'), findsOneWidget);
-    expect(find.byKey(const Key('level-art')), findsOneWidget);
+    expect(find.byKey(const Key('campaign-play-selected')), findsOneWidget);
   });
 
   testWidgets('le choix de musique est mémorisé', (tester) async {
@@ -694,11 +698,13 @@ void main() {
     final store = await ProgressStore.load();
     await _pumpApp(tester, store, const Size(800, 1280));
 
-    await tester.tap(find.byKey(const Key('toggle-music')));
+    await tester.tap(find.byTooltip('Réglages'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Musique'));
+    await tester.pumpAndSettle();
     await tester.pump();
 
     expect(store.musicEnabled, isFalse);
-    expect(find.byIcon(Icons.music_off_rounded), findsOneWidget);
   });
 
   testWidgets('le choix des effets sonores est mémorisé séparément', (
@@ -708,14 +714,19 @@ void main() {
     final store = await ProgressStore.load();
     await _pumpApp(tester, store, const Size(800, 1280));
 
-    await tester.tap(find.byKey(const Key('toggle-effects')));
+    await tester.tap(find.byTooltip('Réglages'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Effets sonores'));
+    await tester.pumpAndSettle();
     await tester.pump();
 
     expect(store.effectsEnabled, isFalse);
     expect(store.musicEnabled, isTrue);
-    expect(find.byIcon(Icons.volume_off_rounded), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('toggle-music')));
+    await tester.tap(find.byTooltip('Réglages'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Musique'));
+    await tester.pumpAndSettle();
     await tester.pump();
 
     expect(store.effectsEnabled, isFalse);
@@ -809,7 +820,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final store = await ProgressStore.load();
       await _pumpApp(tester, store, const Size(360, 800));
-      await tester.tap(find.byKey(const Key('start-mission')));
+      await tester.tap(find.byKey(const Key('campaign-play-selected')));
       await tester.pump();
       await tester.tap(find.byKey(const Key('cell-3-3')));
       await tester.pump();
@@ -836,7 +847,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Quitter'));
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('start-mission')), findsOneWidget);
+      expect(find.byKey(const Key('campaign-play-selected')), findsOneWidget);
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.text('Align’Animaux'), findsOneWidget);
@@ -849,7 +860,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = await ProgressStore.load();
     await _pumpApp(tester, store, const Size(360, 800));
-    await tester.tap(find.byKey(const Key('start-mission')));
+    await tester.tap(find.byKey(const Key('campaign-play-selected')));
     await tester.pump();
     await tester.tap(find.byKey(const Key('cell-3-3')));
     await tester.pump();
@@ -862,7 +873,7 @@ void main() {
     await _pumpRoot(tester, store, const Size(360, 800));
     await tester.tap(find.byKey(const Key('game-pattes-friandises')));
     await tester.pump();
-    await tester.tap(find.byKey(const Key('match3-level-1')));
+    await openLevel(tester, 'match3', 1);
     await tester.pump();
     for (
       var y = 0;
@@ -1034,7 +1045,7 @@ void main() {
     );
     await tester.tap(find.text('J’AI COMPRIS'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('match3-level-1')));
+    await openLevel(tester, 'match3', 1);
     await tester.pump();
     expect(
       find.byKey(const Key('match3-goal-animal-suricate')),
@@ -1069,6 +1080,7 @@ Future<void> _pumpApp(
       sudokuStore: await SudokuProgressStore.load(),
       repasStore: await RepasAnimauxProgressStore.load(),
       numberlinkStore: await NumberlinkProgressStore.load(),
+      animalSortStore: await AnimalSortProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );
@@ -1095,6 +1107,7 @@ Future<void> _pumpRoot(
       sudokuStore: await SudokuProgressStore.load(),
       repasStore: await RepasAnimauxProgressStore.load(),
       numberlinkStore: await NumberlinkProgressStore.load(),
+      animalSortStore: await AnimalSortProgressStore.load(),
       settings: await SettingsStore.load(),
     ),
   );

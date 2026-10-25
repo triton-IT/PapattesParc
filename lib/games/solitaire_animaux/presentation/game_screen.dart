@@ -1,18 +1,24 @@
+import '../../../shared/game_gesture_target.dart';
+import 'dart:async';
+import '../../../shared/game_activity.dart';
+import '../../../shared/artwork.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import '../../../shared/animal_catalog.dart';
-import '../../../shared/animal_background.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
+import '../../../shared/game_stage_layout.dart';
 import '../domain/models.dart';
 import '../domain/solitaire_session.dart';
 import 'card_view.dart';
 
 class SolitaireGameScreen extends StatelessWidget {
   const SolitaireGameScreen({
+    this.elapsed,
     required this.session,
     required this.backAnimal,
     required this.backgroundAsset,
@@ -59,283 +65,85 @@ class SolitaireGameScreen extends StatelessWidget {
   final VoidCallback onLevels;
   final VoidCallback? onNext;
 
+  final ValueListenable<Duration>? elapsed;
+
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => GameStageLayout(
+    background: ArtworkImage(backgroundAsset, fit: BoxFit.cover),
+    scrim: const Color(0x5518382f),
     backgroundColor: const Color(0xffd8e8cf),
-    body: AnimalBackground(
-      asset: backgroundAsset,
-      scrim: const Color(0x5518382f),
-      child: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                _Toolbar(
-                  session: session,
-                  level: level,
-                  onBack: onBack,
-                  onUndo: onUndo,
-                  onHint: onHint,
-                  onNewGame: onNewGame,
-                ),
-                Expanded(
-                  child: _Board(
-                    session: session,
-                    backAnimal: backAnimal,
-                    selected: selected,
-                    hint: hint,
-                    onDraw: onDraw,
-                    onCardTap: onCardTap,
-                    onDoubleTap: onDoubleTap,
-                    onMove: onMove,
-                  ),
-                ),
-              ],
-            ),
-            if (finished)
-              Positioned.fill(
-                child: _ResultOverlay(
-                  session: session,
-                  level: level,
-                  footprints: footprints,
-                  newRecord: newRecord,
-                  onReplay: onReplay,
-                  onConfigure: onConfigure,
-                  onLevels: onLevels,
-                  onNext: onNext,
-                ),
-              ),
-          ],
-        ),
+    eyebrow: level == null ? 'PARTIE LIBRE' : 'NIVEAU ${level!.number}',
+    title: session.mode.label,
+    backKey: const Key('solitaire-back'),
+    onBack: onBack,
+    helpKind: GameHelpKind.solitaire,
+    metrics: [
+      GameStageMetric(
+        icon: Icons.timer_rounded,
+        elapsed: elapsed,
+        label: formatDuration(session.elapsed),
       ),
+      GameStageMetric(
+        key: const Key('solitaire-redeals'),
+        icon: Icons.replay_circle_filled_rounded,
+        label: level == null
+            ? '${session.redealCount}'
+            : '${session.redealCount}/${level!.targetRedeals}',
+      ),
+      GameStageMetric(
+        icon: Icons.flag_rounded,
+        label: '${session.foundationCount}/52',
+      ),
+    ],
+    actions: [
+      GameStageAction(
+        key: const Key('solitaire-undo'),
+        tooltip: 'Annuler',
+        onPressed: session.canUndo ? onUndo : null,
+        icon: Icons.undo_rounded,
+      ),
+      GameStageAction(
+        key: const Key('solitaire-hint'),
+        tooltip: 'Indice',
+        onPressed: onHint,
+        icon: Icons.lightbulb_outline_rounded,
+      ),
+      GameStageAction(
+        key: const Key('solitaire-new-game'),
+        tooltip: level == null ? 'Nouvelle donne' : 'Recommencer',
+        onPressed: onNewGame,
+        icon: Icons.refresh_rounded,
+      ),
+    ],
+    builder: (context, layout) => _Board(
+      session: session,
+      backAnimal: backAnimal,
+      selected: selected,
+      hint: hint,
+      onDraw: onDraw,
+      onCardTap: onCardTap,
+      onDoubleTap: onDoubleTap,
+      onMove: onMove,
     ),
-  );
-}
-
-class _Toolbar extends StatelessWidget {
-  const _Toolbar({
-    required this.session,
-    required this.level,
-    required this.onBack,
-    required this.onUndo,
-    required this.onHint,
-    required this.onNewGame,
-  });
-
-  final SolitaireSession session;
-  final SolitaireLevelDefinition? level;
-  final VoidCallback onBack;
-  final VoidCallback onUndo;
-  final VoidCallback onHint;
-  final VoidCallback onNewGame;
-
-  @override
-  Widget build(BuildContext context) {
-    final compact = MediaQuery.sizeOf(context).width < 620;
-    if (compact) {
-      return ColoredBox(
-        color: const Color(0xfffff4dc),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  _ToolbarButton(
-                    key: const Key('solitaire-back'),
-                    tooltip: 'Retour',
-                    onPressed: onBack,
-                    icon: Icons.arrow_back_rounded,
-                  ),
-                  Expanded(
-                    child: Text(
-                      level == null
-                          ? 'Libre · Pioche ${session.mode.drawCount}'
-                          : 'N${level!.number} · Pioche ${session.mode.drawCount}',
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w900),
-                    ),
-                  ),
-                  _ToolbarButton(
-                    key: const Key('solitaire-undo'),
-                    tooltip: 'Annuler',
-                    onPressed: session.canUndo ? onUndo : null,
-                    icon: Icons.undo_rounded,
-                  ),
-                  _ToolbarButton(
-                    key: const Key('solitaire-hint'),
-                    tooltip: 'Indice',
-                    onPressed: onHint,
-                    icon: Icons.lightbulb_outline_rounded,
-                  ),
-                  _ToolbarButton(
-                    key: const Key('solitaire-new-game'),
-                    tooltip: level == null ? 'Nouvelle donne' : 'Recommencer',
-                    onPressed: onNewGame,
-                    icon: Icons.refresh_rounded,
-                  ),
-                  const GameHelpButton(
-                    kind: GameHelpKind.solitaire,
-                    compact: true,
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _Metric(Icons.timer_rounded, formatDuration(session.elapsed)),
-                  const SizedBox(width: 16),
-                  _Metric(
-                    Icons.replay_circle_filled_rounded,
-                    level == null
-                        ? '${session.redealCount}'
-                        : '${session.redealCount}/${level!.targetRedeals}',
-                    key: const Key('solitaire-redeals'),
-                  ),
-                  const SizedBox(width: 16),
-                  _Metric(Icons.flag_rounded, '${session.foundationCount}/52'),
-                ],
-              ),
-            ],
+    overlays: [
+      if (finished)
+        Positioned.fill(
+          child: _ResultOverlay(
+            session: session,
+            level: level,
+            footprints: footprints,
+            newRecord: newRecord,
+            onReplay: onReplay,
+            onConfigure: onConfigure,
+            onLevels: onLevels,
+            onNext: onNext,
           ),
         ),
-      );
-    }
-    final buttonConstraints = compact
-        ? const BoxConstraints.tightFor(width: 40, height: 40)
-        : null;
-    return ColoredBox(
-      color: const Color(0xfffff4dc),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        child: Row(
-          children: [
-            IconButton(
-              key: const Key('solitaire-back'),
-              tooltip: 'Retour',
-              onPressed: onBack,
-              padding: compact ? EdgeInsets.zero : null,
-              constraints: buttonConstraints,
-              icon: const Icon(Icons.arrow_back_rounded),
-            ),
-            if (!compact) ...[
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  '${level == null ? 'Partie libre' : 'Niveau ${level!.number}'} · ${session.mode.label}',
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-            ] else
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Row(
-                    children: [
-                      _Metric(
-                        Icons.timer_rounded,
-                        formatDuration(session.elapsed),
-                      ),
-                      const SizedBox(width: 6),
-                      _Metric(
-                        Icons.replay_circle_filled_rounded,
-                        level == null
-                            ? '${session.redealCount}'
-                            : '${session.redealCount}/${level!.targetRedeals}',
-                        key: const Key('solitaire-redeals'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            if (!compact) ...[
-              _Metric(Icons.timer_rounded, formatDuration(session.elapsed)),
-              const SizedBox(width: 8),
-              _Metric(
-                Icons.replay_circle_filled_rounded,
-                level == null
-                    ? '${session.redealCount}'
-                    : '${session.redealCount}/${level!.targetRedeals}',
-                key: const Key('solitaire-redeals'),
-              ),
-            ],
-            if (!compact) ...[
-              const SizedBox(width: 8),
-              _Metric(Icons.flag_rounded, '${session.foundationCount}/52'),
-            ],
-            IconButton(
-              key: const Key('solitaire-undo'),
-              tooltip: 'Annuler',
-              onPressed: session.canUndo ? onUndo : null,
-              padding: compact ? EdgeInsets.zero : null,
-              constraints: buttonConstraints,
-              icon: const Icon(Icons.undo_rounded),
-            ),
-            IconButton(
-              key: const Key('solitaire-hint'),
-              tooltip: 'Indice',
-              onPressed: onHint,
-              padding: compact ? EdgeInsets.zero : null,
-              constraints: buttonConstraints,
-              icon: const Icon(Icons.lightbulb_outline_rounded),
-            ),
-            IconButton(
-              key: const Key('solitaire-new-game'),
-              tooltip: level == null ? 'Nouvelle donne' : 'Recommencer',
-              onPressed: onNewGame,
-              padding: compact ? EdgeInsets.zero : null,
-              constraints: buttonConstraints,
-              icon: const Icon(Icons.refresh_rounded),
-            ),
-            GameHelpButton(kind: GameHelpKind.solitaire, compact: compact),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ToolbarButton extends StatelessWidget {
-  const _ToolbarButton({
-    required super.key,
-    required this.tooltip,
-    required this.onPressed,
-    required this.icon,
-  });
-
-  final String tooltip;
-  final VoidCallback? onPressed;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) => IconButton(
-    tooltip: tooltip,
-    onPressed: onPressed,
-    padding: EdgeInsets.zero,
-    constraints: const BoxConstraints.tightFor(width: 40, height: 40),
-    icon: Icon(icon),
-  );
-}
-
-class _Metric extends StatelessWidget {
-  const _Metric(this.icon, this.value, {super.key});
-
-  final IconData icon;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(icon, size: 17, color: AppColors.primary),
-      const SizedBox(width: 3),
-      Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
     ],
   );
 }
 
-class _Board extends StatelessWidget {
+class _Board extends StatefulWidget {
   const _Board({
     required this.session,
     required this.backAnimal,
@@ -355,6 +163,63 @@ class _Board extends StatelessWidget {
   final ValueChanged<CardLocation> onCardTap;
   final ValueChanged<CardLocation> onDoubleTap;
   final ValueChanged<SolitaireMove> onMove;
+
+  @override
+  State<_Board> createState() => _BoardState();
+}
+
+class _BoardState extends State<_Board> {
+  final ScrollController _scroll = ScrollController();
+  Timer? _edgeTimer;
+  bool _dragging = false;
+  double _edgeDirection = 0;
+  final GlobalKey _viewportKey = GlobalKey();
+  SolitaireSession get session => widget.session;
+  AnimalKind get backAnimal => widget.backAnimal;
+  CardLocation? get selected => widget.selected;
+  SolitaireHint? get hint => widget.hint;
+  VoidCallback get onDraw => widget.onDraw;
+  ValueChanged<CardLocation> get onCardTap => widget.onCardTap;
+  ValueChanged<CardLocation> get onDoubleTap => widget.onDoubleTap;
+  ValueChanged<SolitaireMove> get onMove => widget.onMove;
+
+  void dragging(bool value) {
+    _dragging = value;
+    _edgeTimer?.cancel();
+    if (!value) return;
+    _edgeTimer = Timer.periodic(const Duration(milliseconds: 16), (_) {
+      if (!_scroll.hasClients ||
+          !GameActivity.instance.value ||
+          _edgeDirection == 0) {
+        return;
+      }
+      _scroll.jumpTo(
+        (_scroll.offset + _edgeDirection * 5).clamp(
+          0.0,
+          _scroll.position.maxScrollExtent,
+        ),
+      );
+    });
+  }
+
+  void _pointer(Offset global) {
+    if (!_dragging) return;
+    final box = _viewportKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return;
+    final y = box.globalToLocal(global).dy;
+    _edgeDirection = y < 40
+        ? -1
+        : y > box.size.height - 40
+        ? 1
+        : 0;
+  }
+
+  @override
+  void dispose() {
+    _edgeTimer?.cancel();
+    _scroll.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -378,81 +243,124 @@ class _Board extends StatelessWidget {
         1,
         (value, pile) => max(value, pile.length),
       );
-      final overlap = deepest <= 1
-          ? width * .3
-          : min(
-              width * .31,
-              (tableauHeight - cardHeight) / (deepest - 1),
-            ).clamp(11.0, width * .31);
+      final overlap = width * .31;
+      final contentHeight = max(
+        tableauHeight,
+        cardHeight + max(0, deepest - 1) * overlap + 8,
+      );
       final stride = width + gap;
       return Semantics(
         label: 'Plateau de solitaire',
-        child: Stack(
+        child: Column(
           key: const Key('solitaire-board'),
           children: [
-            Positioned(
-              left: horizontalPadding,
-              top: top,
-              child: _Stock(
-                session: session,
-                animal: backAnimal,
-                width: width,
-                onDraw: onDraw,
-              ),
-            ),
-            Positioned(
-              left: horizontalPadding + stride,
-              top: top,
-              child: session.waste.isEmpty
-                  ? EmptyCardSlot(width: width)
-                  : _PlayableCard(
-                      card: session.waste.last,
-                      location: const CardLocation.waste(),
+            SizedBox(
+              height: tableauTop,
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: horizontalPadding,
+                    top: top,
+                    child: _Stock(
+                      session: session,
                       animal: backAnimal,
                       width: width,
-                      selected: selected == const CardLocation.waste(),
-                      highlighted: _isHintSource(const CardLocation.waste()),
-                      onTap: onCardTap,
-                      onDoubleTap: onDoubleTap,
+                      onDraw: onDraw,
                     ),
+                  ),
+                  Positioned(
+                    left: horizontalPadding + stride,
+                    top: top,
+                    child: session.waste.isEmpty
+                        ? EmptyCardSlot(width: width)
+                        : _PlayableCard(
+                            card: session.waste.last,
+                            location: const CardLocation.waste(),
+                            animal: backAnimal,
+                            width: width,
+                            selected: selected == const CardLocation.waste(),
+                            highlighted: _isHintSource(
+                              const CardLocation.waste(),
+                            ),
+                            childWhenDragging: session.waste.length == 1
+                                ? EmptyCardSlot(
+                                    key: const Key(
+                                      'solitaire-waste-empty-drag',
+                                    ),
+                                    width: width,
+                                  )
+                                : SolitaireCardView(
+                                    key: Key(
+                                      'solitaire-card-${session.waste[session.waste.length - 2].id}',
+                                    ),
+                                    card:
+                                        session.waste[session.waste.length - 2],
+                                    backAnimal: backAnimal,
+                                    width: width,
+                                  ),
+                            onTap: onCardTap,
+                            onDoubleTap: onDoubleTap,
+                          ),
+                  ),
+                  for (final suit in CardSuit.values)
+                    Positioned(
+                      left: horizontalPadding + stride * (suit.index + 3),
+                      top: top,
+                      child: _Foundation(
+                        suit: suit,
+                        cards: session.foundations[suit.index],
+                        session: session,
+                        animal: backAnimal,
+                        width: width,
+                        selected: selected,
+                        highlighted:
+                            hint?.move?.target == CardLocation.foundation(suit),
+                        onCardTap: onCardTap,
+                        onDoubleTap: onDoubleTap,
+                        onMove: onMove,
+                      ),
+                    ),
+                ],
+              ),
             ),
-            for (final suit in CardSuit.values)
-              Positioned(
-                left: horizontalPadding + stride * (suit.index + 3),
-                top: top,
-                child: _Foundation(
-                  suit: suit,
-                  cards: session.foundations[suit.index],
-                  session: session,
-                  animal: backAnimal,
-                  width: width,
-                  selected: selected,
-                  highlighted:
-                      hint?.move?.target == CardLocation.foundation(suit),
-                  onCardTap: onCardTap,
-                  onDoubleTap: onDoubleTap,
-                  onMove: onMove,
+            Expanded(
+              child: Listener(
+                key: _viewportKey,
+                onPointerMove: (event) => _pointer(event.position),
+                onPointerUp: (_) => dragging(false),
+                onPointerCancel: (_) => dragging(false),
+                child: SingleChildScrollView(
+                  controller: _scroll,
+                  key: const Key('solitaire-tableau-scroll'),
+                  child: SizedBox(
+                    height: contentHeight,
+                    child: Stack(
+                      children: [
+                        for (var pile = 0; pile < 7; pile++)
+                          Positioned(
+                            left: horizontalPadding + stride * pile,
+                            top: 0,
+                            child: _TableauPile(
+                              pile: pile,
+                              cards: session.tableau[pile],
+                              session: session,
+                              animal: backAnimal,
+                              width: width,
+                              height: contentHeight,
+                              overlap: overlap,
+                              selected: selected,
+                              hint: hint,
+                              onCardTap: onCardTap,
+                              onDoubleTap: onDoubleTap,
+                              onMove: onMove,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            for (var pile = 0; pile < 7; pile++)
-              Positioned(
-                left: horizontalPadding + stride * pile,
-                top: tableauTop,
-                child: _TableauPile(
-                  pile: pile,
-                  cards: session.tableau[pile],
-                  session: session,
-                  animal: backAnimal,
-                  width: width,
-                  height: tableauHeight,
-                  overlap: overlap,
-                  selected: selected,
-                  hint: hint,
-                  onCardTap: onCardTap,
-                  onDoubleTap: onDoubleTap,
-                  onMove: onMove,
-                ),
-              ),
+            ),
           ],
         ),
       );
@@ -479,7 +387,7 @@ class _Stock extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
     button: true,
     label: session.stock.isEmpty ? 'Recycler la défausse' : 'Piocher',
-    child: GestureDetector(
+    child: GameGestureTarget(
       key: const Key('solitaire-stock'),
       onTap: onDraw,
       child: session.stock.isEmpty
@@ -526,7 +434,7 @@ class _Foundation extends StatelessWidget {
           session.canMove(SolitaireMove(details.data, location)),
       onAcceptWithDetails: (details) =>
           onMove(SolitaireMove(details.data, location)),
-      builder: (context, candidates, _) => GestureDetector(
+      builder: (context, candidates, _) => GameGestureTarget(
         key: Key('solitaire-foundation-${suit.name}'),
         onTap: () => onCardTap(location),
         onDoubleTap: cards.isEmpty ? null : () => onDoubleTap(location),
@@ -602,7 +510,7 @@ class _TableauPile extends StatelessWidget {
         key: Key('solitaire-tableau-$pile'),
         width: width,
         height: height,
-        child: GestureDetector(
+        child: GameGestureTarget(
           behavior: HitTestBehavior.translucent,
           onTap: cards.isEmpty ? () => onCardTap(target) : null,
           child: Stack(
@@ -667,6 +575,7 @@ class _PlayableCard extends StatelessWidget {
     required this.selected,
     required this.highlighted,
     this.highlightColor,
+    this.childWhenDragging,
     required this.onTap,
     required this.onDoubleTap,
   });
@@ -678,12 +587,13 @@ class _PlayableCard extends StatelessWidget {
   final bool selected;
   final bool highlighted;
   final Color? highlightColor;
+  final Widget? childWhenDragging;
   final ValueChanged<CardLocation> onTap;
   final ValueChanged<CardLocation> onDoubleTap;
 
   @override
   Widget build(BuildContext context) {
-    final view = GestureDetector(
+    final view = GameGestureTarget(
       onTap: () => onTap(location),
       onDoubleTap: () => onDoubleTap(location),
       child: SolitaireCardView(
@@ -701,6 +611,10 @@ class _PlayableCard extends StatelessWidget {
       label: card.label,
       child: Draggable<CardLocation>(
         data: location,
+        onDragStarted: () =>
+            context.findAncestorStateOfType<_BoardState>()?.dragging(true),
+        onDragEnd: (_) =>
+            context.findAncestorStateOfType<_BoardState>()?.dragging(false),
         feedback: Material(
           color: Colors.transparent,
           child: SolitaireCardView(
@@ -710,7 +624,8 @@ class _PlayableCard extends StatelessWidget {
             selected: true,
           ),
         ),
-        childWhenDragging: Opacity(opacity: .3, child: view),
+        childWhenDragging:
+            childWhenDragging ?? Opacity(opacity: .3, child: view),
         child: view,
       ),
     );
@@ -742,7 +657,7 @@ class _ResultOverlay extends StatelessWidget {
   Widget build(BuildContext context) => ColoredBox(
     key: const Key('solitaire-result'),
     color: const Color(0xaa173a31),
-    child: Center(
+    child: GameResultViewport(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
         child: Card(

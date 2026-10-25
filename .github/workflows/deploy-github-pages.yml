@@ -1,52 +1,119 @@
-name: Deploy Flutter web to GitHub Pages
-
+name: Verify and deploy Papatte Parc
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
-
+    inputs:
+      signed_android_release:
+        description: 'Build Android with production signing secrets'
+        type: boolean
+        default: false
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
 concurrency:
-  group: pages
-  cancel-in-progress: false
-
+  group: papatte-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.44.9'
           cache: true
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build web
-        run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install Pillow==11.3.0
+      - run: python tool/generate_artwork.py --check
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test --exclude-tags=performance --concurrency=1
+      - run: flutter test test/games/mahjong_animaux/mahjong_functional_test.dart --tags=performance --concurrency=1
+      - run: dart compile js -O2 tool/generation_worker.dart -o web/generation_worker.js
+      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+      - run: python tool/check_runtime_assets.py build/web/assets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-candidate-${{ github.sha }}
+          path: build/web
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
           path: build/web
-
-  deploy:
-    needs: build
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.9'
+          cache: true
+      - run: flutter pub get
+      - run: flutter test test/app --concurrency=1
+      - run: flutter build windows --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-candidate-${{ github.sha }}
+          path: build/windows/x64/runner/Release
+  android:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.9'
+          cache: true
+      - run: flutter pub get
+      - name: Prepare production Android signing
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_android_release
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import base64, os
+          from pathlib import Path
+          names = ('KEYSTORE_BASE64', 'KEY_ALIAS', 'STORE_PASSWORD', 'KEY_PASSWORD')
+          if not all(os.environ.get(name) for name in names):
+              raise SystemExit('Production signing secrets are incomplete')
+          target = Path(os.environ['RUNNER_TEMP']) / 'papatte-release.jks'
+          target.write_bytes(base64.b64decode(os.environ['KEYSTORE_BASE64'], validate=True))
+          values = {
+              'ANDROID_KEYSTORE_PATH': str(target),
+              'ANDROID_KEY_ALIAS': os.environ['KEY_ALIAS'],
+              'ANDROID_KEYSTORE_PASSWORD': os.environ['STORE_PASSWORD'],
+              'ANDROID_KEY_PASSWORD': os.environ['KEY_PASSWORD'],
+          }
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              for key, value in values.items():
+                  if '\n' in value or '\r' in value:
+                      raise SystemExit('Invalid multiline signing configuration')
+                  output.write(f'{key}={value}\n')
+          PY
+      - run: flutter build appbundle --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ inputs.signed_android_release && 'signed-release' || 'unsigned-verification' }}-${{ github.sha }}
+          path: build/app/outputs/bundle/release/*.aab
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: [verify, windows, android]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Deploy to GitHub Pages
+      - uses: actions/deploy-pages@v4
         id: deployment
-        uses: actions/deploy-pages@v4

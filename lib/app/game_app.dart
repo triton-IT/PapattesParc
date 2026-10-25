@@ -1,3 +1,5 @@
+import '../shared/game_audio.dart';
+import '../shared/game_activity.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -9,7 +11,7 @@ import '../games/pattes_friandises/presentation/match3_game_flow.dart';
 import '../games/mahjong_animaux/data/mahjong_progress_store.dart';
 import '../games/mahjong_animaux/presentation/mahjong_game_flow.dart';
 import '../games/refuge/data/progress_store.dart';
-import '../games/refuge/domain/levels.dart';
+import '../shared/park_stages.dart';
 import '../games/refuge/presentation/game_app.dart';
 import '../games/repas_animaux/data/repas_animaux_progress_store.dart';
 import '../games/repas_animaux/presentation/repas_animaux_game_flow.dart';
@@ -19,6 +21,8 @@ import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
 import '../games/solitaire_animaux/presentation/solitaire_game_flow.dart';
 import '../games/sudoku_animaux/data/sudoku_progress_store.dart';
 import '../games/sudoku_animaux/presentation/sudoku_game_flow.dart';
+import '../games/familles_du_parc/data/animal_sort_progress_store.dart';
+import '../games/familles_du_parc/presentation/animal_sort_game_flow.dart';
 import '../shared/app_theme.dart';
 import '../shared/settings_store.dart';
 import 'main_menu_screen.dart';
@@ -34,6 +38,7 @@ class PapatteParcApp extends StatelessWidget {
     required this.sudokuStore,
     required this.repasStore,
     required this.numberlinkStore,
+    required this.animalSortStore,
     required this.settings,
     super.key,
   });
@@ -45,11 +50,18 @@ class PapatteParcApp extends StatelessWidget {
   final SudokuProgressStore sudokuStore;
   final RepasAnimauxProgressStore repasStore;
   final NumberlinkProgressStore numberlinkStore;
+  final AnimalSortProgressStore animalSortStore;
   final SettingsStore settings;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Papatte Parc',
+    builder: (context, child) => GameActivityBoundary(
+      child: Listener(
+        onPointerDown: (_) => GameAudio.onUserGesture(),
+        child: child!,
+      ),
+    ),
     debugShowCheckedModeBanner: false,
     theme: buildAppTheme(),
     home: _AppFlow(
@@ -60,6 +72,7 @@ class PapatteParcApp extends StatelessWidget {
       sudokuStore: sudokuStore,
       repasStore: repasStore,
       numberlinkStore: numberlinkStore,
+      animalSortStore: animalSortStore,
       settings: settings,
     ),
   );
@@ -74,6 +87,7 @@ class _AppFlow extends StatefulWidget {
     required this.sudokuStore,
     required this.repasStore,
     required this.numberlinkStore,
+    required this.animalSortStore,
     required this.settings,
   });
 
@@ -84,6 +98,7 @@ class _AppFlow extends StatefulWidget {
   final SudokuProgressStore sudokuStore;
   final RepasAnimauxProgressStore repasStore;
   final NumberlinkProgressStore numberlinkStore;
+  final AnimalSortProgressStore animalSortStore;
   final SettingsStore settings;
 
   @override
@@ -97,46 +112,54 @@ class _AppFlowState extends State<_AppFlow> {
   Widget build(BuildContext context) => switch (_selectedGame) {
     GameId.refuge => RefugeGameFlow(
       store: widget.refugeStore,
+      settings: widget.settings,
       onExit: _showMenu,
     ),
     GameId.pattesFriandises => Match3GameFlow(
-      stages: levels,
+      stages: parkStages,
       progress: widget.match3Store,
       settings: widget.settings,
       onExit: _showMenu,
       onQuit: _onQuit,
     ),
     GameId.mahjongAnimaux => MahjongGameFlow(
-      stages: levels,
+      stages: parkStages,
       progress: widget.mahjongStore,
       settings: widget.settings,
       onExit: _showMenu,
       onQuit: _onQuit,
     ),
     GameId.solitaireAnimaux => SolitaireGameFlow(
-      stages: levels,
+      stages: parkStages,
       progress: widget.solitaireStore,
       settings: widget.settings,
       onExit: _showMenu,
       onQuit: _onQuit,
     ),
     GameId.sudokuAnimaux => SudokuGameFlow(
-      stages: levels,
+      stages: parkStages,
       progress: widget.sudokuStore,
       settings: widget.settings,
       onExit: _showMenu,
       onQuit: _onQuit,
     ),
     GameId.repasAnimaux => RepasAnimauxGameFlow(
-      stages: levels,
+      stages: parkStages,
       progress: widget.repasStore,
       settings: widget.settings,
       onExit: _showMenu,
       onQuit: _onQuit,
     ),
     GameId.numberlink => NumberlinkGameFlow(
-      stages: levels,
+      stages: parkStages,
       progress: widget.numberlinkStore,
+      settings: widget.settings,
+      onExit: _showMenu,
+      onQuit: _onQuit,
+    ),
+    GameId.animalSort => AnimalSortGameFlow(
+      stages: parkStages,
+      progress: widget.animalSortStore,
       settings: widget.settings,
       onExit: _showMenu,
       onQuit: _onQuit,
@@ -149,6 +172,7 @@ class _AppFlowState extends State<_AppFlow> {
       sudokuStore: widget.sudokuStore,
       repasStore: widget.repasStore,
       numberlinkStore: widget.numberlinkStore,
+      animalSortStore: widget.animalSortStore,
       musicEnabled: widget.settings.musicEnabled,
       effectsEnabled: widget.settings.effectsEnabled,
       onSelect: (game) => setState(() => _selectedGame = game),

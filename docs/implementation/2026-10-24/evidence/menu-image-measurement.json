@@ -1,0 +1,18 @@
+{
+  "baseline_image_bytes": 16785007,
+  "observed_menu_image_bytes": 2073770,
+  "reduction_percent": 87.65,
+  "observed_viewport": "1280x720",
+  "images": {
+    "/PapattesParc/assets/assets/optimized/level_art/level-01-suricates-porcs-epics-640.webp": 45656,
+    "/PapattesParc/assets/assets/optimized/level_art/level-45-alpagas-640.webp": 81820,
+    "/PapattesParc/assets/assets/optimized/mahjong/mahjong-cover-640.webp": 78232,
+    "/PapattesParc/assets/assets/optimized/solitaire/solitaire-cover-640.webp": 70742,
+    "/PapattesParc/assets/assets/optimized/sokoban/cover-640.webp": 68914,
+    "/PapattesParc/assets/assets/optimized/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers-640.webp": 68990,
+    "/PapattesParc/assets/assets/optimized/level_art/level-09-gibbons-loutres-asie-640.webp": 73486,
+    "/PapattesParc/assets/assets/optimized/level_art/level-03-girafes-gazelles-addax-640.webp": 54574,
+    "/PapattesParc/assets/assets/optimized/park_map-1491.webp": 1531356
+  },
+  "limits": "Uncompressed file bytes for observed local requests, not a cold/warm load timing or Pages transfer measurement. Current menu includes eight thumbnails and the map."
+}

@@ -1,3 +1,6 @@
+import '../../../shared/generation_service.dart';
+import '../../../shared/generation_overlay.dart';
+import '../../../shared/game_activity.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -36,6 +39,7 @@ class MahjongGameFlow extends StatefulWidget {
 }
 
 class _MahjongGameFlowState extends State<MahjongGameFlow> {
+  final GenerationService _generation = GenerationService();
   _MahjongScreen _screen = _MahjongScreen.levels;
   late final List<MahjongLevelDefinition> _levels;
   late final GameAudio _audio;
@@ -44,9 +48,8 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
   MahjongLevelDefinition? _level;
   MahjongFreeGameConfig? _freeConfig;
   MahjongSession? _session;
-  Timer? _ticker;
-  Timer? _hintTimer;
-  DateTime? _lastTick;
+  late final ActiveGameClock _clock;
+  ActiveGameTimer? _hintTimer;
   Set<int> _hintedIds = {};
   bool _finished = false;
   bool _newRecord = false;
@@ -64,24 +67,24 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
       effectsEnabled: _effectsEnabled,
     );
     unawaited(_audio.initialize());
-    _ticker = Timer.periodic(const Duration(milliseconds: 100), (_) => _tick());
+    _clock = ActiveGameClock(
+      onTick: (delta) {
+        if (_session?.status != MahjongStatus.playing) {
+          return _session?.elapsed ?? Duration.zero;
+        }
+        _session!.tick(delta);
+        return _session!.elapsed;
+      },
+    );
   }
 
   @override
   void dispose() {
-    _ticker?.cancel();
+    _generation.dispose();
+    _clock.dispose();
     _hintTimer?.cancel();
     unawaited(_audio.dispose());
     super.dispose();
-  }
-
-  void _tick() {
-    final now = DateTime.now();
-    final previous = _lastTick;
-    _lastTick = now;
-    if (previous == null || _session?.status != MahjongStatus.playing) return;
-    _session!.tick(now.difference(previous));
-    if (mounted) setState(() {});
   }
 
   void _startLevel(MahjongLevelDefinition level) {
@@ -105,23 +108,38 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
     );
   }
 
-  void _startSession(
+  Future<void> _startSession(
     MahjongLayoutDefinition layout,
     LevelBiome biome,
     AnimalTemperament temperament,
-  ) {
-    _session = MahjongSession(layout: layout, biome: biome, seed: _seed);
-    _hintedIds = {};
-    _finished = false;
-    _newRecord = false;
-    _lastTick = DateTime.now();
-    unawaited(_audio.playLevel(temperament));
-    setState(() => _screen = _MahjongScreen.playing);
+  ) async {
+    try {
+      final seed = _seed;
+      final prepared = await _generation.mahjong(layout, biome, seed);
+      if (!mounted) return;
+      _session = MahjongSession(
+        layout: layout,
+        biome: biome,
+        seed: seed,
+        prepared: prepared,
+      );
+      _hintedIds = {};
+      _finished = false;
+      _newRecord = false;
+      _clock.reset();
+      unawaited(_audio.playLevel(temperament));
+      setState(() => _screen = _MahjongScreen.playing);
+    } on StaleGeneration {
+      return;
+    } catch (_) {
+      if (mounted) _toast('Le niveau ne peut pas être préparé. Réessaie.');
+    }
   }
 
   int _newSeed() => DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919;
 
   void _select(int id) {
+    _clock.flush();
     final result = _session!.select(id);
     switch (result) {
       case MahjongSelectionResult.ignored:
@@ -146,7 +164,7 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
     if (pair == null) return;
     _hintTimer?.cancel();
     setState(() => _hintedIds = {pair.first, pair.second});
-    _hintTimer = Timer(const Duration(seconds: 2), () {
+    _hintTimer = ActiveGameTimer(const Duration(seconds: 2), () {
       if (mounted) setState(() => _hintedIds = {});
     });
   }
@@ -218,6 +236,7 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
   }
 
   void _showLevels() {
+    _generation.cancel();
     unawaited(_audio.playHome());
     setState(() {
       _screen = _MahjongScreen.levels;
@@ -258,7 +277,10 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
   }
 
   @override
-  Widget build(BuildContext context) => _handleBack(
+  Widget build(BuildContext context) =>
+      GenerationBoundary(service: _generation, child: _buildContents(context));
+
+  Widget _buildContents(BuildContext context) => _handleBack(
     switch (_screen) {
       _MahjongScreen.levels => widget.onExit,
       _MahjongScreen.custom => _showLevels,
@@ -283,6 +305,7 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
         onStart: _startFree,
       ),
       _MahjongScreen.playing => MahjongScreen(
+        elapsed: _clock,
         session: _session!,
         backgroundAsset:
             (_level?.stage ??
@@ -291,7 +314,7 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
                     ))
                 .artAsset!,
         title: _freeConfig == null
-            ? 'Niveau ${_level!.number} · ${_level!.layout.name}'
+            ? 'Niveau ${_level!.number} · ${_level!.stage.title}'
             : '${_session!.layout.name} · ${_session!.layout.difficulty.label}',
         isFreeGame: _freeConfig != null,
         hintedIds: _hintedIds,

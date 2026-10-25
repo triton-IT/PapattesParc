@@ -1,3 +1,4 @@
+import 'artwork.dart';
 import 'package:flutter/material.dart';
 
 class AnimalBackground extends StatelessWidget {
@@ -15,7 +16,7 @@ class AnimalBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Stack(
     children: [
-      Positioned.fill(child: Image.asset(asset, fit: BoxFit.cover)),
+      Positioned.fill(child: ArtworkImage(asset, fit: BoxFit.cover)),
       Positioned.fill(child: ColoredBox(color: scrim)),
       child,
     ],

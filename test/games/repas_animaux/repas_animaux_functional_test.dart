@@ -86,6 +86,9 @@ void main() {
 
       expect(campaign, hasLength(45));
       for (final level in campaign) {
+        expect(level.boardBounds.origin, const RepasPosition(1, 1));
+        expect(level.boardBounds.width, level.width - 2);
+        expect(level.boardBounds.height, level.height - 2);
         expect(level.initialCrates.length, level.targets.length);
         expect(level.floor.contains(level.initialKeeper), isTrue);
         final expectedCrates = switch (level.number) {

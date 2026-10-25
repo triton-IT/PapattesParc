@@ -33,7 +33,6 @@ class NumberlinkLevelSelectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mission = levels[store.unlockedLevel - 1];
     return CampaignLevelSelectScreen(
       title: 'SENTIERS SAUVAGES',
       tagline: 'Relie · Guide · Protège',
@@ -42,27 +41,35 @@ class NumberlinkLevelSelectScreen extends StatelessWidget {
       keyPrefix: 'numberlink',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
+      completedCount: store.completedCount,
       progressLabel: 'ANIMAUX À L’ABRI',
-      missionTitle: mission.stage.title,
-      missionSubtitle: mission.stage.species,
-      missionArtAsset: mission.stage.artAsset!,
-      missionStats: [
-        CampaignMissionStat(
-          Icons.grid_view_rounded,
-          '${mission.size} × ${mission.size}',
-          'grille',
-        ),
-        CampaignMissionStat(
-          Icons.route_rounded,
-          '${mission.pairCount}',
-          'sentiers',
-        ),
-        CampaignMissionStat(
-          Icons.pets_rounded,
-          '${store.totalFootprints} / 135',
-          'empreintes',
-        ),
-      ],
+      missionBuilder: (index) {
+        final mission = levels[index];
+        return CampaignMission(
+          completed: store.campaign.isCompleted(index + 1),
+          title: mission.stage.title,
+          subtitle: mission.stage.species,
+          artAsset: mission.stage.artAsset!,
+          stats: [
+            CampaignMissionStat(
+              Icons.grid_view_rounded,
+              '${mission.size} × ${mission.size}',
+              'grille',
+            ),
+            CampaignMissionStat(
+              Icons.route_rounded,
+              '${mission.pairCount}',
+              'sentiers',
+            ),
+            CampaignMissionStat(
+              Icons.pets_rounded,
+              '${store.totalFootprints} / 135',
+              'empreintes',
+            ),
+          ],
+          bestResult: store.bestTime(index + 1)?.toString() ?? 'Aucun record',
+        );
+      },
       labelBuilder: (index) => levels[index].stage.title,
       musicEnabled: musicEnabled,
       effectsEnabled: effectsEnabled,

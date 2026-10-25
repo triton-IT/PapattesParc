@@ -287,7 +287,10 @@ class _Header extends StatelessWidget {
   final VoidCallback onBack;
 
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) => Wrap(
+    alignment: WrapAlignment.spaceBetween,
+    spacing: 8,
+    runSpacing: 8,
     children: [
       FilledButton.tonalIcon(
         key: const Key('back-from-custom'),
@@ -295,7 +298,6 @@ class _Header extends StatelessWidget {
         icon: const Icon(Icons.arrow_back_rounded),
         label: const Text('Parcours'),
       ),
-      const Spacer(),
       const DecoratedBox(
         decoration: BoxDecoration(
           color: AppColors.sun,
@@ -304,15 +306,18 @@ class _Header extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.tune_rounded, color: AppColors.deep, size: 20),
               SizedBox(width: 7),
-              Text(
-                'PARTIE LIBRE',
-                style: TextStyle(
-                  color: AppColors.deep,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: .8,
+              Flexible(
+                child: Text(
+                  'PARTIE LIBRE',
+                  style: TextStyle(
+                    color: AppColors.deep,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: .8,
+                  ),
                 ),
               ),
             ],
@@ -355,6 +360,7 @@ class _AnimalTypePicker extends StatelessWidget {
                 iconEnabledColor: Colors.white,
                 underline: const Divider(color: Color(0xffe3eee8)),
                 style: const TextStyle(
+                  fontFamily: 'Nunito',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
