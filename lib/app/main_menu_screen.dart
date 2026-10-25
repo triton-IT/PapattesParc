@@ -1,3 +1,7 @@
+import 'dart:math' as math;
+import '../shared/game_catalog.dart';
+export '../shared/game_catalog.dart' show GameId;
+import '../shared/artwork.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -8,17 +12,8 @@ import '../games/repas_animaux/data/repas_animaux_progress_store.dart';
 import '../games/sentiers_sauvages/data/numberlink_progress_store.dart';
 import '../games/solitaire_animaux/data/solitaire_progress_store.dart';
 import '../games/sudoku_animaux/data/sudoku_progress_store.dart';
+import '../games/familles_du_parc/data/animal_sort_progress_store.dart';
 import '../shared/app_theme.dart';
-
-enum GameId {
-  refuge,
-  pattesFriandises,
-  mahjongAnimaux,
-  solitaireAnimaux,
-  sudokuAnimaux,
-  repasAnimaux,
-  numberlink,
-}
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({
@@ -29,6 +24,7 @@ class MainMenuScreen extends StatelessWidget {
     required this.sudokuStore,
     required this.repasStore,
     required this.numberlinkStore,
+    required this.animalSortStore,
     required this.musicEnabled,
     required this.effectsEnabled,
     required this.onSelect,
@@ -45,12 +41,48 @@ class MainMenuScreen extends StatelessWidget {
   final SudokuProgressStore sudokuStore;
   final RepasAnimauxProgressStore repasStore;
   final NumberlinkProgressStore numberlinkStore;
+  final AnimalSortProgressStore animalSortStore;
   final bool musicEnabled;
   final bool effectsEnabled;
   final ValueChanged<GameId> onSelect;
   final VoidCallback onToggleMusic;
   final VoidCallback onToggleEffects;
   final VoidCallback? onQuit;
+
+  String _progress(GameId game) {
+    final (completed, footprints) = switch (game) {
+      GameId.refuge => (refugeStore.completedCount, null),
+      GameId.pattesFriandises => (
+        match3Store.completedCount,
+        match3Store.totalFootprints,
+      ),
+      GameId.mahjongAnimaux => (
+        mahjongStore.completedCount,
+        mahjongStore.totalFootprints,
+      ),
+      GameId.solitaireAnimaux => (
+        solitaireStore.completedCount,
+        solitaireStore.totalFootprints,
+      ),
+      GameId.sudokuAnimaux => (
+        sudokuStore.completedCount,
+        sudokuStore.totalFootprints,
+      ),
+      GameId.repasAnimaux => (
+        repasStore.completedCount,
+        repasStore.totalFootprints,
+      ),
+      GameId.numberlink => (
+        numberlinkStore.completedCount,
+        numberlinkStore.totalFootprints,
+      ),
+      GameId.animalSort => (
+        animalSortStore.completedCount,
+        animalSortStore.totalFootprints,
+      ),
+    };
+    return '$completed / 45 terminés${footprints == null ? '' : ' · $footprints empreintes'}';
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -61,7 +93,7 @@ class MainMenuScreen extends StatelessWidget {
           Positioned.fill(
             child: Opacity(
               opacity: .12,
-              child: Image.asset('assets/park_map.png', fit: BoxFit.cover),
+              child: ArtworkImage('assets/park_map.png', fit: BoxFit.cover),
             ),
           ),
           Column(
@@ -77,98 +109,17 @@ class MainMenuScreen extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final cards = [
-                      _GameCard(
-                        key: const Key('game-refuge'),
-                        title: 'Balises du refuge',
-                        description:
-                            'Observe les indices et localise les animaux sans les effrayer.',
-                        progress: '${refugeStore.unlockedLevel} / 45 missions',
-                        artAsset:
-                            'assets/level_art/level-01-suricates-porcs-epics.png',
-                        icon: Icons.grid_on_rounded,
-                        color: AppColors.primary,
-                        onPlay: () => onSelect(GameId.refuge),
-                      ),
-                      _GameCard(
-                        key: const Key('game-pattes-friandises'),
-                        title: 'Align’Animaux',
-                        description:
-                            'Aligne les animaux, prépare les paniers et nettoie les habitats.',
-                        progress:
-                            '${match3Store.unlockedLevel} / 45 niveaux · '
-                            '${match3Store.totalFootprints} empreintes',
-                        artAsset: 'assets/level_art/level-45-alpagas.png',
-                        icon: Icons.pets_rounded,
-                        color: const Color(0xffc9694b),
-                        onPlay: () => onSelect(GameId.pattesFriandises),
-                      ),
-                      _GameCard(
-                        key: const Key('game-mahjong-animaux'),
-                        title: 'Mahjong des animaux',
-                        description:
-                            'Libère les tuiles et rassemble les animaux par paires.',
-                        progress:
-                            '${mahjongStore.unlockedLevel} / 45 niveaux · '
-                            '${mahjongStore.totalFootprints} empreintes',
-                        artAsset: 'assets/mahjong/mahjong-cover.png',
-                        icon: Icons.view_module_rounded,
-                        color: AppColors.success,
-                        onPlay: () => onSelect(GameId.mahjongAnimaux),
-                      ),
-                      _GameCard(
-                        key: const Key('game-solitaire-animaux'),
-                        title: 'Solitaire des animaux',
-                        description:
-                            'Range les cartes et révèle les animaux du parc.',
-                        progress:
-                            '${solitaireStore.unlockedLevel} / 45 niveaux · '
-                            '${solitaireStore.totalFootprints} empreintes',
-                        artAsset: 'assets/solitaire/solitaire-cover.png',
-                        icon: Icons.style_rounded,
-                        color: AppColors.primary,
-                        onPlay: () => onSelect(GameId.solitaireAnimaux),
-                      ),
-                      _GameCard(
-                        key: const Key('game-sudoku-animaux'),
-                        title: 'Le Défi des Papattes',
-                        description:
-                            'Replace chaque animal dans sa ligne, sa colonne et son enclos.',
-                        progress:
-                            '${sudokuStore.unlockedLevel} / 45 niveaux · '
-                            '${sudokuStore.totalFootprints} empreintes',
-                        artAsset:
-                            'assets/level_art/level-14-tapirs-coendous-capybaras-nandous-fourmiliers.png',
-                        icon: Icons.grid_view_rounded,
-                        color: const Color(0xff8c5e9e),
-                        onPlay: () => onSelect(GameId.sudokuAnimaux),
-                      ),
-                      _GameCard(
-                        key: const Key('game-repas-animaux'),
-                        title: 'Le repas des animaux',
-                        description:
-                            'Aide le soigneur à livrer les caisses de nourriture dans chaque enclos.',
-                        progress:
-                            '${repasStore.unlockedLevel} / 45 niveaux · '
-                            '${repasStore.totalFootprints} empreintes',
-                        artAsset: 'assets/sokoban/cover.png',
-                        icon: Icons.restaurant_rounded,
-                        color: const Color(0xffb56736),
-                        onPlay: () => onSelect(GameId.repasAnimaux),
-                      ),
-                      _GameCard(
-                        key: const Key('game-numberlink'),
-                        title: 'Sentiers sauvages',
-                        description:
-                            'Relie chaque animal à son enclos sans croiser les sentiers.',
-                        progress:
-                            '${numberlinkStore.unlockedLevel} / 45 niveaux · '
-                            '${numberlinkStore.totalFootprints} empreintes',
-                        artAsset:
-                            'assets/level_art/level-09-gibbons-loutres-asie.png',
-                        icon: Icons.route_rounded,
-                        color: AppColors.success,
-                        onPlay: () => onSelect(GameId.numberlink),
-                      ),
+                      for (final game in gameCatalog)
+                        _GameCard(
+                          key: Key(game.key),
+                          title: game.title,
+                          description: game.description,
+                          progress: _progress(game.id),
+                          artAsset: game.artAsset,
+                          icon: game.icon,
+                          color: game.color,
+                          onPlay: () => onSelect(game.id),
+                        ),
                     ];
                     return Center(
                       child: ConstrainedBox(
@@ -187,11 +138,18 @@ class MainMenuScreen extends StatelessWidget {
                                       : 1,
                                   crossAxisSpacing: 14,
                                   mainAxisSpacing: 14,
-                                  mainAxisExtent: constraints.maxWidth >= 1100
-                                      ? (constraints.maxHeight - 46) / 2
-                                      : constraints.maxHeight < 700
-                                      ? 255
-                                      : 300,
+                                  mainAxisExtent: math.max(
+                                    280 *
+                                        MediaQuery.textScalerOf(
+                                          context,
+                                        ).scale(1).clamp(1.0, 2.0),
+                                    constraints.maxWidth >= 1100
+                                        ? math.min(
+                                            430,
+                                            (constraints.maxHeight - 46) / 2,
+                                          )
+                                        : 280,
+                                  ),
                                 ),
                             itemCount: cards.length,
                             itemBuilder: (_, index) => cards[index],
@@ -321,7 +279,7 @@ class _GameCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(artAsset, fit: BoxFit.cover),
+          ArtworkImage(artAsset, fit: BoxFit.cover),
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(

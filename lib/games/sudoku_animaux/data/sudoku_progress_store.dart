@@ -1,4 +1,5 @@
-import 'dart:math';
+import '../../../shared/game_records.dart';
+import '../../../shared/campaign_progress.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,44 +8,37 @@ class SudokuProgressStore {
 
   static const _unlockedLevelKey = 'sudoku:unlockedLevel';
   final SharedPreferences _preferences;
+  late final GameRecords _records = GameRecords(_preferences);
+  late final CampaignProgress campaign = CampaignProgress(
+    _preferences,
+    'sudoku',
+    unlockedLevel: () => unlockedLevel,
+    legacyCompleted: (level) => bestTime(level) != null,
+  );
+  int get completedCount => campaign.completedCount;
 
-  static Future<SudokuProgressStore> load() async =>
-      SudokuProgressStore._(await SharedPreferences.getInstance());
+  static Future<SudokuProgressStore> load() async {
+    final store = SudokuProgressStore._(await SharedPreferences.getInstance());
+    await store.campaign.migrate();
+    return store;
+  }
 
   int get unlockedLevel =>
       (_preferences.getInt(_unlockedLevelKey) ?? 1).clamp(1, 45);
 
-  Duration? bestTime(int level) {
-    final milliseconds = _preferences.getInt('sudoku:bestTime:$level');
-    return milliseconds == null ? null : Duration(milliseconds: milliseconds);
-  }
+  Duration? bestTime(int level) => _records.duration('sudoku:bestTime:$level');
 
-  int footprints(int level) =>
-      _preferences.getInt('sudoku:footprints:$level') ?? 0;
+  int footprints(int level) => campaign.reward(level);
 
-  int get totalFootprints {
-    var total = 0;
-    for (var level = 1; level <= 45; level++) {
-      total += footprints(level);
-    }
-    return total;
-  }
+  int get totalFootprints => campaign.totalRewards;
 
   Future<void> completeLevel(
     int level,
     Duration elapsed,
     int footprints,
   ) async {
-    final timeKey = 'sudoku:bestTime:$level';
-    final current = bestTime(level);
-    if (current == null || elapsed < current) {
-      await _preferences.setInt(timeKey, elapsed.inMilliseconds);
-    }
-    if (footprints > this.footprints(level)) {
-      await _preferences.setInt('sudoku:footprints:$level', footprints);
-    }
-    if (level < 45 && unlockedLevel <= level) {
-      await _preferences.setInt(_unlockedLevelKey, min(45, level + 1));
-    }
+    await campaign.complete(level);
+    await _records.saveDuration('sudoku:bestTime:$level', elapsed);
+    await campaign.rewardAndUnlock(level, footprints);
   }
 }

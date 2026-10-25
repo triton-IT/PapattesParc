@@ -1,4 +1,5 @@
-import 'dart:math';
+import '../../../shared/game_records.dart';
+import '../../../shared/campaign_progress.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,38 +8,40 @@ class RepasAnimauxProgressStore {
 
   static const _unlockedLevelKey = 'repas:unlockedLevel';
   final SharedPreferences _preferences;
+  late final GameRecords _records = GameRecords(_preferences);
+  late final CampaignProgress campaign = CampaignProgress(
+    _preferences,
+    'repas',
+    unlockedLevel: () => unlockedLevel,
+    legacyCompleted: (level) => bestPushes(level) != null,
+  );
+  int get completedCount => campaign.completedCount;
 
-  static Future<RepasAnimauxProgressStore> load() async =>
-      RepasAnimauxProgressStore._(await SharedPreferences.getInstance());
+  static Future<RepasAnimauxProgressStore> load() async {
+    final store = RepasAnimauxProgressStore._(
+      await SharedPreferences.getInstance(),
+    );
+    await store.campaign.migrate();
+    return store;
+  }
 
   int get unlockedLevel =>
       (_preferences.getInt(_unlockedLevelKey) ?? 1).clamp(1, 45);
 
   int? bestPushes(int level) => _preferences.getInt('repas:bestPushes:$level');
 
-  int footprints(int level) =>
-      _preferences.getInt('repas:footprints:$level') ?? 0;
+  int footprints(int level) => campaign.reward(level);
 
-  int get totalFootprints {
-    var total = 0;
-    for (var level = 1; level <= 45; level++) {
-      total += footprints(level);
-    }
-    return total;
-  }
+  int get totalFootprints => campaign.totalRewards;
 
   Future<bool> completeLevel(int level, int pushes, int footprints) async {
-    final previous = bestPushes(level);
-    final newRecord = previous == null || pushes < previous;
-    if (newRecord) {
-      await _preferences.setInt('repas:bestPushes:$level', pushes);
-    }
-    if (footprints > this.footprints(level)) {
-      await _preferences.setInt('repas:footprints:$level', footprints);
-    }
-    if (level < 45 && unlockedLevel <= level) {
-      await _preferences.setInt(_unlockedLevelKey, min(45, level + 1));
-    }
+    await campaign.complete(level);
+    final newRecord = await _records.saveInteger(
+      'repas:bestPushes:$level',
+      pushes,
+      order: RecordOrder.lowerWins,
+    );
+    await campaign.rewardAndUnlock(level, footprints);
     return newRecord;
   }
 }

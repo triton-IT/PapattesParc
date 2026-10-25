@@ -33,7 +33,6 @@ class Match3LevelSelectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mission = levels[store.unlockedLevel - 1];
     return CampaignLevelSelectScreen(
       title: 'ALIGN’ANIMAUX',
       tagline: 'Aligne · Combine · Protège',
@@ -42,27 +41,35 @@ class Match3LevelSelectScreen extends StatelessWidget {
       keyPrefix: 'match3',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
+      completedCount: store.completedCount,
       progressLabel: 'HABITATS PRÉSERVÉS',
-      missionTitle: mission.stage.title,
-      missionSubtitle: mission.stage.species,
-      missionArtAsset: mission.stage.artAsset!,
-      missionStats: [
-        CampaignMissionStat(
-          Icons.swap_horiz_rounded,
-          '${mission.moves}',
-          'coups',
-        ),
-        CampaignMissionStat(
-          Icons.pets_rounded,
-          '${mission.animals.length}',
-          'espèces',
-        ),
-        CampaignMissionStat(
-          Icons.workspace_premium_rounded,
-          '${store.totalFootprints} / 135',
-          'empreintes',
-        ),
-      ],
+      missionBuilder: (index) {
+        final mission = levels[index];
+        return CampaignMission(
+          completed: store.campaign.isCompleted(index + 1),
+          title: mission.stage.title,
+          subtitle: mission.stage.species,
+          artAsset: mission.stage.artAsset!,
+          stats: [
+            CampaignMissionStat(
+              Icons.swap_horiz_rounded,
+              '${mission.moves}',
+              'coups',
+            ),
+            CampaignMissionStat(
+              Icons.pets_rounded,
+              '${mission.animals.length}',
+              'espèces',
+            ),
+            CampaignMissionStat(
+              Icons.workspace_premium_rounded,
+              '${store.totalFootprints} / 135',
+              'empreintes',
+            ),
+          ],
+          bestResult: '${store.bestScore(index + 1)} points',
+        );
+      },
       labelBuilder: (index) => levels[index].stage.title,
       musicEnabled: musicEnabled,
       effectsEnabled: effectsEnabled,

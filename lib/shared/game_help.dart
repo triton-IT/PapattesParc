@@ -1,3 +1,4 @@
+import 'artwork.dart';
 import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
@@ -10,6 +11,7 @@ enum GameHelpKind {
   sudoku,
   repasAnimaux,
   numberlink,
+  animalSort,
 }
 
 class GameHelpButton extends StatelessWidget {
@@ -31,7 +33,10 @@ class GameHelpButton extends StatelessWidget {
     color: color,
     padding: compact ? EdgeInsets.zero : null,
     constraints: compact
-        ? const BoxConstraints.tightFor(width: 40, height: 40)
+        ? const BoxConstraints.tightFor(
+            width: AppGeometry.touchTarget,
+            height: AppGeometry.touchTarget,
+          )
         : null,
     onPressed: () => _showHelp(context),
     icon: const Icon(Icons.help_outline_rounded),
@@ -72,6 +77,7 @@ class GameHelpButton extends StatelessWidget {
     GameHelpKind.sudoku => 'Le Défi des Papattes',
     GameHelpKind.repasAnimaux => 'Le repas des animaux',
     GameHelpKind.numberlink => 'Sentiers sauvages',
+    GameHelpKind.animalSort => 'Réserves du parc',
   };
 
   List<String> get _items => switch (kind) {
@@ -110,6 +116,12 @@ class GameHelpButton extends StatelessWidget {
       'Relie chaque animal à son enclos en traçant un sentier horizontal ou vertical.',
       'Les sentiers ne peuvent ni se croiser ni partager une case. Reviens sur ton propre sentier pour en effacer la fin.',
       'Mets tous les animaux à l’abri et couvre toute la grille. Trois indices peuvent révéler un sentier sans le tracer à ta place.',
+    ],
+    GameHelpKind.animalSort => const [
+      'Sélectionne une réserve, puis une réserve vide ou contenant le même repas.',
+      'Toutes les portions identiques visibles se déplacent ensemble, dans la limite des quatre places disponibles.',
+      'Regroupe quatre aliments identiques dans chaque réserve. Chaque espèce possède son repas illustré.',
+      'Tu peux annuler, recommencer ou utiliser trois indices.',
     ],
   };
 }
@@ -158,7 +170,7 @@ class _GameCoachState extends State<_GameCoach> {
                     child: Semantics(
                       image: true,
                       label: 'Suricate guide',
-                      child: Image.asset(
+                      child: ArtworkImage(
                         'assets/match3/animals/suricate.png',
                         key: const Key('help-coach-suricate'),
                         width: portraitSize,

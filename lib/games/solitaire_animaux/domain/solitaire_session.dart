@@ -105,6 +105,19 @@ class SolitaireSession {
     );
   }
 
+  bool moveAutomatically(CardLocation source) {
+    final moving = _movingCards(source);
+    if (moving.length == 1 && moving.single.rank == CardRank.king) {
+      for (var pile = 0; pile < tableau.length; pile++) {
+        if (tableau[pile].isNotEmpty) continue;
+        if (move(SolitaireMove(source, CardLocation.tableau(pile, -1)))) {
+          return true;
+        }
+      }
+    }
+    return moveToFoundation(source);
+  }
+
   bool undo() {
     if (_history.isEmpty) return false;
     _restore(_history.removeLast());
@@ -152,6 +165,7 @@ class SolitaireSession {
       if (firstFaceUp < 0) continue;
       for (var target = 0; target < tableau.length; target++) {
         if (from == target) continue;
+        if (firstFaceUp == 0 && tableau[target].isEmpty) continue;
         final move = SolitaireMove(
           CardLocation.tableau(from, firstFaceUp),
           CardLocation.tableau(target, -1),

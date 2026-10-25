@@ -1,3 +1,4 @@
+import '../../../shared/artwork.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/app_theme.dart';
@@ -32,7 +33,7 @@ class _RepasCustomGameScreenState extends State<RepasCustomGameScreen> {
           Positioned.fill(
             child: Opacity(
               opacity: .12,
-              child: Image.asset('assets/park_map.png', fit: BoxFit.cover),
+              child: ArtworkImage('assets/park_map.png', fit: BoxFit.cover),
             ),
           ),
           Column(
@@ -54,9 +55,11 @@ class _RepasCustomGameScreenState extends State<RepasCustomGameScreen> {
                       child: Icon(Icons.tune_rounded),
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      'PARTIE LIBRE',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    Expanded(
+                      child: Text(
+                        'PARTIE LIBRE',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
                     ),
                   ],
                 ),

@@ -1,0 +1,3 @@
+00:00 +0: loading C:/dev/PapattesParc/test/games/mahjong_animaux/mahjong_functional_test.dart
+00:00 +0: les 45 plateaux sont pairs, déterministes et jouables
+00:06 +1: All tests passed!

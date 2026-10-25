@@ -1,4 +1,5 @@
-import 'dart:math';
+import '../../../shared/game_records.dart';
+import '../../../shared/campaign_progress.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,48 +8,44 @@ class NumberlinkProgressStore {
 
   static const _unlockedLevelKey = 'numberlink:unlockedLevel';
   final SharedPreferences _preferences;
+  late final GameRecords _records = GameRecords(_preferences);
+  late final CampaignProgress campaign = CampaignProgress(
+    _preferences,
+    'numberlink',
+    unlockedLevel: () => unlockedLevel,
+    legacyCompleted: (level) => bestTime(level) != null,
+  );
+  int get completedCount => campaign.completedCount;
 
-  static Future<NumberlinkProgressStore> load() async =>
-      NumberlinkProgressStore._(await SharedPreferences.getInstance());
+  static Future<NumberlinkProgressStore> load() async {
+    final store = NumberlinkProgressStore._(
+      await SharedPreferences.getInstance(),
+    );
+    await store.campaign.migrate();
+    return store;
+  }
 
   int get unlockedLevel =>
       (_preferences.getInt(_unlockedLevelKey) ?? 1).clamp(1, 45);
 
-  Duration? bestTime(int level) {
-    final milliseconds = _preferences.getInt('numberlink:bestTime:$level');
-    return milliseconds == null ? null : Duration(milliseconds: milliseconds);
-  }
+  Duration? bestTime(int level) =>
+      _records.duration('numberlink:bestTime:$level');
 
-  int footprints(int level) =>
-      _preferences.getInt('numberlink:footprints:$level') ?? 0;
+  int footprints(int level) => campaign.reward(level);
 
-  int get totalFootprints {
-    var total = 0;
-    for (var level = 1; level <= 45; level++) {
-      total += footprints(level);
-    }
-    return total;
-  }
+  int get totalFootprints => campaign.totalRewards;
 
   Future<bool> completeLevel(
     int level,
     Duration elapsed,
     int footprints,
   ) async {
-    final current = bestTime(level);
-    final isRecord = current == null || elapsed < current;
-    if (isRecord) {
-      await _preferences.setInt(
-        'numberlink:bestTime:$level',
-        elapsed.inMilliseconds,
-      );
-    }
-    if (footprints > this.footprints(level)) {
-      await _preferences.setInt('numberlink:footprints:$level', footprints);
-    }
-    if (level < 45 && unlockedLevel <= level) {
-      await _preferences.setInt(_unlockedLevelKey, min(45, level + 1));
-    }
+    await campaign.complete(level);
+    final isRecord = await _records.saveDuration(
+      'numberlink:bestTime:$level',
+      elapsed,
+    );
+    await campaign.rewardAndUnlock(level, footprints);
     return isRecord;
   }
 }

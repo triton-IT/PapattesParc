@@ -1,3 +1,4 @@
+import '../../../shared/game_activity.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -150,13 +151,13 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
         _clearing = step.cleared;
         _cascade = step.cascade;
       });
-      await Future<void>.delayed(const Duration(milliseconds: 220));
+      await GameActivity.delay(const Duration(milliseconds: 220));
       if (!mounted) return;
       setState(() {
         _displayed = step.result;
         _clearing = const {};
       });
-      await Future<void>.delayed(const Duration(milliseconds: 440));
+      await GameActivity.delay(const Duration(milliseconds: 440));
       if (!mounted) return;
     }
     setState(() {

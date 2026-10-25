@@ -1,3 +1,6 @@
+import '../../../shared/generation_service.dart';
+import '../../../shared/generation_overlay.dart';
+import '../../../shared/game_activity.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -36,6 +39,7 @@ class SudokuGameFlow extends StatefulWidget {
 }
 
 class _SudokuGameFlowState extends State<SudokuGameFlow> {
+  final GenerationService _generation = GenerationService();
   _SudokuScreen _screen = _SudokuScreen.levels;
   late final List<SudokuLevelDefinition> _levels;
   late final GameAudio _audio;
@@ -44,9 +48,8 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
   SudokuLevelDefinition? _level;
   SudokuFreeGameConfig? _freeConfig;
   SudokuSession? _session;
-  Timer? _ticker;
-  Timer? _wrongTimer;
-  DateTime? _lastTick;
+  late final ActiveGameClock _clock;
+  ActiveGameTimer? _wrongTimer;
   int? _selectedIndex;
   int? _wrongIndex;
   bool _noteMode = false;
@@ -57,7 +60,7 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
   @override
   void initState() {
     super.initState();
-    _levels = buildSudokuCampaign(widget.stages);
+    _levels = buildSudokuCampaignMetadata(widget.stages);
     _musicEnabled = widget.settings.musicEnabled;
     _effectsEnabled = widget.settings.effectsEnabled;
     _audio = GameAudio(
@@ -65,24 +68,24 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
       effectsEnabled: _effectsEnabled,
     );
     unawaited(_audio.initialize());
-    _ticker = Timer.periodic(const Duration(milliseconds: 100), (_) => _tick());
+    _clock = ActiveGameClock(
+      onTick: (delta) {
+        if (_session?.status != SudokuStatus.playing) {
+          return _session?.elapsed ?? Duration.zero;
+        }
+        _session!.tick(delta);
+        return _session!.elapsed;
+      },
+    );
   }
 
   @override
   void dispose() {
-    _ticker?.cancel();
+    _generation.dispose();
+    _clock.dispose();
     _wrongTimer?.cancel();
     unawaited(_audio.dispose());
     super.dispose();
-  }
-
-  void _tick() {
-    final now = DateTime.now();
-    final previous = _lastTick;
-    _lastTick = now;
-    if (previous == null || _session?.status != SudokuStatus.playing) return;
-    _session!.tick(now.difference(previous));
-    if (mounted) setState(() {});
   }
 
   void _startLevel(SudokuLevelDefinition level) {
@@ -95,21 +98,39 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
     _startNewFreeGame();
   }
 
-  void _startNewFreeGame() {
+  Future<void> _startNewFreeGame() async {
     final config = _freeConfig!;
     final stage = widget.stages.firstWhere(
       (stage) => stage.biome == config.biome,
     );
-    _startSession(
-      buildFreeSudokuLevel(
+    try {
+      final level = await _generation.sudoku(
         stage,
-        config,
-        DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919,
-      ),
-    );
+        config: config,
+        seed: DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919,
+      );
+      if (mounted) _installSession(level);
+    } on StaleGeneration {
+      return;
+    } catch (_) {
+      if (mounted) _toast('Le niveau ne peut pas être préparé. Réessaie.');
+    }
   }
 
-  void _startSession(SudokuLevelDefinition level) {
+  Future<void> _startSession(SudokuLevelDefinition level) async {
+    try {
+      final ready = level.needsGeneration
+          ? await _generation.sudoku(level.stage)
+          : level;
+      if (mounted) _installSession(ready);
+    } on StaleGeneration {
+      return;
+    } catch (_) {
+      if (mounted) _toast('Le niveau ne peut pas être préparé. Réessaie.');
+    }
+  }
+
+  void _installSession(SudokuLevelDefinition level) {
     _level = level;
     _session = SudokuSession(level);
     _selectedIndex = null;
@@ -117,7 +138,7 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
     _noteMode = false;
     _finished = false;
     _newRecord = false;
-    _lastTick = DateTime.now();
+    _clock.reset();
     unawaited(_audio.playLevel(level.stage.temperament));
     setState(() => _screen = _SudokuScreen.playing);
   }
@@ -128,6 +149,7 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
   });
 
   void _selectAnimal(int animal) {
+    _clock.flush();
     final index = _selectedIndex!;
     if (_noteMode && _session!.entries[index] == null) {
       _session!.toggleNote(index, animal);
@@ -152,7 +174,7 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
     _toast(
       'Ce n’est pas cet animal. Observe la ligne, la colonne et l’enclos.',
     );
-    _wrongTimer = Timer(const Duration(milliseconds: 500), () {
+    _wrongTimer = ActiveGameTimer(const Duration(milliseconds: 500), () {
       if (mounted) setState(() => _wrongIndex = null);
     });
   }
@@ -167,6 +189,7 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
   }
 
   void _hint() {
+    _clock.flush();
     final target = _session!.hint(_selectedIndex);
     if (target == null) return;
     _selectedIndex = target;
@@ -219,6 +242,7 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
   }
 
   void _showLevels() {
+    _generation.cancel();
     unawaited(_audio.playHome());
     setState(() {
       _screen = _SudokuScreen.levels;
@@ -227,6 +251,7 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
   }
 
   void _showCustom() {
+    _generation.cancel();
     unawaited(_audio.playHome());
     setState(() {
       _screen = _SudokuScreen.custom;
@@ -262,7 +287,10 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
   }
 
   @override
-  Widget build(BuildContext context) => PopScope(
+  Widget build(BuildContext context) =>
+      GenerationBoundary(service: _generation, child: _buildContents(context));
+
+  Widget _buildContents(BuildContext context) => PopScope(
     canPop: false,
     onPopInvokedWithResult: (didPop, _) {
       if (didPop) return;
@@ -295,6 +323,7 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
         onStart: _startFree,
       ),
       _SudokuScreen.playing => SudokuScreen(
+        elapsed: _clock,
         session: _session!,
         selectedIndex: _selectedIndex,
         noteMode: _noteMode,

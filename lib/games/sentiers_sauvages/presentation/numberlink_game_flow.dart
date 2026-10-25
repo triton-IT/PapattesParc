@@ -1,3 +1,4 @@
+import '../../../shared/game_activity.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -44,8 +45,7 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
   NumberlinkLevelDefinition? _level;
   NumberlinkFreeGameConfig? _freeConfig;
   NumberlinkSession? _session;
-  Timer? _ticker;
-  DateTime? _lastTick;
+  late final ActiveGameClock _clock;
   bool _finished = false;
   bool _newRecord = false;
   int _nonce = 0;
@@ -61,25 +61,22 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
       effectsEnabled: _effectsEnabled,
     );
     unawaited(_audio.initialize());
-    _ticker = Timer.periodic(const Duration(milliseconds: 100), (_) => _tick());
+    _clock = ActiveGameClock(
+      onTick: (delta) {
+        if (_session?.status != NumberlinkStatus.playing) {
+          return _session?.elapsed ?? Duration.zero;
+        }
+        _session!.tick(delta);
+        return _session!.elapsed;
+      },
+    );
   }
 
   @override
   void dispose() {
-    _ticker?.cancel();
+    _clock.dispose();
     unawaited(_audio.dispose());
     super.dispose();
-  }
-
-  void _tick() {
-    final now = DateTime.now();
-    final previous = _lastTick;
-    _lastTick = now;
-    if (previous == null || _session?.status != NumberlinkStatus.playing) {
-      return;
-    }
-    _session!.tick(now.difference(previous));
-    if (mounted && _session!.hasStarted) setState(() {});
   }
 
   void _startLevel(NumberlinkLevelDefinition level) {
@@ -111,12 +108,13 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
     _session = NumberlinkSession(level);
     _finished = false;
     _newRecord = false;
-    _lastTick = DateTime.now();
+    _clock.reset();
     unawaited(_audio.playLevel(level.stage.temperament));
     setState(() => _screen = _NumberlinkScreen.playing);
   }
 
   NumberlinkTraceResult _begin(NumberlinkPosition position) {
+    _clock.flush();
     final result = _session!.begin(position);
     if (result == NumberlinkTraceResult.blocked) {
       _reject(
@@ -131,6 +129,7 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
   }
 
   NumberlinkTraceResult _trace(NumberlinkPosition position) {
+    _clock.flush();
     final result = _session!.trace(position);
     switch (result) {
       case NumberlinkTraceResult.blocked:
@@ -159,6 +158,7 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
   void _endTrace() => _session!.endTrace();
 
   void _hint() {
+    _clock.flush();
     final pairId = _session!.hint();
     if (pairId == null) {
       _toast('Aucun nouvel indice disponible.');
@@ -169,6 +169,7 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
   }
 
   Future<void> _finish() async {
+    _clock.flush();
     if (_finished) return;
     _finished = true;
     if (_freeConfig == null) {
@@ -326,6 +327,7 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
         onStart: _startFree,
       ),
       _NumberlinkScreen.playing => NumberlinkScreen(
+        elapsed: _clock,
         session: _session!,
         finished: _finished,
         newRecord: _newRecord,

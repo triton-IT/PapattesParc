@@ -7,16 +7,23 @@ List<RepasLevelDefinition> buildRepasCampaign(List<ParkStage> stages) => [
       stage: stages[index],
       rows: _boards[index].rows,
       parPushes: _boards[index].parPushes,
+      backgroundAsset: _boards[index].backgroundAsset,
       referenceSolution: _solution(_boards[index].solution),
     ),
 ];
 
 class _RepasBoard {
-  const _RepasBoard(this.parPushes, this.rows, this.solution);
+  const _RepasBoard(
+    this.parPushes,
+    this.rows,
+    this.solution, {
+    this.backgroundAsset,
+  });
 
   final int parPushes;
   final List<String> rows;
   final String solution;
+  final String? backgroundAsset;
 }
 
 List<RepasDirection> _solution(String value) => [
@@ -404,15 +411,20 @@ const _boards = [
     '#....t#',
     '#######',
   ], 'lldddldrrr'),
-  _RepasBoard(8, [
-    '#######',
-    '#s#...#',
-    '#c.c..#',
-    '#.##..#',
-    '#.#...#',
-    '#t.##t#',
-    '#######',
-  ], 'ddurrlldduurrrurddd'),
+  _RepasBoard(
+    8,
+    [
+      '#######',
+      '#s#...#',
+      '#c.c..#',
+      '#.##..#',
+      '#.#...#',
+      '#t.##t#',
+      '#######',
+    ],
+    'ddurrlldduurrrurddd',
+    backgroundAsset: 'assets/sokoban/background-level-34-visons.png',
+  ),
   _RepasBoard(7, [
     '#######',
     '#...s.#',

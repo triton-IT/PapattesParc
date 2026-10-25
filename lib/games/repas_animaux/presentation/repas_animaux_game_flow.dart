@@ -1,6 +1,7 @@
+import '../../../shared/generation_service.dart';
+import '../../../shared/generation_overlay.dart';
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/game_audio.dart';
@@ -38,6 +39,7 @@ class RepasAnimauxGameFlow extends StatefulWidget {
 }
 
 class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
+  final GenerationService _generation = GenerationService();
   _RepasScreen _screen = _RepasScreen.levels;
   late final List<RepasLevelDefinition> _levels;
   late final GameAudio _audio;
@@ -66,6 +68,7 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
 
   @override
   void dispose() {
+    _generation.dispose();
     unawaited(_audio.dispose());
     super.dispose();
   }
@@ -89,7 +92,7 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
     setState(() => _generating = true);
     final seed = DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919;
     try {
-      final generated = await compute(generateRepasBoard, (config, seed));
+      final generated = await _generation.repasBoard(config, seed);
       if (!mounted) return;
       _freeConfig = config;
       _startSession(
@@ -100,7 +103,9 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
           referenceSolution: generated.solution,
         ),
       );
-    } on StateError {
+    } on StaleGeneration {
+      return;
+    } catch (_) {
       if (mounted) {
         _toast('Ce niveau ne peut pas être préparé. Réessaie.');
       }
@@ -196,6 +201,7 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
   }
 
   void _showLevels() {
+    _generation.cancel();
     unawaited(_audio.playHome());
     setState(() {
       _screen = _RepasScreen.levels;
@@ -204,6 +210,7 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
   }
 
   void _showCustom() {
+    _generation.cancel();
     unawaited(_audio.playHome());
     setState(() {
       _screen = _RepasScreen.custom;
@@ -242,7 +249,10 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
   }
 
   @override
-  Widget build(BuildContext context) => _handleBack(
+  Widget build(BuildContext context) =>
+      GenerationBoundary(service: _generation, child: _buildContents(context));
+
+  Widget _buildContents(BuildContext context) => _handleBack(
     switch (_screen) {
       _RepasScreen.levels => widget.onExit,
       _RepasScreen.custom => _leaveCustom,

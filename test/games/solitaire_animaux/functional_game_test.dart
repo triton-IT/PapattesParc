@@ -129,6 +129,37 @@ void main() {
     },
   );
 
+  test('un double-clic place un roi dans la première colonne libre', () {
+    final session = SolitaireSession(mode: SolitaireMode.drawOne, seed: 1);
+    for (final pile in session.tableau) {
+      pile.clear();
+    }
+    session.foundations[CardSuit.hearts.index].addAll([
+      for (final rank in CardRank.values.take(12))
+        SolitaireCard(
+          id: rank.index,
+          suit: CardSuit.hearts,
+          rank: rank,
+          faceUp: true,
+        ),
+    ]);
+    session.waste
+      ..clear()
+      ..add(
+        const SolitaireCard(
+          id: 12,
+          suit: CardSuit.hearts,
+          rank: CardRank.king,
+          faceUp: true,
+        ),
+      );
+
+    expect(session.moveAutomatically(const CardLocation.waste()), isTrue);
+    expect(session.waste, isEmpty);
+    expect(session.tableau.first.single.rank, CardRank.king);
+    expect(session.foundations[CardSuit.hearts.index], hasLength(12));
+  });
+
   test('la finition sûre envoie les quatre rois vers les fondations', () {
     final session = SolitaireSession(mode: SolitaireMode.drawOne, seed: 1);
     session.stock.clear();
@@ -221,6 +252,25 @@ void main() {
     expect(hint.move!.target, CardLocation.foundation(CardSuit.spades));
   });
 
+  test('une pile visible vers une colonne vide n\u2019est pas un indice', () {
+    final session = SolitaireSession(mode: SolitaireMode.drawOne, seed: 1);
+    session.stock.clear();
+    session.waste.clear();
+    for (final pile in [...session.tableau, ...session.foundations]) {
+      pile.clear();
+    }
+    session.tableau.first.add(
+      const SolitaireCard(
+        id: 12,
+        suit: CardSuit.hearts,
+        rank: CardRank.king,
+        faceUp: true,
+      ),
+    );
+
+    expect(session.hint(), isNull);
+  });
+
   testWidgets('l’indice distingue la source verte de la destination jaune', (
     tester,
   ) async {
@@ -268,6 +318,38 @@ void main() {
 
     expect(borderColor(45), AppColors.success);
     expect(borderColor(44), AppColors.sun);
+  });
+
+  testWidgets('la défausse révèle la carte dessous pendant le déplacement', (
+    tester,
+  ) async {
+    final session = SolitaireSession(mode: SolitaireMode.drawOne, seed: 1)
+      ..draw()
+      ..draw();
+    final lowerCard = session.waste.first;
+    final topCard = session.waste.last;
+    await tester.pumpWidget(_gameScreen(session));
+
+    var gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(Key('solitaire-card-${topCard.id}'))),
+    );
+    await gesture.moveBy(const Offset(30, 30));
+    await tester.pump();
+    expect(find.byKey(Key('solitaire-card-${lowerCard.id}')), findsOneWidget);
+    expect(find.byKey(Key('solitaire-card-${topCard.id}')), findsNothing);
+    await gesture.up();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    session.waste.removeAt(0);
+    await tester.pumpWidget(_gameScreen(session));
+    gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(Key('solitaire-card-${topCard.id}'))),
+    );
+    await gesture.moveBy(const Offset(30, 30));
+    await tester.pump();
+    expect(find.byKey(const Key('solitaire-waste-empty-drag')), findsOneWidget);
+    await gesture.up();
+    await tester.pump(const Duration(milliseconds: 50));
   });
 
   testWidgets('le résultat de campagne propose les actions du parcours', (
@@ -432,6 +514,33 @@ SolitaireSession _foundationHintSession() {
   );
   return session;
 }
+
+Widget _gameScreen(SolitaireSession session) => MaterialApp(
+  theme: buildAppTheme(),
+  home: SolitaireGameScreen(
+    session: session,
+    backAnimal: AnimalKind.suricate,
+    backgroundAsset: AnimalKind.suricate.backgroundAsset,
+    level: null,
+    footprints: 0,
+    selected: null,
+    hint: null,
+    finished: false,
+    newRecord: false,
+    onDraw: () {},
+    onCardTap: (_) {},
+    onDoubleTap: (_) {},
+    onMove: (_) {},
+    onUndo: () {},
+    onHint: () {},
+    onBack: () {},
+    onNewGame: () {},
+    onReplay: () {},
+    onConfigure: () {},
+    onLevels: () {},
+    onNext: null,
+  ),
+);
 
 SolitaireMove? _firstLegalMove(SolitaireSession session) {
   for (var from = 0; from < 7; from++) {

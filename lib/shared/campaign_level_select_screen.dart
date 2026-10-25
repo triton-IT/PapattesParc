@@ -1,18 +1,34 @@
+import 'artwork.dart';
 import 'package:flutter/material.dart';
-
 import 'app_theme.dart';
+import 'campaign_selection_controller.dart';
 import 'game_help.dart';
 import 'park_journey_map.dart';
 
 class CampaignMissionStat {
   const CampaignMissionStat(this.icon, this.value, this.label);
-
   final IconData icon;
   final String value;
   final String label;
 }
 
-class CampaignLevelSelectScreen extends StatelessWidget {
+class CampaignMission {
+  const CampaignMission({
+    required this.title,
+    required this.subtitle,
+    required this.artAsset,
+    required this.stats,
+    this.bestResult = 'Aucun record',
+    this.completed = false,
+    this.difficultyLabel,
+  });
+  final String title, subtitle, artAsset, bestResult;
+  final bool completed;
+  final String? difficultyLabel;
+  final List<CampaignMissionStat> stats;
+}
+
+class CampaignLevelSelectScreen extends StatefulWidget {
   const CampaignLevelSelectScreen({
     required this.title,
     required this.tagline,
@@ -21,11 +37,9 @@ class CampaignLevelSelectScreen extends StatelessWidget {
     required this.keyPrefix,
     required this.itemCount,
     required this.unlockedLevel,
+    required this.completedCount,
     required this.progressLabel,
-    required this.missionTitle,
-    required this.missionSubtitle,
-    required this.missionArtAsset,
-    required this.missionStats,
+    required this.missionBuilder,
     required this.labelBuilder,
     required this.musicEnabled,
     required this.effectsEnabled,
@@ -35,30 +49,49 @@ class CampaignLevelSelectScreen extends StatelessWidget {
     required this.onToggleMusic,
     required this.onToggleEffects,
     this.onQuit,
+    this.onSelectionChanged,
     super.key,
   });
-
-  final String title;
-  final String tagline;
+  final String title, tagline, keyPrefix, progressLabel;
   final IconData icon;
   final GameHelpKind helpKind;
-  final String keyPrefix;
-  final int itemCount;
-  final int unlockedLevel;
-  final String progressLabel;
-  final String missionTitle;
-  final String missionSubtitle;
-  final String missionArtAsset;
-  final List<CampaignMissionStat> missionStats;
+  final int itemCount, unlockedLevel, completedCount;
+  final CampaignMission Function(int index) missionBuilder;
   final String Function(int index) labelBuilder;
-  final bool musicEnabled;
-  final bool effectsEnabled;
-  final VoidCallback onBack;
-  final ValueChanged<int> onPlay;
-  final VoidCallback onCustom;
-  final VoidCallback onToggleMusic;
-  final VoidCallback onToggleEffects;
+  final bool musicEnabled, effectsEnabled;
+  final VoidCallback onBack, onCustom, onToggleMusic, onToggleEffects;
   final VoidCallback? onQuit;
+  final ValueChanged<int> onPlay;
+  final ValueChanged<int>? onSelectionChanged;
+  @override
+  State<CampaignLevelSelectScreen> createState() =>
+      _CampaignLevelSelectScreenState();
+}
+
+class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
+  late CampaignSelectionController _selection;
+  @override
+  void initState() {
+    super.initState();
+    _selection = CampaignSelectionController.forGame(
+      widget.keyPrefix,
+      widget.unlockedLevel,
+    );
+  }
+
+  @override
+  void didUpdateWidget(CampaignLevelSelectScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _selection = CampaignSelectionController.forGame(
+      widget.keyPrefix,
+      widget.unlockedLevel,
+    );
+  }
+
+  void _select(int index) {
+    _selection.select(index);
+    widget.onSelectionChanged?.call(index);
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -66,97 +99,51 @@ class CampaignLevelSelectScreen extends StatelessWidget {
     body: SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final wide =
-              constraints.maxWidth >= 850 &&
-              constraints.maxWidth > constraints.maxHeight;
+          final landscape = constraints.maxWidth > constraints.maxHeight;
+          final large =
+              constraints.maxWidth >= 1100 && constraints.maxHeight >= 650;
           final map = ParkJourneyMap(
-            key: Key('$keyPrefix-level-grid'),
-            itemCount: itemCount,
-            unlockedLevel: unlockedLevel,
-            keyPrefix: keyPrefix,
-            labelBuilder: labelBuilder,
-            onSelect: onPlay,
+            key: Key('${widget.keyPrefix}-level-grid'),
+            itemCount: widget.itemCount,
+            unlockedLevel: widget.unlockedLevel,
+            keyPrefix: widget.keyPrefix,
+            labelBuilder: widget.labelBuilder,
+            controller: _selection,
+            onSelect: _select,
           );
-          final header = _Header(
-            title: title,
-            tagline: tagline,
-            icon: icon,
-            keyPrefix: keyPrefix,
-            unlockedLevel: unlockedLevel,
-            itemCount: itemCount,
-            musicEnabled: musicEnabled,
-            effectsEnabled: effectsEnabled,
-            onBack: onBack,
-            onToggleMusic: onToggleMusic,
-            onToggleEffects: onToggleEffects,
-            onQuit: onQuit,
+          final mission = AnimatedBuilder(
+            animation: _selection,
+            builder: (context, _) => _mission(context, large: large),
           );
-          final mission = _MissionCard(
-            level: unlockedLevel,
-            itemCount: itemCount,
-            progressLabel: progressLabel,
-            title: missionTitle,
-            subtitle: missionSubtitle,
-            artAsset: missionArtAsset,
-            stats: missionStats,
-            compact: !wide,
-            onPlay: () => onPlay(unlockedLevel - 1),
-          );
-          final custom = FilledButton.tonalIcon(
-            key: Key('$keyPrefix-open-custom'),
-            onPressed: onCustom,
-            icon: const Icon(Icons.grid_view_rounded),
-            label: const Text('PARTIE LIBRE'),
-          );
-          if (!wide) {
-            return Column(
-              children: [
-                header,
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(child: map),
-                      Positioned(
-                        top: 8,
-                        left: 12,
-                        child: GameHelpButton(kind: helpKind),
-                      ),
-                      Positioned(
-                        top: 8,
-                        right: 12,
-                        child: ParkJourneyLegend(
-                          key: Key('$keyPrefix-journey-legend'),
-                        ),
-                      ),
-                      Positioned(right: 12, bottom: 12, child: custom),
-                    ],
-                  ),
-                ),
-                mission,
-              ],
-            );
-          }
-          return Stack(
+          return Column(
             children: [
-              Positioned.fill(child: map),
-              const Positioned.fill(child: _MapVignette()),
-              Positioned(left: 0, right: 0, top: 0, child: header),
-              Positioned(
-                top: 88,
-                left: 28,
-                child: GameHelpButton(kind: helpKind),
-              ),
-              Positioned(
-                top: 88,
-                right: 28,
-                child: ParkJourneyLegend(key: Key('$keyPrefix-journey-legend')),
-              ),
-              Positioned(right: 28, bottom: 28, child: custom),
-              Positioned(
-                left: 0,
-                bottom: 0,
-                width: constraints.maxWidth < 1200 ? 420 : 520,
-                child: mission,
+              _header(context),
+              Expanded(
+                child: landscape
+                    ? Row(
+                        children: [
+                          Expanded(child: map),
+                          SizedBox(
+                            width: constraints.maxWidth < 700
+                                ? 220
+                                : constraints.maxWidth < 1100
+                                ? 280
+                                : 360,
+                            child: SingleChildScrollView(child: mission),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          Expanded(child: map),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: constraints.maxHeight * .3,
+                            ),
+                            child: SingleChildScrollView(child: mission),
+                          ),
+                        ],
+                      ),
               ),
             ],
           );
@@ -164,367 +151,177 @@ class CampaignLevelSelectScreen extends StatelessWidget {
       ),
     ),
   );
-}
-
-class _Header extends StatelessWidget {
-  const _Header({
-    required this.title,
-    required this.tagline,
-    required this.icon,
-    required this.keyPrefix,
-    required this.unlockedLevel,
-    required this.itemCount,
-    required this.musicEnabled,
-    required this.effectsEnabled,
-    required this.onBack,
-    required this.onToggleMusic,
-    required this.onToggleEffects,
-    required this.onQuit,
-  });
-
-  final String title;
-  final String tagline;
-  final IconData icon;
-  final String keyPrefix;
-  final int unlockedLevel;
-  final int itemCount;
-  final bool musicEnabled;
-  final bool effectsEnabled;
-  final VoidCallback onBack;
-  final VoidCallback onToggleMusic;
-  final VoidCallback onToggleEffects;
-  final VoidCallback? onQuit;
-
-  @override
-  Widget build(BuildContext context) {
-    final compact = MediaQuery.sizeOf(context).width < 500;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(compact ? 11 : 24, 16, compact ? 11 : 24, 8),
-      child: Row(
-        children: [
-          _HudButton(
-            key: Key('$keyPrefix-back-to-games'),
-            compact: compact,
-            tooltip: 'Choisir un jeu',
-            onPressed: onBack,
-            icon: const Icon(Icons.arrow_back_rounded),
-          ),
-          SizedBox(width: compact ? 7 : 10),
-          Container(
-            width: compact ? 40 : 44,
-            height: compact ? 40 : 44,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x33245b4a),
-                  blurRadius: 12,
-                  offset: Offset(0, 4),
-                ),
-              ],
+  Widget _header(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            IconButton(
+              key: Key('${widget.keyPrefix}-back-to-games'),
+              tooltip: 'Choisir un jeu',
+              onPressed: widget.onBack,
+              icon: const Icon(Icons.arrow_back_rounded),
             ),
-            child: Icon(icon, color: Colors.white),
-          ),
-          SizedBox(width: compact ? 9 : 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: compact ? 19 : null,
-                    letterSpacing: compact ? .7 : 1.2,
-                  ),
-                ),
-                if (!compact)
+            const SizedBox(width: 4),
+            Icon(widget.icon, color: AppColors.primary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    tagline,
-                    style: const TextStyle(
-                      color: AppColors.muted,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      shadows: [Shadow(color: Colors.white, blurRadius: 8)],
-                    ),
+                    widget.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-              ],
-            ),
-          ),
-          _HudButton(
-            key: Key('$keyPrefix-toggle-music'),
-            compact: compact,
-            tooltip: musicEnabled ? 'Couper la musique' : 'Activer la musique',
-            onPressed: onToggleMusic,
-            icon: Icon(
-              musicEnabled ? Icons.music_note_rounded : Icons.music_off_rounded,
-              color: musicEnabled ? AppColors.primary : AppColors.muted,
-            ),
-          ),
-          SizedBox(width: compact ? 5 : 8),
-          _HudButton(
-            key: Key('$keyPrefix-toggle-effects'),
-            compact: compact,
-            tooltip: effectsEnabled
-                ? 'Couper les effets sonores'
-                : 'Activer les effets sonores',
-            onPressed: onToggleEffects,
-            icon: Icon(
-              effectsEnabled
-                  ? Icons.volume_up_rounded
-                  : Icons.volume_off_rounded,
-              color: effectsEnabled ? AppColors.primary : AppColors.muted,
-            ),
-          ),
-          SizedBox(width: compact ? 5 : 8),
-          ParkJourneyProgress(
-            key: Key('$keyPrefix-journey-progress'),
-            currentLevel: unlockedLevel,
-            itemCount: itemCount,
-          ),
-          if (onQuit != null) ...[
-            SizedBox(width: compact ? 5 : 8),
-            _HudButton(
-              key: Key('$keyPrefix-quit-app'),
-              compact: compact,
-              tooltip: 'Quitter l’application',
-              onPressed: onQuit!,
-              icon: const Icon(
-                Icons.exit_to_app_rounded,
-                color: AppColors.danger,
+                  Text(
+                    widget.tagline,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
+            PopupMenuButton<String>(
+              tooltip: 'Réglages',
+              onSelected: (value) {
+                switch (value) {
+                  case 'music':
+                    widget.onToggleMusic();
+                  case 'effects':
+                    widget.onToggleEffects();
+                  case 'quit':
+                    widget.onQuit?.call();
+                }
+              },
+              itemBuilder: (_) => [
+                CheckedPopupMenuItem(
+                  value: 'music',
+                  checked: widget.musicEnabled,
+                  child: const Text('Musique'),
+                ),
+                CheckedPopupMenuItem(
+                  value: 'effects',
+                  checked: widget.effectsEnabled,
+                  child: const Text('Effets sonores'),
+                ),
+                if (widget.onQuit != null)
+                  const PopupMenuItem(
+                    value: 'quit',
+                    child: Text('Quitter l’application'),
+                  ),
+              ],
+            ),
+            GameHelpButton(kind: widget.helpKind, compact: true),
           ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: LinearProgressIndicator(
+                key: Key('${widget.keyPrefix}-journey-progress'),
+                value: widget.completedCount / widget.itemCount,
+                semanticsLabel:
+                    '${widget.completedCount} niveaux terminés sur ${widget.itemCount}',
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '${(widget.completedCount * 100 / widget.itemCount).round()} %',
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+  Widget _mission(BuildContext context, {required bool large}) {
+    final index = _selection.selectedIndex.clamp(0, widget.itemCount - 1);
+    final mission = widget.missionBuilder(index);
+    return Card(
+      margin: const EdgeInsets.all(8),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (large)
+            SizedBox(
+              height: 150,
+              child: ArtworkImage(mission.artAsset, fit: BoxFit.cover),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'MISSION ${index + 1} · ${mission.completed ? 'TERMINÉE' : 'DÉBLOQUÉE'}',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                Text(
+                  mission.title,
+                  key: const Key('campaign-next-level-title'),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                FilledButton.icon(
+                  key: const Key('campaign-play-selected'),
+                  onPressed: index < widget.unlockedLevel
+                      ? () => widget.onPlay(index)
+                      : null,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: const Text('JOUER'),
+                ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    TextButton(
+                      key: const Key('campaign-continue'),
+                      onPressed: () => widget.onPlay(widget.unlockedLevel - 1),
+                      child: const Text('CONTINUER'),
+                    ),
+                    TextButton.icon(
+                      key: Key('${widget.keyPrefix}-open-custom'),
+                      onPressed: widget.onCustom,
+                      icon: const Icon(Icons.grid_view_rounded),
+                      label: const Text('PARTIE LIBRE'),
+                    ),
+                  ],
+                ),
+                ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  title: const Text('Détails et record'),
+                  children: [
+                    Text(mission.subtitle),
+                    Text(
+                      mission.difficultyLabel == null
+                          ? 'Défi : ${mission.stats.take(2).map((stat) => '${stat.value} ${stat.label}').join(' · ')}'
+                          : 'Difficulté : ${mission.difficultyLabel}',
+                    ),
+                    Text(mission.bestResult),
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 8,
+                      children: [
+                        for (final stat in mission.stats)
+                          Text('${stat.value} ${stat.label}'),
+                      ],
+                    ),
+                  ],
+                ),
+                ParkJourneyLegend(
+                  key: Key('${widget.keyPrefix}-journey-legend'),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
-}
-
-class _HudButton extends StatelessWidget {
-  const _HudButton({
-    required this.compact,
-    required this.tooltip,
-    required this.onPressed,
-    required this.icon,
-    super.key,
-  });
-
-  final bool compact;
-  final String tooltip;
-  final VoidCallback onPressed;
-  final Widget icon;
-
-  @override
-  Widget build(BuildContext context) => Material(
-    color: AppColors.surface.withValues(alpha: .92),
-    shape: const CircleBorder(),
-    elevation: 3,
-    shadowColor: AppColors.deep.withValues(alpha: .2),
-    child: IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      padding: compact ? EdgeInsets.zero : null,
-      constraints: compact
-          ? const BoxConstraints.tightFor(width: 40, height: 40)
-          : null,
-      icon: icon,
-    ),
-  );
-}
-
-class _MissionCard extends StatelessWidget {
-  const _MissionCard({
-    required this.level,
-    required this.itemCount,
-    required this.progressLabel,
-    required this.title,
-    required this.subtitle,
-    required this.artAsset,
-    required this.stats,
-    required this.compact,
-    required this.onPlay,
-  });
-
-  final int level;
-  final int itemCount;
-  final String progressLabel;
-  final String title;
-  final String subtitle;
-  final String artAsset;
-  final List<CampaignMissionStat> stats;
-  final bool compact;
-  final VoidCallback onPlay;
-
-  @override
-  Widget build(BuildContext context) {
-    final progress = (level - 1) / itemCount;
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: compact
-              ? Image.asset(artAsset, fit: BoxFit.cover)
-              : ShaderMask(
-                  blendMode: BlendMode.dstIn,
-                  shaderCallback: (bounds) => const RadialGradient(
-                    center: Alignment.bottomLeft,
-                    radius: 1,
-                    colors: [Colors.white, Colors.white, Colors.transparent],
-                    stops: [0, .66, 1],
-                  ).createShader(bounds),
-                  child: Image.asset(artAsset, fit: BoxFit.cover),
-                ),
-        ),
-        const Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0x0018382f),
-                  Color(0x5518382f),
-                  Color(0xf218382f),
-                ],
-                stops: [0, .44, 1],
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(compact ? 14 : 18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  const Icon(
-                    Icons.explore_rounded,
-                    color: AppColors.sun,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      progressLabel,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    '${(progress * 100).round()} %',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(
-                value: progress,
-                minHeight: 6,
-                borderRadius: BorderRadius.circular(99),
-                backgroundColor: Colors.white24,
-                color: AppColors.success,
-              ),
-              SizedBox(height: compact ? 112 : 170),
-              Text(
-                'PROCHAINE MISSION · ${level.toString().padLeft(2, '0')}',
-                style: const TextStyle(
-                  color: AppColors.sun,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: .8,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                title,
-                key: const Key('campaign-next-level-title'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(color: Colors.white),
-              ),
-              Text(
-                subtitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Color(0xffe3eee8)),
-              ),
-              SizedBox(height: compact ? 10 : 14),
-              Row(
-                children: [
-                  for (final stat in stats)
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Icon(stat.icon, color: Colors.white, size: 20),
-                          const SizedBox(height: 5),
-                          Text(
-                            stat.value,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          Text(
-                            stat.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Color(0xffe3eee8),
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-              SizedBox(height: compact ? 10 : 14),
-              FilledButton.icon(
-                key: const Key('campaign-continue'),
-                onPressed: onPlay,
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.success,
-                  foregroundColor: Colors.white,
-                ),
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: const Text('CONTINUER L’AVENTURE'),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _MapVignette extends StatelessWidget {
-  const _MapVignette();
-
-  @override
-  Widget build(BuildContext context) => IgnorePointer(
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.center,
-          colors: [AppColors.deep.withValues(alpha: .14), Colors.transparent],
-          stops: const [0, .35],
-        ),
-      ),
-    ),
-  );
 }

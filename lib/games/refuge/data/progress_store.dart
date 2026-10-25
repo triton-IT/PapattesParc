@@ -1,3 +1,5 @@
+import '../../../shared/campaign_progress.dart';
+import '../../../shared/game_records.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/models.dart';
@@ -9,9 +11,21 @@ class ProgressStore {
   static const _musicEnabledKey = 'settings:musicEnabled';
   static const _effectsEnabledKey = 'settings:effectsEnabled';
   final SharedPreferences _preferences;
+  late final GameRecords _records = GameRecords(_preferences);
+  late final CampaignProgress campaign = CampaignProgress(
+    _preferences,
+    'journey',
+    unlockedLevel: () => unlockedLevel,
+    legacyCompleted: (level) =>
+        _preferences.containsKey('bestTime:level:$level'),
+  );
+  int get completedCount => campaign.completedCount;
 
-  static Future<ProgressStore> load() async =>
-      ProgressStore._(await SharedPreferences.getInstance());
+  static Future<ProgressStore> load() async {
+    final store = ProgressStore._(await SharedPreferences.getInstance());
+    await store.campaign.migrate();
+    return store;
+  }
 
   int get unlockedLevel =>
       (_preferences.getInt(_unlockedLevelKey) ?? 1).clamp(1, 45);
@@ -23,17 +37,15 @@ class ProgressStore {
   double bestTime(LevelDefinition level) =>
       _preferences.getDouble('bestTime:level:${level.number}') ?? 0;
 
-  Future<bool> saveIfBetter(LevelDefinition level, Duration elapsed) async {
-    final seconds = elapsed.inMilliseconds / 1000;
-    final current = bestTime(level);
-    if (current > 0 && current <= seconds) return false;
-    await _preferences.setDouble('bestTime:level:${level.number}', seconds);
-    return true;
-  }
+  bool hasBestTime(LevelDefinition level) =>
+      _preferences.containsKey('bestTime:level:${level.number}');
+
+  Future<bool> saveIfBetter(LevelDefinition level, Duration elapsed) =>
+      _records.saveSeconds('bestTime:level:${level.number}', elapsed);
 
   Future<void> unlockAfter(int completedLevel) async {
-    if (completedLevel >= 45 || unlockedLevel > completedLevel) return;
-    await _preferences.setInt(_unlockedLevelKey, completedLevel + 1);
+    await campaign.complete(completedLevel);
+    await campaign.rewardAndUnlock(completedLevel, 0);
   }
 
   Future<void> setMusicEnabled(bool enabled) =>

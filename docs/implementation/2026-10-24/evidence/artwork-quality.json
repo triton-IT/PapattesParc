@@ -1,0 +1,21 @@
+{
+  "lossless_sources_verified": 106,
+  "sample_psnr": [
+    {
+      "path": "assets/level_art/level-01-suricates-porcs-epics.png",
+      "psnr_db": 41.26
+    },
+    {
+      "path": "assets/level_art/level-33-takins-markhors.png",
+      "psnr_db": 37.67
+    },
+    {
+      "path": "assets/mahjong/mahjong-cover.png",
+      "psnr_db": 39.31
+    },
+    {
+      "path": "assets/sokoban/cover.png",
+      "psnr_db": 40.45
+    }
+  ]
+}

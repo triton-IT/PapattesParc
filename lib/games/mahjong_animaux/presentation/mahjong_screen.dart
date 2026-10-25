@@ -1,18 +1,22 @@
+import '../../../shared/board_camera.dart';
+import '../../../shared/artwork.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import '../../../shared/animal_catalog.dart';
 import '../../../shared/animal_colors.dart';
-import '../../../shared/animal_background.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
+import '../../../shared/game_stage_layout.dart';
 import '../domain/mahjong_session.dart';
 import '../domain/models.dart';
 
 class MahjongScreen extends StatelessWidget {
   const MahjongScreen({
+    this.elapsed,
     required this.session,
     required this.title,
     required this.backgroundAsset,
@@ -51,99 +55,56 @@ class MahjongScreen extends StatelessWidget {
   final VoidCallback? onConfigure;
   final VoidCallback? onNext;
 
+  final ValueListenable<Duration>? elapsed;
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xfffff4dc),
-    body: AnimalBackground(
-      asset: backgroundAsset,
-      child: SafeArea(
-        child: Stack(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final wide =
-                    constraints.maxWidth >= 900 &&
-                    constraints.maxWidth > constraints.maxHeight;
-                final board = MahjongBoard(
-                  session: session,
-                  hintedIds: hintedIds,
-                  onSelect: onSelect,
-                  onBlocked: onBlocked,
-                );
-                final panel = _GamePanel(
-                  session: session,
-                  title: title,
-                  isFreeGame: isFreeGame,
-                  onHint: onHint,
-                  onShuffle: onShuffle,
-                );
-                if (wide) {
-                  return Row(
-                    children: [
-                      Expanded(child: board),
-                      SizedBox(width: 340, child: panel),
-                    ],
-                  );
-                }
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(64, 10, 12, 0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
-                          Text(
-                            formatDuration(session.elapsed),
-                            style: const TextStyle(fontWeight: FontWeight.w900),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(child: board),
-                    panel,
-                  ],
-                );
-              },
-            ),
-            Positioned(
-              left: 12,
-              top: 12,
-              child: IconButton.filledTonal(
-                key: const Key('mahjong-back'),
-                tooltip: 'Retour',
-                onPressed: onBack,
-                icon: const Icon(Icons.arrow_back_rounded),
-              ),
-            ),
-            const Positioned(
-              right: 12,
-              top: 12,
-              child: GameHelpButton(kind: GameHelpKind.mahjong),
-            ),
-            if (finished)
-              Positioned.fill(
-                child: _ResultOverlay(
-                  session: session,
-                  isFreeGame: isFreeGame,
-                  newRecord: newRecord,
-                  onReplaySame: onReplaySame,
-                  onReplayNew: onReplayNew,
-                  onLevels: onLevels,
-                  onConfigure: onConfigure,
-                  onNext: onNext,
-                ),
-              ),
-          ],
-        ),
+  Widget build(BuildContext context) => GameStageLayout(
+    background: ArtworkImage(backgroundAsset, fit: BoxFit.cover),
+    eyebrow: isFreeGame ? 'PARTIE LIBRE' : 'MISSION',
+    title: title,
+    backKey: const Key('mahjong-back'),
+    onBack: onBack,
+    helpKind: GameHelpKind.mahjong,
+    metrics: [
+      GameStageMetric(
+        icon: Icons.timer_rounded,
+        elapsed: elapsed,
+        label: formatDuration(session.elapsed),
       ),
+      GameStageMetric(
+        icon: Icons.layers_rounded,
+        label: '${session.remainingPairs} paires',
+      ),
+      GameStageMetric(
+        icon: Icons.shuffle_rounded,
+        label: '${session.shufflesRemaining}/3',
+      ),
+    ],
+    builder: (context, layout) => GameStageSplit(
+      wide: layout.isLandscape,
+      board: MahjongBoard(
+        session: session,
+        hintedIds: hintedIds,
+        onSelect: onSelect,
+        onBlocked: onBlocked,
+      ),
+      panel: _GamePanel(session: session, onHint: onHint, onShuffle: onShuffle),
     ),
+    overlays: [
+      if (finished)
+        Positioned.fill(
+          child: _ResultOverlay(
+            session: session,
+            isFreeGame: isFreeGame,
+            newRecord: newRecord,
+            onReplaySame: onReplaySame,
+            onReplayNew: onReplayNew,
+            onLevels: onLevels,
+            onConfigure: onConfigure,
+            onNext: onNext,
+          ),
+        ),
+    ],
   );
 }
 
@@ -202,7 +163,10 @@ class _MahjongBoardState extends State<MahjongBoard> {
     final height = maxY * 34.0 + 24;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final viewport = Size(constraints.maxWidth, constraints.maxHeight);
+        final viewport = Size(
+          (constraints.maxWidth - 48).clamp(1, double.infinity),
+          constraints.maxHeight,
+        );
         final fitScale = min(
           1.0,
           min(viewport.width / width, viewport.height / height),
@@ -221,8 +185,8 @@ class _MahjongBoardState extends State<MahjongBoard> {
               0,
             );
         }
-        return InteractiveViewer(
-          key: const Key('mahjong-board'),
+        return BoardCamera(
+          viewerKey: const Key('mahjong-board'),
           transformationController: _controller,
           constrained: false,
           minScale: fitScale,
@@ -315,7 +279,7 @@ class _MahjongTileView extends StatelessWidget {
             padding: const EdgeInsets.all(5),
             child: Opacity(
               opacity: snapshot.isFree ? 1 : .62,
-              child: Image.asset(
+              child: ArtworkImage(
                 snapshot.tile.animal.asset,
                 fit: BoxFit.contain,
                 errorBuilder: (_, _, _) => CircleAvatar(
@@ -334,100 +298,31 @@ class _MahjongTileView extends StatelessWidget {
 class _GamePanel extends StatelessWidget {
   const _GamePanel({
     required this.session,
-    required this.title,
-    required this.isFreeGame,
     required this.onHint,
     required this.onShuffle,
   });
 
   final MahjongSession session;
-  final String title;
-  final bool isFreeGame;
   final VoidCallback onHint;
   final VoidCallback onShuffle;
 
   @override
-  Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.surface,
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            isFreeGame ? 'PARTIE LIBRE' : 'MISSION',
-            style: const TextStyle(
-              color: AppColors.muted,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _Metric(Icons.timer_rounded, formatDuration(session.elapsed)),
-              _Metric(Icons.layers_rounded, '${session.remainingPairs} paires'),
-              _Metric(Icons.shuffle_rounded, '${session.shufflesRemaining}/3'),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  key: const Key('mahjong-hint'),
-                  onPressed: session.availablePair == null ? null : onHint,
-                  icon: const Icon(Icons.lightbulb_rounded),
-                  label: const Text('INDICE'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  key: const Key('mahjong-shuffle'),
-                  onPressed: session.shufflesRemaining == 0 ? null : onShuffle,
-                  icon: const Icon(Icons.shuffle_rounded),
-                  label: const Text('MÉLANGER'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-class _Metric extends StatelessWidget {
-  const _Metric(this.icon, this.label);
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: const Color(0xfffff4dc),
-      borderRadius: BorderRadius.circular(7),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: AppColors.primary),
-          const SizedBox(width: 5),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w900)),
-        ],
-      ),
+  Widget build(BuildContext context) => GameStagePanel(
+    child: GameStageCommands(
+      children: [
+        FilledButton.tonalIcon(
+          key: const Key('mahjong-hint'),
+          onPressed: session.availablePair == null ? null : onHint,
+          icon: const Icon(Icons.lightbulb_rounded),
+          label: const Text('INDICE'),
+        ),
+        FilledButton.tonalIcon(
+          key: const Key('mahjong-shuffle'),
+          onPressed: session.shufflesRemaining == 0 ? null : onShuffle,
+          icon: const Icon(Icons.shuffle_rounded),
+          label: const Text('MÉLANGER'),
+        ),
+      ],
     ),
   );
 }
@@ -459,7 +354,7 @@ class _ResultOverlay extends StatelessWidget {
     return ColoredBox(
       key: const Key('mahjong-result-overlay'),
       color: const Color(0xaa173a31),
-      child: Center(
+      child: GameResultViewport(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 440),
           child: Card(

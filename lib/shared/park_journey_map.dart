@@ -1,6 +1,8 @@
+import 'artwork.dart';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-
 import 'app_theme.dart';
+import 'campaign_selection_controller.dart';
 
 class ParkJourneyProgress extends StatelessWidget {
   const ParkJourneyProgress({
@@ -8,230 +10,351 @@ class ParkJourneyProgress extends StatelessWidget {
     required this.itemCount,
     super.key,
   });
-
   final int currentLevel;
   final int itemCount;
-
   @override
-  Widget build(BuildContext context) {
-    final compact = MediaQuery.sizeOf(context).width < 500;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: .92),
-        borderRadius: BorderRadius.circular(99),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x24245b4a),
-            blurRadius: 12,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: compact ? 9 : 13,
-          vertical: 11,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.verified_rounded,
-              color: AppColors.success,
-              size: 20,
-            ),
-            SizedBox(width: compact ? 4 : 7),
-            Text(
-              compact ? '$currentLevel/$itemCount' : '$currentLevel / $itemCount',
-              style: const TextStyle(
-                color: AppColors.deep,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Chip(
+    avatar: const Icon(Icons.verified_rounded, size: 20),
+    label: Text('$currentLevel / $itemCount'),
+  );
 }
 
 class ParkJourneyLegend extends StatelessWidget {
   const ParkJourneyLegend({super.key});
-
   @override
-  Widget build(BuildContext context) => const IgnorePointer(
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.touch_app_rounded, color: AppColors.primary, size: 18),
-        SizedBox(width: 7),
-        Text(
-          'Clique sur un point de la carte',
-          style: TextStyle(
-            color: AppColors.primary,
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    ),
+  Widget build(BuildContext context) => const Text(
+    'Sélectionne un niveau',
+    style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
   );
 }
 
-class ParkJourneyMap extends StatelessWidget {
+class ParkJourneyMap extends StatefulWidget {
   const ParkJourneyMap({
     required this.itemCount,
     required this.unlockedLevel,
     required this.keyPrefix,
     required this.labelBuilder,
     required this.onSelect,
+    this.controller,
     super.key,
   });
-
   final int itemCount;
   final int unlockedLevel;
   final String keyPrefix;
-  final String Function(int index) labelBuilder;
+  final String Function(int) labelBuilder;
   final ValueChanged<int> onSelect;
+  final CampaignSelectionController? controller;
+  @override
+  State<ParkJourneyMap> createState() => _ParkJourneyMapState();
+}
+
+class _ParkJourneyMapState extends State<ParkJourneyMap> {
+  static const _world = Size(1491, 1055);
+  late CampaignSelectionController _selection;
+  bool _positionPending = false;
+  @override
+  void initState() {
+    super.initState();
+    _selection =
+        widget.controller ??
+        CampaignSelectionController.forGame(
+          widget.keyPrefix,
+          widget.unlockedLevel,
+        );
+  }
+
+  double _fit(Size viewport) =>
+      math.min(viewport.width / _world.width, viewport.height / _world.height);
+
+  void _focus(Size viewport, {bool overview = false}) {
+    if (!mounted || viewport.isEmpty) return;
+    final fit = _fit(viewport);
+    final point = parkLevelPositions[_selection.selectedIndex];
+    final scale = fit * (overview ? 1 : 3);
+    _selection.camera.value = Matrix4.diagonal3Values(scale, scale, 1)
+      ..setTranslationRaw(
+        viewport.width / 2 - (overview ? .5 : point.dx) * _world.width * scale,
+        viewport.height / 2 -
+            (overview ? .5 : point.dy) * _world.height * scale,
+        0,
+      );
+    _selection.viewport = viewport;
+    _selection.focusRequested = false;
+  }
+
+  void _zoom(double factor, Size viewport) {
+    final old = _selection.camera.value;
+    final scale = old.getMaxScaleOnAxis();
+    final next = (scale * factor).clamp(_fit(viewport), _fit(viewport) * 6);
+    final center = viewport.center(Offset.zero);
+    final world = _selection.camera.toScene(center);
+    _selection.camera.value = Matrix4.diagonal3Values(next, next, 1)
+      ..setTranslationRaw(
+        center.dx - world.dx * next,
+        center.dy - world.dy * next,
+        0,
+      );
+  }
+
+  Future<void> _list([List<int>? indices]) async {
+    final entries = indices ?? List.generate(widget.itemCount, (i) => i);
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height * .78,
+          child: Column(
+            children: [
+              Text(
+                indices == null ? 'Niveaux du parc' : 'Niveaux de cette zone',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: entries.length,
+                  itemBuilder: (context, position) {
+                    final index = entries[position];
+                    final unlocked = index < widget.unlockedLevel;
+                    return ListTile(
+                      key: Key('${widget.keyPrefix}-list-level-${index + 1}'),
+                      enabled: unlocked,
+                      selected: index == _selection.selectedIndex,
+                      leading: Icon(
+                        unlocked ? Icons.pets_rounded : Icons.lock_rounded,
+                      ),
+                      title: Text(
+                        '${index + 1} · ${widget.labelBuilder(index)}',
+                      ),
+                      onTap: unlocked
+                          ? () {
+                              Navigator.pop(context);
+                              _selection.select(index);
+                              widget.onSelect(index);
+                              if (_selection.viewport case final viewport?) {
+                                _focus(viewport);
+                              }
+                            }
+                          : null,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => ColoredBox(
     color: const Color(0xfffff4dc),
     child: LayoutBuilder(
       builder: (context, constraints) {
-        final fitted = applyBoxFit(
-          BoxFit.contain,
-          const Size(1491, 1055),
-          constraints.biggest,
-        );
-        final size = fitted.destination;
-        final markerSize = size.width < 500
-            ? 26.0
-            : size.width < 900
-            ? 32.0
-            : 38.0;
-        return InteractiveViewer(
-          minScale: 1,
-          maxScale: 3,
-          child: Center(
-            child: SizedBox(
-              width: size.width,
-              height: size.height,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.asset('assets/park_map.png', fit: BoxFit.fill),
-                  ),
-                  for (var index = 0; index < itemCount; index++)
-                    if (index + 1 > unlockedLevel)
-                      _Marker(
-                        index: index,
-                        unlockedLevel: unlockedLevel,
-                        size: markerSize,
-                        mapSize: size,
-                        keyPrefix: keyPrefix,
-                        label: labelBuilder(index),
-                        onTap: () => onSelect(index),
-                      ),
-                  for (var index = 0; index < itemCount; index++)
-                    if (index + 1 < unlockedLevel)
-                      _Marker(
-                        index: index,
-                        unlockedLevel: unlockedLevel,
-                        size: markerSize,
-                        mapSize: size,
-                        keyPrefix: keyPrefix,
-                        label: labelBuilder(index),
-                        onTap: () => onSelect(index),
-                      ),
-                  if (unlockedLevel <= itemCount)
-                    _Marker(
-                      index: unlockedLevel - 1,
-                      unlockedLevel: unlockedLevel,
-                      size: markerSize,
-                      mapSize: size,
-                      keyPrefix: keyPrefix,
-                      label: labelBuilder(unlockedLevel - 1),
-                      onTap: () => onSelect(unlockedLevel - 1),
-                    ),
-                ],
+        final viewport = constraints.biggest;
+        final oldSize = _selection.viewport;
+        if ((oldSize != viewport || _selection.focusRequested) &&
+            !_positionPending) {
+          _positionPending = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _positionPending = false;
+            if (!mounted) return;
+            if (oldSize == null || _selection.focusRequested) {
+              _focus(viewport);
+            } else {
+              final scene = _selection.camera.toScene(
+                oldSize.center(Offset.zero),
+              );
+              final scale =
+                  _selection.camera.value.getMaxScaleOnAxis() *
+                  _fit(viewport) /
+                  _fit(oldSize);
+              _selection.camera.value = Matrix4.diagonal3Values(scale, scale, 1)
+                ..setTranslationRaw(
+                  viewport.width / 2 - scene.dx * scale,
+                  viewport.height / 2 - scene.dy * scale,
+                  0,
+                );
+              _selection.viewport = viewport;
+            }
+          });
+        }
+        return Stack(
+          clipBehavior: Clip.hardEdge,
+          children: [
+            InteractiveViewer(
+              transformationController: _selection.camera,
+              constrained: false,
+              minScale: _fit(viewport),
+              maxScale: _fit(viewport) * 6,
+              boundaryMargin: const EdgeInsets.all(1600),
+              child: SizedBox.fromSize(
+                size: _world,
+                child: ArtworkImage('assets/park_map.png', fit: BoxFit.fill),
               ),
             ),
-          ),
+            AnimatedBuilder(
+              animation: Listenable.merge([_selection.camera, _selection]),
+              builder: (context, _) {
+                final points = [
+                  for (var i = 0; i < widget.itemCount; i++)
+                    MatrixUtils.transformPoint(
+                      _selection.camera.value,
+                      Offset(
+                        parkLevelPositions[i].dx * _world.width,
+                        parkLevelPositions[i].dy * _world.height,
+                      ),
+                    ),
+                ];
+                final groups = <List<int>>[];
+                final remaining = {for (var i = 0; i < points.length; i++) i};
+                while (remaining.isNotEmpty) {
+                  final group = [remaining.first];
+                  remaining.remove(group.first);
+                  for (var cursor = 0; cursor < group.length; cursor++) {
+                    final nearby = remaining
+                        .where(
+                          (i) =>
+                              (points[i] - points[group[cursor]]).distance < 54,
+                        )
+                        .toList();
+                    group.addAll(nearby);
+                    remaining.removeAll(nearby);
+                  }
+                  groups.add(group);
+                }
+                return Stack(
+                  children: [
+                    for (final group in groups) _marker(group, points),
+                  ],
+                );
+              },
+            ),
+            Positioned(
+              top: 4,
+              right: 4,
+              child: Material(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                elevation: 2,
+                child: Wrap(
+                  direction: Axis.vertical,
+                  children: [
+                    IconButton(
+                      tooltip: 'Zoom +',
+                      onPressed: () => _zoom(1.4, viewport),
+                      icon: const Icon(Icons.add),
+                    ),
+                    IconButton(
+                      tooltip: 'Zoom −',
+                      onPressed: () => _zoom(1 / 1.4, viewport),
+                      icon: const Icon(Icons.remove),
+                    ),
+                    IconButton(
+                      tooltip: 'Recentrer',
+                      onPressed: () => _focus(viewport),
+                      icon: const Icon(Icons.my_location),
+                    ),
+                    IconButton(
+                      tooltip: 'Vue du parc',
+                      onPressed: () => _focus(viewport, overview: true),
+                      icon: const Icon(Icons.map_outlined),
+                    ),
+                    IconButton(
+                      key: Key('${widget.keyPrefix}-level-list'),
+                      tooltip: 'Liste des niveaux',
+                      onPressed: _list,
+                      icon: const Icon(Icons.format_list_numbered),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       },
     ),
   );
-}
 
-class _Marker extends StatelessWidget {
-  const _Marker({
-    required this.index,
-    required this.unlockedLevel,
-    required this.size,
-    required this.mapSize,
-    required this.keyPrefix,
-    required this.label,
-    required this.onTap,
-  });
-
-  final int index;
-  final int unlockedLevel;
-  final double size;
-  final Size mapSize;
-  final String keyPrefix;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final level = index + 1;
-    final unlocked = level <= unlockedLevel;
-    final current = level == unlockedLevel;
-    final color = level < unlockedLevel
-        ? AppColors.success
-        : current
-        ? AppColors.sun
-        : AppColors.deep.withValues(alpha: .68);
-    final position = parkLevelPositions[index];
+  Widget _marker(List<int> group, List<Offset> points) {
+    final containsSelection = group.contains(_selection.selectedIndex);
+    final anchor = containsSelection
+        ? points[_selection.selectedIndex]
+        : points[group.first];
+    final index = group.first;
+    final unlocked = index < widget.unlockedLevel;
+    final label = group.length > 1
+        ? '${group.length} niveaux'
+        : '${index + 1} · ${widget.labelBuilder(index)}';
     return Positioned(
-      left: position.dx * mapSize.width - size / 2,
-      top: position.dy * mapSize.height - size / 2,
+      left: anchor.dx - 24,
+      top: anchor.dy - 24,
       child: Tooltip(
-        message: 'Niveau $level · $label',
-        child: InkWell(
-          key: Key('$keyPrefix-level-$level'),
-          onTap: unlocked ? onTap : null,
-          customBorder: const CircleBorder(),
-          child: Container(
-            width: size,
-            height: size,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: current ? Colors.white : const Color(0xfffff8e9),
-                width: current ? 4 : 2,
+        message: label,
+        child: Semantics(
+          label: label,
+          selected: containsSelection,
+          enabled: group.length > 1 || unlocked,
+          button: true,
+          child: Material(
+            color: containsSelection
+                ? AppColors.sun
+                : unlocked
+                ? AppColors.success
+                : AppColors.deep,
+            shape: const CircleBorder(),
+            elevation: 3,
+            child: InkWell(
+              key: Key(
+                group.length == 1
+                    ? '${widget.keyPrefix}-level-${index + 1}'
+                    : '${widget.keyPrefix}-group-${group.first}',
               ),
-              boxShadow: const [
-                BoxShadow(color: Color(0x55245b4a), blurRadius: 7),
-              ],
+              customBorder: const CircleBorder(),
+              onTap: group.length > 1
+                  ? () => _list(group..sort())
+                  : unlocked
+                  ? () {
+                      _selection.select(index);
+                      widget.onSelect(index);
+                    }
+                  : null,
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: Center(
+                  child: group.length > 1
+                      ? Text(
+                          '${group.length}',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontWeight: FontWeight.w900,
+                            color: containsSelection
+                                ? AppColors.deep
+                                : Colors.white,
+                          ),
+                        )
+                      : unlocked
+                      ? Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontWeight: FontWeight.w900,
+                            color: containsSelection
+                                ? AppColors.deep
+                                : Colors.white,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.lock_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                ),
+              ),
             ),
-            child: unlocked
-                ? Text(
-                    '$level',
-                    style: TextStyle(
-                      color: current ? AppColors.deep : Colors.white,
-                      fontSize: size * .34,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  )
-                : Icon(
-                    Icons.lock_rounded,
-                    color: Colors.white,
-                    size: size * .5,
-                  ),
           ),
         ),
       ),

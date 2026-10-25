@@ -1,3 +1,5 @@
+import '../support/visible_artwork.dart';
+import 'package:papatte_parc/shared/artwork.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -308,7 +310,7 @@ void main() {
         matchesGoldenFile('../goldens/repas-custom-${_name(size)}.png'),
       );
 
-      final repasSession = RepasSession(repasLevels.first);
+      final repasSession = RepasSession(repasLevels[31]);
       await _pump(
         tester,
         size,
@@ -329,7 +331,7 @@ void main() {
         matchesGoldenFile('../goldens/repas-mission-${_name(size)}.png'),
       );
 
-      for (final direction in repasLevels.first.referenceSolution) {
+      for (final direction in repasSession.level.referenceSolution) {
         repasSession.move(direction);
       }
       await _pump(
@@ -356,6 +358,7 @@ void main() {
 }
 
 const _sizes = [
+  Size(800, 360),
   Size(360, 800),
   Size(800, 1280),
   Size(1366, 768),
@@ -368,25 +371,31 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
   addTearDown(tester.view.reset);
   await tester.pumpWidget(MaterialApp(theme: buildAppTheme(), home: screen));
   await tester.runAsync(
-    () => precacheImage(
-      const AssetImage('assets/level_art/level-01-suricates-porcs-epics.png'),
+    () => precacheArtwork(
+      ArtworkResolver.provider(
+        'assets/level_art/level-01-suricates-porcs-epics.png',
+      ),
       tester.element(find.byType(MaterialApp)),
     ),
   );
   await tester.runAsync(
-    () => precacheImage(
-      const AssetImage('assets/park_map.png'),
+    () => precacheArtwork(
+      ArtworkResolver.provider('assets/park_map.png'),
       tester.element(find.byType(MaterialApp)),
     ),
   );
   for (final asset in [
     'assets/level_art/level-45-alpagas.png',
+    levels[31].artAsset!,
     'assets/mahjong/mahjong-cover.png',
     'assets/sokoban/cover.png',
     'assets/sokoban/keeper-south.png',
     'assets/sokoban/food-crate-mixed.png',
     'assets/sokoban/feeding-spot-v2.png',
     'assets/sokoban/fence-v2.png',
+    'assets/sokoban/board-frame-clay.png',
+    for (var i = 1; i <= 6; i++) 'assets/sokoban/board-moss-clay-$i.png',
+    for (var i = 1; i <= 4; i++) 'assets/sokoban/board-sand-clay-$i.png',
     'assets/match3/animals/suricate.png',
     'assets/match3/animals/lion.png',
     'assets/match3/animals/girafe.png',
@@ -395,13 +404,14 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
     for (final animal in AnimalKind.values) animal.asset,
   ]) {
     await tester.runAsync(
-      () => precacheImage(
-        AssetImage(asset),
+      () => precacheArtwork(
+        ArtworkResolver.provider(asset),
         tester.element(find.byType(MaterialApp)),
       ),
     );
   }
   await tester.pumpAndSettle();
+  await loadVisibleArtwork(tester);
   expect(tester.takeException(), isNull, reason: '$size');
 }
 

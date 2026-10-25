@@ -1,0 +1,99 @@
+00:00 +0: loading C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart
+00:00 +0: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: (setUpAll)
+00:00 +0: C:/dev/PapattesParc/test/app/audit_generated_animal_sort_visual_regression_test.dart: références visuelles des réserves du parc
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:05 +0: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 360x800
+AUDIT Match3CustomGameScreen Size(360.0, 800.0)
+00:05 +1: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 360x800
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:07 +1: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+AUDIT MahjongLevelSelectScreen Size(360.0, 800.0)
+00:07 +1: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 360x800
+AUDIT SudokuCustomGameScreen Size(360.0, 800.0)
+00:07 +1: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+AUDIT_EXCEPTION Size(360.0, 800.0): A RenderFlex overflowed by 28 pixels on the right.
+00:07 +1: C:/dev/PapattesParc/test/app/audit_generated_free_game_visual_regression_test.dart: références des parties libres 360x800
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:07 +2: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+00:08 +2: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+AUDIT SolitaireLevelSelectScreen Size(360.0, 800.0)
+00:08 +2: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+AUDIT MahjongCustomGameScreen Size(360.0, 800.0)
+00:09 +2: C:/dev/PapattesParc/test/app/audit_generated_menu_visual_regression_test.dart: références visuelles du menu
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:09 +2: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+AUDIT NumberlinkLevelSelectScreen Size(360.0, 800.0)
+00:09 +2: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+AUDIT_EXCEPTION Size(360.0, 800.0): A RenderFlex overflowed by 28 pixels on the right.
+00:09 +2: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:09 +3: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+00:10 +3: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+AUDIT_EXCEPTION Size(360.0, 800.0): A RenderFlex overflowed by 28 pixels on the right.
+00:10 +4: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+00:11 +4: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+AUDIT NumberlinkCustomGameScreen Size(360.0, 800.0)
+00:11 +4: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+AUDIT MahjongScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:11 +4: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:11 +4: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+AUDIT HomeScreen Size(360.0, 800.0)
+00:12 +4: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+AUDIT SolitaireSetupScreen Size(360.0, 800.0)
+00:12 +4: C:/dev/PapattesParc/test/app/audit_generated_mahjong_visual_regression_test.dart: références visuelles du mahjong
+AUDIT MahjongScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:12 +5: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+00:12 +5: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:12 +5: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+AUDIT NumberlinkScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:13 +5: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:13 +5: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+AUDIT SolitaireGameScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:13 +5: C:/dev/PapattesParc/test/app/audit_generated_numberlink_visual_regression_test.dart: références visuelles des sentiers sauvages
+AUDIT NumberlinkScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:13 +6: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+AUDIT SolitaireGameScreen Size(360.0, 800.0)
+00:14 +6: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+AUDIT CustomGameScreen Size(360.0, 800.0)
+00:14 +6: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: références visuelles du solitaire
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:14 +7: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+AUDIT_EXCEPTION Size(360.0, 800.0): A RenderFlex overflowed by 86 pixels on the right.
+00:14 +7: C:/dev/PapattesParc/test/app/audit_generated_solitaire_visual_regression_test.dart: la carte reste prioritaire sur un écran court
+AUDIT SolitaireLevelSelectScreen Size(611.0, 896.0)
+AUDIT_EXCEPTION Size(611.0, 896.0): null
+00:14 +8: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: références visuelles responsive
+AUDIT GameScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+AUDIT GameScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+AUDIT Match3LevelSelectScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): A RenderFlex overflowed by 28 pixels on the right.
+AUDIT Match3Screen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+AUDIT Match3Screen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+AUDIT SudokuLevelSelectScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): A RenderFlex overflowed by 28 pixels on the right.
+AUDIT SudokuScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+AUDIT SudokuScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+AUDIT RepasLevelSelectScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): A RenderFlex overflowed by 28 pixels on the right.
+AUDIT RepasCustomGameScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): A RenderFlex overflowed by 59 pixels on the right.
+AUDIT RepasScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+AUDIT RepasScreen Size(360.0, 800.0)
+AUDIT_EXCEPTION Size(360.0, 800.0): null
+00:24 +9: C:/dev/PapattesParc/test/app/audit_generated_visual_regression_test.dart: (tearDownAll)
+00:24 +9: All tests passed!

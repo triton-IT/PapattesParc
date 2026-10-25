@@ -1,47 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Huit jeux de réflexion et de patience dans un parc animalier illustré.">
+  <meta name="theme-color" content="#245B4A">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Papatte Parc">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>Papatte Parc</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
+  <title>Papatte Parc</title>
+  <style>
+    html,body{margin:0;height:100%;background:#fff4dc;color:#245b4a;font-family:system-ui,sans-serif}
+    #boot{position:fixed;inset:0;display:grid;place-content:center;text-align:center;padding:24px}
+    #boot h1{font-size:clamp(24px,6vw,42px);margin:0 0 16px}
+    #boot p{max-width:32rem;line-height:1.5}
+    #boot button{padding:14px 24px;border:0;border-radius:14px;background:#245b4a;color:#fff;font:inherit;cursor:pointer}
+    #boot button:focus-visible{outline:3px solid #b86a22;outline-offset:4px}
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
+  <main id="boot" role="status" aria-live="polite">
+    <h1>Papatte Parc</h1><p id="boot-state">Préparation de ton aventure…</p>
+    <button id="retry" hidden onclick="location.reload()">Réessayer</button>
+  </main>
+  <noscript>Active JavaScript et connecte-toi à Internet pour ouvrir Papatte Parc.</noscript>
+  <script>
+    window.showBootError=function(){
+      const state=document.getElementById('boot-state');
+      if(state){state.textContent='Le jeu ne peut pas être chargé. Vérifie ta connexion puis réessaie.';
+        document.getElementById('retry').hidden=false;}
+    };
+    window.addEventListener('flutter-first-frame',()=>document.getElementById('boot')?.remove(),{once:true});
+  </script>
+  <script src="flutter_bootstrap.js" async onerror="showBootError()"></script>
 </body>
 </html>
-
