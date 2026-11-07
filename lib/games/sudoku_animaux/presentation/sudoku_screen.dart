@@ -200,6 +200,27 @@ class SudokuScreen extends StatelessWidget {
       (false, 28) => 'assets/optimized/sudoku/amur-leopard-autumn-scene.webp',
       (false, 29) => 'assets/optimized/sudoku/reindeer-tundra-scene.webp',
       (false, 30) => 'assets/optimized/sudoku/amur-leopard-winter-scene.webp',
+      (false, 31) => 'assets/optimized/sudoku/urials-turs-caucasus-scene.webp',
+      (false, 32) => 'assets/optimized/sudoku/brown-bear-valley-scene.webp',
+      (false, 33) => 'assets/optimized/sudoku/takin-markhor-cliffs-scene.webp',
+      (false, 34) => 'assets/optimized/sudoku/european-mink-stream-scene.webp',
+      (false, 35) => 'assets/optimized/sudoku/wolverine-woodland-scene.webp',
+      (false, 36) => 'assets/optimized/sudoku/deer-pig-forest-scene.webp',
+      (false, 37) =>
+        'assets/optimized/sudoku/red-pandas-winter-forest-scene.webp',
+      (false, 38) => 'assets/optimized/sudoku/lemur-island-scene.webp',
+      (false, 39) =>
+        'assets/optimized/sudoku/prevost-squirrel-canopy-scene.webp',
+      (false, 40) =>
+        'assets/optimized/sudoku/barbary-macaque-forest-scene.webp',
+      (false, 41) => 'assets/optimized/sudoku/snow-leopard-cliffs-scene.webp',
+      (false, 42) => 'assets/optimized/sudoku/cheetah-grassland-scene.webp',
+      (false, 43) =>
+        'assets/optimized/sudoku/cheetah-running-savanna-scene.webp',
+      (false, 44) =>
+        'assets/optimized/sudoku/saimiri-pudu-rainforest-scene.webp',
+      (false, 45) =>
+        'assets/optimized/sudoku/alpaca-highland-meadow-scene.webp',
       _ => 'assets/optimized/sudoku/integrated-scene.webp',
     };
     final themedLevel =
