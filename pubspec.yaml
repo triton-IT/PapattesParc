@@ -31,6 +31,7 @@ flutter:
     - assets/optimized/match3/animals/
     - assets/optimized/mahjong/
     - assets/optimized/solitaire/
+    - assets/optimized/sudoku/
     - assets/optimized/sokoban/
     - assets/optimized/food_sort/
     - assets/optimized/food_sort/ui/
