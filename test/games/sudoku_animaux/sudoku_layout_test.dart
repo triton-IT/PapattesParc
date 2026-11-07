@@ -77,7 +77,19 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(1672, 941));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       final campaign = buildSudokuCampaign(levels);
-      for (final levelIndex in [0, 15, 30]) {
+      const controlTooltips = [
+        'Agrandir le plateau',
+        'Réduire le plateau',
+        'Déplacer le plateau',
+        'Recentrer le plateau',
+      ];
+      const expectedControlCenters = [
+        Offset(1084, 338),
+        Offset(1084, 444),
+        Offset(1084, 550),
+        Offset(1084, 656),
+      ];
+      for (final levelIndex in [0, 15, ...List.generate(15, (i) => 30 + i)]) {
         final session = SudokuSession(campaign[levelIndex]);
         final selected = session.entries.lastIndexOf(null);
         int? tappedCell, tappedAnimal;
@@ -104,6 +116,11 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        for (var i = 0; i < controlTooltips.length; i++) {
+          final center = tester.getCenter(find.byTooltip(controlTooltips[i]));
+          expect(center.dx, closeTo(expectedControlCenters[i].dx, 1));
+          expect(center.dy, closeTo(expectedControlCenters[i].dy, 1));
+        }
         await tester.tap(find.byKey(Key('sudoku-cell-$selected')));
         expect(tappedCell, selected);
         final animal = find.byKey(
@@ -183,6 +200,18 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1672, 941));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final campaign = buildSudokuCampaign(levels);
+    const cameraTooltips = [
+      'Agrandir le plateau',
+      'Réduire le plateau',
+      'Déplacer le plateau',
+      'Recentrer le plateau',
+    ];
+    const cameraCenters = [
+      Offset(1084, 338),
+      Offset(1084, 444),
+      Offset(1084, 550),
+      Offset(1084, 656),
+    ];
     for (final entry in [
       (0, false, 'assets/optimized/sudoku/integrated-scene.webp'),
       (1, false, 'assets/optimized/sudoku/lions-scene.webp'),
@@ -191,6 +220,25 @@ void main() {
       (4, false, 'assets/optimized/sudoku/grande-savane-scene.webp'),
       (9, false, 'assets/optimized/sudoku/tamarins-armadillo-sloth-scene-v2.webp'),
       (17, false, 'assets/optimized/sudoku/tiger-river-scene-v2.webp'),
+      (30, false, 'assets/optimized/sudoku/urials-turs-caucasus-scene.webp'),
+      (31, false, 'assets/optimized/sudoku/brown-bear-valley-scene.webp'),
+      (32, false, 'assets/optimized/sudoku/takin-markhor-cliffs-scene.webp'),
+      (33, false, 'assets/optimized/sudoku/european-mink-stream-scene.webp'),
+      (34, false, 'assets/optimized/sudoku/wolverine-woodland-scene.webp'),
+      (35, false, 'assets/optimized/sudoku/deer-pig-forest-scene.webp'),
+      (
+        36,
+        false,
+        'assets/optimized/sudoku/red-pandas-winter-forest-scene.webp',
+      ),
+      (37, false, 'assets/optimized/sudoku/lemur-island-scene.webp'),
+      (38, false, 'assets/optimized/sudoku/prevost-squirrel-canopy-scene.webp'),
+      (39, false, 'assets/optimized/sudoku/barbary-macaque-forest-scene.webp'),
+      (40, false, 'assets/optimized/sudoku/snow-leopard-cliffs-scene.webp'),
+      (41, false, 'assets/optimized/sudoku/cheetah-grassland-scene.webp'),
+      (42, false, 'assets/optimized/sudoku/cheetah-running-savanna-scene.webp'),
+      (43, false, 'assets/optimized/sudoku/saimiri-pudu-rainforest-scene.webp'),
+      (44, false, 'assets/optimized/sudoku/alpaca-highland-meadow-scene.webp'),
       (4, true, 'assets/optimized/sudoku/integrated-scene.webp'),
       (3, true, 'assets/optimized/sudoku/integrated-scene.webp'),
       (2, true, 'assets/optimized/sudoku/integrated-scene.webp'),
@@ -224,6 +272,18 @@ void main() {
         find.byKey(const Key('sudoku-scene-background')),
       );
       expect((image.image as AssetImage).assetName, entry.$3);
+      await tester.runAsync(
+        () => precacheImage(
+          image.image,
+          tester.element(find.byType(MaterialApp)),
+        ),
+      );
+      await tester.pump();
+      for (var i = 0; i < cameraTooltips.length; i++) {
+        final center = tester.getCenter(find.byTooltip(cameraTooltips[i]));
+        expect(center.dx, closeTo(cameraCenters[i].dx, 1));
+        expect(center.dy, closeTo(cameraCenters[i].dy, 1));
+      }
     }
   });
 }
