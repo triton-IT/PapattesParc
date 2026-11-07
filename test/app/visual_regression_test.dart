@@ -355,6 +355,122 @@ void main() {
       );
     }
   }, skip: !Platform.isWindows);
+
+  testWidgets('sudoku niveau des lions', (tester) async {
+    final session = SudokuSession(buildSudokuCampaign(levels)[1]);
+    await _pump(
+      tester,
+      const Size(1672, 941),
+      SudokuScreen(
+        session: session,
+        selectedIndex: null,
+        noteMode: false,
+        wrongIndex: null,
+        finished: false,
+        newRecord: false,
+        onSelectCell: (_) {},
+        onSelectAnimal: (_) {},
+        onToggleNotes: () {},
+        onClear: () {},
+        onHint: () {},
+        onBack: () {},
+        onReplay: () {},
+        onLevels: () {},
+        onNext: () {},
+      ),
+    );
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('../goldens/sudoku-lions-1672x941.png'),
+    );
+  }, skip: !Platform.isWindows);
+
+  testWidgets('sudoku niveau des girafes', (tester) async {
+    final session = SudokuSession(buildSudokuCampaign(levels)[2]);
+    await _pump(
+      tester,
+      const Size(1672, 941),
+      SudokuScreen(
+        session: session,
+        selectedIndex: null,
+        noteMode: false,
+        wrongIndex: null,
+        finished: false,
+        newRecord: false,
+        onSelectCell: (_) {},
+        onSelectAnimal: (_) {},
+        onToggleNotes: () {},
+        onClear: () {},
+        onHint: () {},
+        onBack: () {},
+        onReplay: () {},
+        onLevels: () {},
+        onNext: () {},
+      ),
+    );
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('../goldens/sudoku-giraffes-1672x941.png'),
+    );
+  }, skip: !Platform.isWindows);
+
+  testWidgets('sudoku niveau de Madagascar', (tester) async {
+    final session = SudokuSession(buildSudokuCampaign(levels)[3]);
+    await _pump(
+      tester,
+      const Size(1672, 941),
+      SudokuScreen(
+        session: session,
+        selectedIndex: null,
+        noteMode: false,
+        wrongIndex: null,
+        finished: false,
+        newRecord: false,
+        onSelectCell: (_) {},
+        onSelectAnimal: (_) {},
+        onToggleNotes: () {},
+        onClear: () {},
+        onHint: () {},
+        onBack: () {},
+        onReplay: () {},
+        onLevels: () {},
+        onNext: () {},
+      ),
+    );
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('../goldens/sudoku-madagascar-1672x941.png'),
+    );
+  }, skip: !Platform.isWindows);
+
+  testWidgets('sudoku niveau de la grande savane', (tester) async {
+    final session = SudokuSession(buildSudokuCampaign(levels)[4]);
+    await _pump(
+      tester,
+      const Size(1672, 941),
+      SudokuScreen(
+        session: session,
+        selectedIndex: null,
+        noteMode: false,
+        wrongIndex: null,
+        finished: false,
+        newRecord: false,
+        onSelectCell: (_) {},
+        onSelectAnimal: (_) {},
+        onToggleNotes: () {},
+        onClear: () {},
+        onHint: () {},
+        onBack: () {},
+        onReplay: () {},
+        onLevels: () {},
+        onNext: () {},
+      ),
+    );
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('../goldens/sudoku-grande-savane-1672x941.png'),
+    );
+  }, skip: !Platform.isWindows);
 }
 
 const _sizes = [
@@ -389,6 +505,19 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
     levels[31].artAsset!,
     'assets/mahjong/mahjong-cover.png',
     'assets/sokoban/cover.png',
+    'assets/optimized/sudoku/wood-frame.webp',
+    'assets/optimized/sudoku/parchment-panel.webp',
+    'assets/optimized/sudoku/hud-plank.webp',
+    'assets/optimized/sudoku/savanna.webp',
+    'assets/optimized/sudoku/integrated-scene.webp',
+    'assets/optimized/sudoku/lions-scene.webp',
+    'assets/optimized/sudoku/giraffes-scene.webp',
+    'assets/optimized/sudoku/madagascar-scene.webp',
+    'assets/optimized/sudoku/grande-savane-scene.webp',
+    'assets/optimized/sudoku/hint-sign.webp',
+    'assets/optimized/sudoku/notes-paper.webp',
+    'assets/optimized/sudoku/camera-stone.webp',
+    'assets/optimized/sudoku/sandstone-tile.webp',
     'assets/sokoban/keeper-south.png',
     'assets/sokoban/food-crate-mixed.png',
     'assets/sokoban/feeding-spot-v2.png',

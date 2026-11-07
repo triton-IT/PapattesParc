@@ -19,9 +19,11 @@ class GameHelpButton extends StatelessWidget {
     required this.kind,
     this.color,
     this.compact = false,
+    this.iconSize,
     super.key,
   });
 
+  final double? iconSize;
   final GameHelpKind kind;
   final Color? color;
   final bool compact;
@@ -30,6 +32,7 @@ class GameHelpButton extends StatelessWidget {
   Widget build(BuildContext context) => IconButton(
     key: Key('help-${kind.name}'),
     tooltip: 'Comment jouer',
+    iconSize: iconSize,
     color: color,
     padding: compact ? EdgeInsets.zero : null,
     constraints: compact

@@ -12,12 +12,17 @@ class BoardCamera extends StatefulWidget {
     this.boundaryMargin = EdgeInsets.zero,
     this.clipBehavior = Clip.hardEdge,
     this.panEnabled = true,
+    this.wooden = false,
+    this.layoutBuilder,
     super.key,
   });
   final Widget child;
   final TransformationController? transformationController;
   final Key? viewerKey;
   final bool constrained, panEnabled;
+  final bool wooden;
+  final Widget Function(BuildContext context, Widget viewport, Widget controls)?
+  layoutBuilder;
   final double minScale, maxScale;
   final EdgeInsets boundaryMargin;
   final Clip clipBehavior;
@@ -105,88 +110,142 @@ class _BoardCameraState extends State<BoardCamera> {
   }
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (_overview == null || _viewport != constraints.biggest) {
-              _overview = _camera.value.clone();
-            }
-            _viewport = constraints.biggest;
-            return Listener(
-              behavior: HitTestBehavior.opaque,
-              onPointerDown: _pointerDown,
-              onPointerMove: _pointerMove,
-              onPointerUp: _pointerUp,
-              onPointerCancel: _pointerUp,
-              child: InteractiveViewer(
-                key: widget.viewerKey,
-                transformationController: _camera,
-                constrained: widget.constrained,
-                minScale: widget.minScale,
-                maxScale: widget.maxScale,
-                boundaryMargin: widget.boundaryMargin,
-                clipBehavior: widget.clipBehavior,
-                panEnabled: false,
-                scaleEnabled: false,
-                child: _CameraNavigation(
-                  notifier: _navigation,
-                  child: AbsorbPointer(
-                    absorbing: _moveMode,
-                    child: widget.child,
+  Widget build(BuildContext context) {
+    final viewport = LayoutBuilder(
+      builder: (context, constraints) {
+        if (_overview == null || _viewport != constraints.biggest) {
+          _overview = _camera.value.clone();
+        }
+        _viewport = constraints.biggest;
+        return Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: _pointerDown,
+          onPointerMove: _pointerMove,
+          onPointerUp: _pointerUp,
+          onPointerCancel: _pointerUp,
+          child: InteractiveViewer(
+            key: widget.viewerKey,
+            transformationController: _camera,
+            constrained: widget.constrained,
+            minScale: widget.minScale,
+            maxScale: widget.maxScale,
+            boundaryMargin: widget.boundaryMargin,
+            clipBehavior: widget.clipBehavior,
+            panEnabled: false,
+            scaleEnabled: false,
+            child: _CameraNavigation(
+              notifier: _navigation,
+              child: AbsorbPointer(absorbing: _moveMode, child: widget.child),
+            ),
+          ),
+        );
+      },
+    );
+    final integrated = widget.wooden && widget.layoutBuilder != null;
+    Widget cameraButton(Widget button) => integrated
+        ? SizedBox.square(
+            dimension: 86,
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/optimized/sudoku/camera-stone.webp',
                   ),
+                  fit: BoxFit.fill,
                 ),
               ),
-            );
-          },
-        ),
-      ),
-      SizedBox(
-        width: 48,
-        child: LayoutBuilder(
-          builder: (context, constraints) => Align(
-            alignment: Alignment.center,
-            child: Material(
-              color: Theme.of(
-                context,
-              ).colorScheme.surface.withValues(alpha: .94),
-              borderRadius: BorderRadius.circular(16),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: constraints.maxHeight),
-                child: SingleChildScrollView(
+              child: button,
+            ),
+          )
+        : button;
+    final controls = SizedBox(
+      width: widget.wooden
+          ? (MediaQuery.sizeOf(context).width / 20).clamp(48.0, 84.0)
+          : 48,
+      child: LayoutBuilder(
+        builder: (context, constraints) => Align(
+          alignment: Alignment.center,
+          child: Material(
+            color: integrated
+                ? Colors.transparent
+                : widget.wooden
+                ? const Color(0xffbc9060)
+                : Theme.of(context).colorScheme.surface.withValues(alpha: .94),
+            borderRadius: BorderRadius.circular(16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: constraints.maxHeight),
+              child: SingleChildScrollView(
+                child: IconButtonTheme(
+                  data: IconButtonThemeData(
+                    style: widget.wooden
+                        ? IconButton.styleFrom(
+                            backgroundColor: integrated
+                                ? Colors.transparent
+                                : const Color(0xffecd2a1),
+                            foregroundColor: const Color(0xff245b4a),
+                            iconSize: (MediaQuery.sizeOf(context).width / 50)
+                                .clamp(24.0, 36.0),
+                            minimumSize: Size.square(
+                              (MediaQuery.sizeOf(context).width / 24).clamp(
+                                44.0,
+                                70.0,
+                              ),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: integrated
+                                  ? BorderSide.none
+                                  : const BorderSide(
+                                      color: Color(0xff80562f),
+                                      width: 2,
+                                    ),
+                            ),
+                          )
+                        : null,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        tooltip: 'Agrandir le plateau',
-                        onPressed: () => _zoom(1.4, _viewport),
-                        icon: const Icon(Icons.zoom_in),
+                      cameraButton(
+                        IconButton(
+                          tooltip: 'Agrandir le plateau',
+                          onPressed: () => _zoom(1.4, _viewport),
+                          icon: const Icon(Icons.zoom_in),
+                        ),
                       ),
-                      IconButton(
-                        tooltip: 'Réduire le plateau',
-                        onPressed: () => _zoom(1 / 1.4, _viewport),
-                        icon: const Icon(Icons.zoom_out),
+                      if (integrated) const SizedBox(height: 20),
+                      cameraButton(
+                        IconButton(
+                          tooltip: 'Réduire le plateau',
+                          onPressed: () => _zoom(1 / 1.4, _viewport),
+                          icon: const Icon(Icons.zoom_out),
+                        ),
                       ),
-                      IconButton(
-                        tooltip: 'Déplacer le plateau',
-                        isSelected: _moveMode,
-                        onPressed: widget.panEnabled
-                            ? () => setState(() {
-                                _moveMode = !_moveMode;
-                                _navigation.value = _moveMode;
-                              })
-                            : null,
-                        icon: const Icon(Icons.pan_tool_outlined),
+                      if (integrated) const SizedBox(height: 20),
+                      cameraButton(
+                        IconButton(
+                          tooltip: 'Déplacer le plateau',
+                          isSelected: _moveMode,
+                          onPressed: widget.panEnabled
+                              ? () => setState(() {
+                                  _moveMode = !_moveMode;
+                                  _navigation.value = _moveMode;
+                                })
+                              : null,
+                          icon: const Icon(Icons.pan_tool_outlined),
+                        ),
                       ),
-                      IconButton(
-                        tooltip: 'Recentrer le plateau',
-                        onPressed: () {
-                          if (_overview != null) {
-                            _camera.value = _overview!.clone();
-                          }
-                        },
-                        icon: const Icon(Icons.center_focus_strong),
+                      if (integrated) const SizedBox(height: 20),
+                      cameraButton(
+                        IconButton(
+                          tooltip: 'Recentrer le plateau',
+                          onPressed: () {
+                            if (_overview != null) {
+                              _camera.value = _overview!.clone();
+                            }
+                          },
+                          icon: const Icon(Icons.center_focus_strong),
+                        ),
                       ),
                     ],
                   ),
@@ -196,8 +255,17 @@ class _BoardCameraState extends State<BoardCamera> {
           ),
         ),
       ),
-    ],
-  );
+    );
+    if (widget.layoutBuilder case final builder?) {
+      return builder(context, viewport, controls);
+    }
+    return Row(
+      children: [
+        Expanded(child: viewport),
+        controls,
+      ],
+    );
+  }
 }
 
 class _CameraNavigation extends InheritedNotifier<ValueNotifier<bool>> {

@@ -67,6 +67,7 @@ class GameStageLayout extends StatelessWidget {
     this.backgroundOverlay,
     this.scrim = const Color(0x2618382f),
     this.backgroundColor = AppColors.deep,
+    this.wooden = false,
     super.key,
   });
 
@@ -84,6 +85,7 @@ class GameStageLayout extends StatelessWidget {
   final Widget? backgroundOverlay;
   final Color scrim;
   final Color backgroundColor;
+  final bool wooden;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -102,23 +104,50 @@ class GameStageLayout extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                        child: Material(
-                          color: AppColors.deep.withValues(alpha: .88),
-                          borderRadius: BorderRadius.circular(16),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          width:
+                              wooden &&
+                                  landscape &&
+                                  constraints.maxHeight >= 500
+                              ? constraints.maxWidth * .87
+                              : constraints.maxWidth,
                           child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: _GameStageHud(
-                              eyebrow: eyebrow,
-                              title: title,
-                              backKey: backKey,
-                              onBack: onBack,
-                              backTooltip: backTooltip,
-                              helpKind: helpKind,
-                              metrics: metrics,
-                              actions: actions,
-                              wide: landscape,
+                            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: wooden
+                                    ? const Color(0xff704322)
+                                    : AppColors.deep.withValues(alpha: .88),
+                                borderRadius: BorderRadius.circular(16),
+                                image: wooden
+                                    ? const DecorationImage(
+                                        image: AssetImage(
+                                          'assets/optimized/sudoku/hud-plank.webp',
+                                        ),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: wooden ? 14 : 4,
+                                  vertical: wooden ? 8 : 4,
+                                ),
+                                child: _GameStageHud(
+                                  eyebrow: eyebrow,
+                                  title: title,
+                                  backKey: backKey,
+                                  onBack: onBack,
+                                  backTooltip: backTooltip,
+                                  helpKind: helpKind,
+                                  metrics: metrics,
+                                  actions: actions,
+                                  wide: landscape,
+                                  wooden: wooden,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -190,9 +219,11 @@ class GameStageSplit extends StatelessWidget {
     required this.wide,
     required this.board,
     required this.panel,
+    this.maxPanelWidth = 340,
     super.key,
   });
 
+  final double maxPanelWidth;
   final bool wide;
   final Widget board;
   final Widget panel;
@@ -202,7 +233,7 @@ class GameStageSplit extends StatelessWidget {
     builder: (context, constraints) {
       final short = constraints.maxHeight < 400;
       final panelWidth = math.min(
-        short ? 260.0 : 340.0,
+        short ? 260.0 : maxPanelWidth,
         math.max(200.0, constraints.maxWidth * .32),
       );
       final controls = SingleChildScrollView(
@@ -279,8 +310,10 @@ class _GameStageHud extends StatelessWidget {
     required this.metrics,
     required this.actions,
     required this.wide,
+    required this.wooden,
   });
 
+  final bool wooden;
   final String eyebrow;
   final String title;
   final Key backKey;
@@ -293,12 +326,17 @@ class _GameStageHud extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scale = wooden && wide
+        ? (MediaQuery.sizeOf(context).width / 800).clamp(1.0, 2.0)
+        : 1.0;
+    final spaciousWooden =
+        wooden && wide && MediaQuery.sizeOf(context).width >= 1000;
     final trailing = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < metrics.length; i++) ...[
           if (i > 0) const SizedBox(width: 8),
-          _Metric(metric: metrics[i]),
+          _Metric(metric: metrics[i], wooden: wooden, scale: scale),
         ],
         if (metrics.isNotEmpty && actions.isNotEmpty) const SizedBox(width: 6),
         ...actions,
@@ -306,38 +344,51 @@ class _GameStageHud extends StatelessWidget {
     );
     final firstRow = Row(
       children: [
-        _BackButton(key: backKey, tooltip: backTooltip, onPressed: onBack),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                eyebrow,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: AppColors.sun,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                ),
-              ),
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  shadows: [Shadow(color: Color(0x66000000), blurRadius: 6)],
-                ),
-              ),
-            ],
-          ),
+        _BackButton(
+          key: backKey,
+          tooltip: backTooltip,
+          onPressed: onBack,
+          scale: scale,
         ),
+        const SizedBox(width: 12),
+        if (spaciousWooden)
+          SizedBox(
+            width: MediaQuery.sizeOf(context).width * .30,
+            child: _HudTitle(eyebrow: eyebrow, title: title, scale: scale),
+          )
+        else
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  eyebrow,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.sun,
+                    fontSize: 11 * scale,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                  ),
+                ),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18 * scale,
+                    fontWeight: FontWeight.w900,
+                    shadows: const [
+                      Shadow(color: Color(0x66000000), blurRadius: 6),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         if (wide) ...[
           const SizedBox(width: 8),
           Flexible(
@@ -348,8 +399,14 @@ class _GameStageHud extends StatelessWidget {
             ),
           ),
         ],
+        if (spaciousWooden) const Spacer(),
         const SizedBox(width: 8),
-        GameHelpButton(kind: helpKind, color: Colors.white, compact: true),
+        GameHelpButton(
+          kind: helpKind,
+          color: Colors.white,
+          compact: true,
+          iconSize: 24 * scale,
+        ),
       ],
     );
     if (wide || metrics.isEmpty && actions.isEmpty) return firstRow;
@@ -369,13 +426,54 @@ class _GameStageHud extends StatelessWidget {
   }
 }
 
+class _HudTitle extends StatelessWidget {
+  const _HudTitle({
+    required this.eyebrow,
+    required this.title,
+    required this.scale,
+  });
+  final String eyebrow, title;
+  final double scale;
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        eyebrow,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: AppColors.sun,
+          fontSize: 11 * scale,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1,
+        ),
+      ),
+      Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 18 * scale,
+          fontWeight: FontWeight.w900,
+          shadows: const [Shadow(color: Color(0x66000000), blurRadius: 6)],
+        ),
+      ),
+    ],
+  );
+}
+
 class _BackButton extends StatelessWidget {
   const _BackButton({
     required this.tooltip,
     required this.onPressed,
+    this.scale = 1,
     super.key,
   });
 
+  final double scale;
   final String tooltip;
   final VoidCallback onPressed;
 
@@ -397,13 +495,18 @@ class _BackButton extends StatelessWidget {
       tooltip: tooltip,
       onPressed: onPressed,
       color: Colors.white,
+      iconSize: 24 * scale,
       icon: const Icon(Icons.arrow_back_rounded),
     ),
   );
 }
 
 class _Metric extends StatelessWidget {
-  const _Metric({required this.metric});
+  const _Metric({required this.metric, this.wooden = false, this.scale = 1});
+
+  final double scale;
+
+  final bool wooden;
 
   final GameStageMetric metric;
 
@@ -411,24 +514,49 @@ class _Metric extends StatelessWidget {
   Widget build(BuildContext context) => DecoratedBox(
     key: metric.key,
     decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: .14),
+      color: wooden ? null : Colors.white.withValues(alpha: .14),
+      gradient: wooden
+          ? const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xffbd8955), Color(0xff82512d), Color(0xffa97143)],
+            )
+          : null,
       borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: Colors.white.withValues(alpha: .2)),
+      border: Border.all(
+        color: wooden
+            ? const Color(0xffd6ab70)
+            : Colors.white.withValues(alpha: .2),
+        width: wooden ? 2 : 1,
+      ),
+      boxShadow: wooden
+          ? const [
+              BoxShadow(
+                color: Color(0x88000000),
+                blurRadius: 4,
+                offset: Offset(0, 3),
+              ),
+            ]
+          : null,
     ),
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      padding: EdgeInsets.symmetric(
+        horizontal: 11 * scale,
+        vertical: 7 * scale,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(metric.icon, size: 17, color: Colors.white),
+          Icon(metric.icon, size: 17 * scale, color: Colors.white),
           const SizedBox(width: 5),
           if (metric.elapsed case final elapsed?)
             ValueListenableBuilder<Duration>(
               valueListenable: elapsed,
               builder: (context, value, _) => Text(
                 formatDuration(value),
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
+                  fontSize: 14 * scale,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -436,8 +564,9 @@ class _Metric extends StatelessWidget {
           else
             Text(
               metric.label,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
+                fontSize: 14 * scale,
                 fontWeight: FontWeight.w900,
               ),
             ),

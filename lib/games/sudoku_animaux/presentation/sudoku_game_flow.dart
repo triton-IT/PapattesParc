@@ -163,6 +163,8 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
       return;
     }
     unawaited(_audio.playEffect(SoundEffect.click));
+    _selectedIndex = null;
+    _noteMode = false;
     if (result == SudokuPlacementResult.won) unawaited(_finish());
     setState(() {});
   }
