@@ -84,6 +84,58 @@ void main() {
     }
   }, skip: !Platform.isWindows);
 
+  testWidgets('la scène permet de choisir un panier et de zoomer', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1920, 1080);
+    addTearDown(tester.view.reset);
+    final session = AnimalSortSession(buildAnimalSortCampaign(levels).first);
+    int? selected;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildAppTheme(),
+        home: AnimalSortScreen(
+          session: session,
+          selectedZone: null,
+          hintMove: null,
+          finished: false,
+          newRecord: false,
+          freeGame: false,
+          onTapZone: (index) => selected = index,
+          onUndo: () {},
+          onHint: () {},
+          onBack: () {},
+          onRestart: () {},
+          onReplay: () {},
+          onLevels: () {},
+          onNext: () {},
+          onNewGame: null,
+          onConfigure: null,
+        ),
+      ),
+    );
+    expect(
+      find.byKey(const Key('animal-sort-scene-background')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const Key('animal-sort-zone-0')));
+    expect(selected, 0);
+    final viewer = tester.widget<InteractiveViewer>(
+      find.byKey(const Key('animal-sort-camera')),
+    );
+    expect(viewer.transformationController!.value.getMaxScaleOnAxis(), 1);
+    await tester.tap(find.byTooltip('Agrandir le plateau'));
+    await tester.pump();
+    expect(
+      viewer.transformationController!.value.getMaxScaleOnAxis(),
+      greaterThan(1),
+    );
+    await tester.tap(find.byTooltip('Recentrer le plateau'));
+    await tester.pump();
+    expect(viewer.transformationController!.value.getMaxScaleOnAxis(), 1);
+  });
+
   testWidgets('les dix paniers restent sur le chariot', (tester) async {
     final level = buildAnimalSortCampaign(levels).last;
     final session = AnimalSortSession(level);

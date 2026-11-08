@@ -97,6 +97,39 @@ void main() {
     }
   }, skip: !Platform.isWindows);
 
+  testWidgets('scène du niveau et commandes du plateau restent actives', (
+    tester,
+  ) async {
+    final level = buildSolitaireCampaign(park.levels)[1];
+    final session = SolitaireSession(mode: level.mode, seed: level.seed);
+    var draws = 0;
+    await _pump(
+      tester,
+      const Size(1920, 1080),
+      _screen(session, level: level, onDraw: () => draws++),
+    );
+    final scene = tester.widget<Image>(
+      find.byKey(const Key('solitaire-scene-background')),
+    );
+    expect(
+      (scene.image as AssetImage).assetName,
+      'assets/optimized/sudoku/lions-scene.webp',
+    );
+    await tester.tap(find.byKey(const Key('solitaire-stock')));
+    expect(draws, 1);
+    final viewer = tester.widget<InteractiveViewer>(
+      find.byType(InteractiveViewer),
+    );
+    await tester.tap(find.byTooltip('Agrandir le plateau'));
+    await tester.pump();
+    expect(
+      viewer.transformationController!.value.getMaxScaleOnAxis(),
+      greaterThan(1),
+    );
+    expect(find.byKey(const Key('solitaire-hint')), findsOneWidget);
+    expect(find.byKey(const Key('solitaire-new-game')), findsOneWidget);
+  });
+
   testWidgets('la carte reste prioritaire sur un écran court', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final progress = await SolitaireProgressStore.load();
@@ -167,6 +200,7 @@ SolitaireGameScreen _screen(
   SolitaireSession session, {
   required SolitaireLevelDefinition level,
   bool finished = false,
+  VoidCallback? onDraw,
 }) => SolitaireGameScreen(
   session: session,
   backAnimal: AnimalKind.suricate,
@@ -177,7 +211,7 @@ SolitaireGameScreen _screen(
   hint: null,
   finished: finished,
   newRecord: finished,
-  onDraw: () {},
+  onDraw: onDraw ?? () {},
   onCardTap: (_) {},
   onDoubleTap: (_) {},
   onMove: (_) {},

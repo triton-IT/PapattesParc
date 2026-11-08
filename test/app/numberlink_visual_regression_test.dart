@@ -14,6 +14,7 @@ import 'package:papatte_parc/games/sentiers_sauvages/presentation/custom_game_sc
 import 'package:papatte_parc/games/sentiers_sauvages/presentation/level_select_screen.dart';
 import 'package:papatte_parc/games/sentiers_sauvages/presentation/numberlink_screen.dart';
 import 'package:papatte_parc/shared/animal_catalog.dart';
+import 'package:papatte_parc/shared/animal_scene.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
 import 'package:papatte_parc/shared/park_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,6 +29,56 @@ void main() {
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
 
+  testWidgets('la scène intégrée conserve le tracé et la caméra', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1920, 1080);
+    addTearDown(tester.view.reset);
+    final session = NumberlinkSession(buildNumberlinkCampaign(levels).first);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildAppTheme(),
+        home: _screen(session, finished: false),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const Key('numberlink-scene-background')),
+      findsOneWidget,
+    );
+    final rect = tester.getRect(find.byKey(const Key('numberlink-board')));
+    final pair = session.level.pairs.first;
+    for (final position in [pair.animalPosition, pair.enclosurePosition]) {
+      final cell = find.byKey(
+        Key('numberlink-cell-${position.index(session.level.size)}'),
+      );
+      final images = tester
+          .widgetList<ArtworkImage>(
+            find.descendant(of: cell, matching: find.byType(ArtworkImage)),
+          )
+          .toList();
+      expect(images, hasLength(1));
+      expect(images.single.asset, pair.animal.asset);
+    }
+    Offset center(NumberlinkPosition p) => Offset(
+      rect.left + (p.x + .5) * rect.width / session.level.size,
+      rect.top + (p.y + .5) * rect.height / session.level.size,
+    );
+    await tester.tapAt(center(pair.referencePath.first));
+    await tester.tapAt(center(pair.referencePath[1]));
+    expect(session.paths[pair.id]!.length, 2);
+    await tester.tap(find.byTooltip('Agrandir le plateau'));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Recentrer le plateau'));
+    await tester.pump();
+    expect(session.paths[pair.id]!.length, 2);
+    await tester.tap(find.byKey(const Key('numberlink-hint')));
+    await tester.pump();
+    expect(session.hintsRemaining, 2);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('références visuelles des sentiers sauvages', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final store = await NumberlinkProgressStore.load();
@@ -35,7 +86,12 @@ void main() {
     final level = campaign[30];
     final assets = {
       'assets/park_map.png',
-      'assets/sokoban/fence-v2.png',
+      'assets/optimized/sudoku/sandstone-tile.webp',
+      'assets/optimized/sudoku/parchment-panel.webp',
+      'assets/optimized/sudoku/hud-plank.webp',
+      'assets/optimized/sudoku/hint-sign.webp',
+      'assets/optimized/sudoku/camera-stone.webp',
+      animalSceneAsset(level.number),
       levels.first.artAsset!,
       levels
           .firstWhere((stage) => stage.biome == LevelBiome.riverside)

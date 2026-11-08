@@ -87,7 +87,7 @@ const gameCatalog = <GameCatalogEntry>[
     GameId.numberlink,
     'game-numberlink',
     'Sentiers sauvages',
-    'Relie chaque animal à son enclos sans croiser les sentiers.',
+    'Relie les animaux identiques sans croiser les sentiers.',
     'assets/level_art/level-09-gibbons-loutres-asie.png',
     Icons.route_rounded,
     AppColors.success,

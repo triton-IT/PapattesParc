@@ -1,4 +1,6 @@
 import '../../../shared/artwork.dart';
+import '../../../shared/animal_scene.dart';
+import '../../../shared/board_camera.dart';
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -51,9 +53,25 @@ class AnimalSortScreen extends StatelessWidget {
   final VoidCallback? onConfigure;
 
   @override
-  Widget build(BuildContext context) => GameStageLayout(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final scale = min(
+        constraints.maxWidth / 1672,
+        constraints.maxHeight / 941,
+      );
+      if ((freeGame || session.level.number != 19) &&
+          scale >= .8 &&
+          MediaQuery.textScalerOf(context).scale(1) <= 1.3) {
+        return _integratedScene();
+      }
+      return _responsiveScene();
+    },
+  );
+
+  Widget _responsiveScene() => GameStageLayout(
+    wooden: true,
     background: ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
-    scrim: const Color(0x3318382f),
+    scrim: Colors.transparent,
     eyebrow: freeGame ? 'PARTIE LIBRE' : 'NIVEAU ${session.level.number}',
     title: session.level.stage.title,
     backKey: const Key('animal-sort-back'),
@@ -98,12 +116,15 @@ class AnimalSortScreen extends StatelessWidget {
         layout.isLandscape ? 52 : 8,
         8,
       ),
-      child: _AnimalSortBoard(
-        session: session,
-        selectedZone: selectedZone,
-        hintMove: hintMove,
-        landscape: layout.isLandscape,
-        onTapZone: onTapZone,
+      child: BoardCamera(
+        wooden: true,
+        child: _AnimalSortBoard(
+          session: session,
+          selectedZone: selectedZone,
+          hintMove: hintMove,
+          landscape: layout.isLandscape,
+          onTapZone: onTapZone,
+        ),
       ),
     ),
     overlays: [
@@ -120,6 +141,274 @@ class AnimalSortScreen extends StatelessWidget {
             onConfigure: onConfigure,
           ),
         ),
+    ],
+  );
+  Widget _integratedScene() => Scaffold(
+    backgroundColor: const Color(0xff986a3e),
+    body: Stack(
+      children: [
+        Positioned.fill(
+          child: ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
+        ),
+        SafeArea(
+          child: SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: 1672,
+                height: 941,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image(
+                        key: const Key('animal-sort-scene-background'),
+                        image: AssetImage(
+                          animalSceneAsset(
+                            session.level.number,
+                            isFreeGame: freeGame,
+                          ),
+                        ),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: BoardCamera(
+                        wooden: true,
+                        viewerKey: const Key('animal-sort-camera'),
+                        layoutBuilder: (context, viewport, controls) => Stack(
+                          children: [
+                            Positioned(
+                              left: 193,
+                              top: 225,
+                              width: 555,
+                              height: 531,
+                              child: viewport,
+                            ),
+                            Positioned(
+                              left: 1038,
+                              top: 295,
+                              width: 92,
+                              height: 404,
+                              child: controls,
+                            ),
+                          ],
+                        ),
+                        child: _AnimalSortBoard(
+                          session: session,
+                          selectedZone: selectedZone,
+                          hintMove: hintMove,
+                          landscape: true,
+                          onTapZone: onTapZone,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 60,
+                      top: 42,
+                      width: 110,
+                      height: 110,
+                      child: IconButton(
+                        key: const Key('animal-sort-back'),
+                        tooltip: 'Retour',
+                        onPressed: onBack,
+                        color: const Color(0xffffedcb),
+                        iconSize: 65,
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                    ),
+                    Positioned(
+                      left: 205,
+                      top: 50,
+                      width: 460,
+                      height: 100,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'RÉSERVES DU PARC',
+                            style: TextStyle(
+                              color: Color(0xffffcc69),
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              freeGame
+                                  ? 'Partie libre'
+                                  : 'Niveau ${session.level.number}',
+                              style: const TextStyle(
+                                color: Color(0xffffefd5),
+                                fontSize: 40,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      left: 708,
+                      top: 76,
+                      width: 190,
+                      height: 60,
+                      child: _SceneMetric(
+                        icon: Icons.restaurant_rounded,
+                        label:
+                            '${session.completedMeals}/${session.level.animals.length} repas',
+                      ),
+                    ),
+                    Positioned(
+                      left: 973,
+                      top: 76,
+                      width: 320,
+                      height: 60,
+                      child: _SceneMetric(
+                        icon: Icons.swap_vert_rounded,
+                        label: '${session.moves} déplacements',
+                      ),
+                    ),
+                    const Positioned(
+                      left: 1351,
+                      top: 70,
+                      width: 75,
+                      height: 75,
+                      child: GameHelpButton(
+                        kind: GameHelpKind.animalSort,
+                        color: Color(0xffffecd0),
+                        iconSize: 52,
+                      ),
+                    ),
+                    Positioned(
+                      left: 1190,
+                      top: 300,
+                      width: 430,
+                      height: 400,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _sceneButton(
+                            const Key('animal-sort-undo'),
+                            Icons.undo_rounded,
+                            'ANNULER',
+                            session.canUndo ? onUndo : null,
+                          ),
+                          const SizedBox(height: 15),
+                          _sceneButton(
+                            const Key('animal-sort-hint'),
+                            Icons.lightbulb_rounded,
+                            'INDICE · ${session.hintsRemaining}',
+                            onHint,
+                          ),
+                          const SizedBox(height: 15),
+                          _sceneButton(
+                            const Key('animal-sort-restart'),
+                            Icons.refresh_rounded,
+                            'RECOMMENCER',
+                            onRestart,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (finished)
+          Positioned.fill(
+            child: SafeArea(
+              child: _ResultOverlay(
+                session: session,
+                newRecord: newRecord,
+                freeGame: freeGame,
+                onReplay: onReplay,
+                onLevels: onLevels,
+                onNext: onNext,
+                onNewGame: onNewGame,
+                onConfigure: onConfigure,
+              ),
+            ),
+          ),
+      ],
+    ),
+  );
+
+  Widget _sceneButton(
+    Key key,
+    IconData icon,
+    String label,
+    VoidCallback? action,
+  ) => SizedBox(
+    width: double.infinity,
+    height: 75,
+    child: DecoratedBox(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/optimized/sudoku/hint-sign.webp'),
+          fit: BoxFit.fill,
+        ),
+      ),
+      child: TextButton.icon(
+        key: key,
+        onPressed: action,
+        style: TextButton.styleFrom(
+          foregroundColor: const Color(0xffffedc2),
+          disabledForegroundColor: const Color(0xffb9a483),
+        ),
+        icon: Icon(icon, size: 35),
+        label: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            shadows: [
+              Shadow(
+                color: Color(0xff30501f),
+                blurRadius: 3,
+                offset: Offset(1, 2),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _SceneMetric extends StatelessWidget {
+  const _SceneMetric({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(icon, color: const Color(0xffffecd0), size: 39),
+      const SizedBox(width: 10),
+      Flexible(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xffffecd0),
+              fontWeight: FontWeight.w900,
+              fontSize: 29,
+              shadows: [
+                Shadow(
+                  color: Color(0xff523017),
+                  blurRadius: 4,
+                  offset: Offset(1, 2),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     ],
   );
 }
@@ -372,7 +661,9 @@ class _FoodBasket extends StatelessWidget {
       child: InkWell(
         key: Key('animal-sort-zone-$index'),
         borderRadius: BorderRadius.circular(38),
-        onTap: onTap,
+        onTap: () {
+          if (!BoardCamera.isNavigating(context)) onTap();
+        },
         child: AnimatedScale(
           duration: const Duration(milliseconds: 180),
           scale: selected ? 1.04 : 1,

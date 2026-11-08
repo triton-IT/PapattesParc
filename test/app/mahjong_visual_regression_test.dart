@@ -121,6 +121,7 @@ Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
     'assets/match3/animals/lion.png',
     'assets/match3/animals/girafe.png',
     'assets/match3/animals/zebre.png',
+    'assets/optimized/sudoku/tiger-river-scene-v2.webp',
   ]) {
     await tester.runAsync(
       () => precacheArtwork(
@@ -148,6 +149,7 @@ MahjongScreen _screen(
   required bool finished,
 }) => MahjongScreen(
   session: session,
+  levelNumber: 18,
   backgroundAsset: 'assets/level_art/level-01-suricates-porcs-epics.png',
   title: title,
   isFreeGame: false,

@@ -42,7 +42,7 @@ class NumberlinkLevelSelectScreen extends StatelessWidget {
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
       completedCount: store.completedCount,
-      progressLabel: 'ANIMAUX À L’ABRI',
+      progressLabel: 'SENTIERS TERMINÉS',
       missionBuilder: (index) {
         final mission = levels[index];
         return CampaignMission(

@@ -307,6 +307,7 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
       _MahjongScreen.playing => MahjongScreen(
         elapsed: _clock,
         session: _session!,
+        levelNumber: _level?.number ?? 1,
         backgroundAsset:
             (_level?.stage ??
                     widget.stages.firstWhere(

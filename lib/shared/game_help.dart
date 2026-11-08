@@ -49,8 +49,8 @@ class GameHelpButton extends StatelessWidget {
     context: context,
     builder: (context) => AlertDialog(
       title: Text(_title),
-      content: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 520),
+      content: SizedBox(
+        width: 520,
         child: SingleChildScrollView(
           child: Column(
             key: Key('help-content-${kind.name}'),
@@ -116,9 +116,9 @@ class GameHelpButton extends StatelessWidget {
       'Annule autant de déplacements que nécessaire ou recommence le niveau si une caisse est bloquée.',
     ],
     GameHelpKind.numberlink => const [
-      'Relie chaque animal à son enclos en traçant un sentier horizontal ou vertical.',
+      'Relie les animaux identiques en traçant un sentier horizontal ou vertical.',
       'Les sentiers ne peuvent ni se croiser ni partager une case. Reviens sur ton propre sentier pour en effacer la fin.',
-      'Mets tous les animaux à l’abri et couvre toute la grille. Trois indices peuvent révéler un sentier sans le tracer à ta place.',
+      'Relie toutes les paires et couvre toute la grille. Trois indices peuvent révéler un sentier sans le tracer à ta place.',
     ],
     GameHelpKind.animalSort => const [
       'Sélectionne une réserve, puis une réserve vide ou contenant le même repas.',
