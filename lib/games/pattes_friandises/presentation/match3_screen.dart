@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+import '../../../shared/animal_scene.dart';
+import '../../../shared/board_camera.dart';
 import '../../../shared/game_gesture_target.dart';
 import '../../../shared/artwork.dart';
 import 'package:flutter/material.dart';
@@ -46,8 +49,30 @@ class Match3Screen extends StatelessWidget {
   final VoidCallback? onBack;
 
   @override
-  Widget build(BuildContext context) => GameStageLayout(
-    background: ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final scale = math.min(
+        constraints.maxWidth / 1672,
+        constraints.maxHeight / 941,
+      );
+      if ((isFreeGame || session.level.number != 19) &&
+          scale >= .8 &&
+          MediaQuery.textScalerOf(context).scale(1) <= 1.3) {
+        return _integratedScene(context);
+      }
+      return _responsiveScene();
+    },
+  );
+
+  Widget _responsiveScene() => GameStageLayout(
+    background: session.level.number == 1 && !isFreeGame
+        ? const Image(
+            image: AssetImage('assets/optimized/sudoku/savanna.webp'),
+            fit: BoxFit.cover,
+          )
+        : ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
+    wooden: true,
+    scrim: Colors.transparent,
     eyebrow: 'NIVEAU ${session.level.number}',
     title: session.level.stage.title,
     backKey: const Key('match3-back-to-levels'),
@@ -65,7 +90,7 @@ class Match3Screen extends StatelessWidget {
     ],
     builder: (context, layout) => GameStageSplit(
       wide: layout.isLandscape,
-      board: _board,
+      board: BoardCamera(wooden: true, child: _board),
       panel: _objectives,
     ),
     overlays: [
@@ -106,6 +131,191 @@ class Match3Screen extends StatelessWidget {
     ],
   );
 
+  Widget _integratedScene(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xff986a3e),
+    body: Stack(
+      children: [
+        Positioned.fill(
+          child: ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
+        ),
+        SafeArea(
+          child: SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: 1672,
+                height: 941,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image(
+                        key: const Key('match3-scene-background'),
+                        image: AssetImage(
+                          animalSceneAsset(
+                            session.level.number,
+                            isFreeGame: isFreeGame,
+                          ),
+                        ),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: BoardCamera(
+                        wooden: true,
+                        layoutBuilder: (context, viewport, controls) => Stack(
+                          children: [
+                            Positioned(
+                              left: 193,
+                              top: 225,
+                              width: 555,
+                              height: 531,
+                              child: viewport,
+                            ),
+                            Positioned(
+                              left: 1038,
+                              top: 295,
+                              width: 92,
+                              height: 404,
+                              child: controls,
+                            ),
+                          ],
+                        ),
+                        child: _integratedBoard,
+                      ),
+                    ),
+                    Positioned(
+                      left: 60,
+                      top: 42,
+                      width: 110,
+                      height: 110,
+                      child: IconButton(
+                        key: const Key('match3-back-to-levels'),
+                        tooltip: 'Retour',
+                        onPressed: onBack ?? onLevels,
+                        color: const Color(0xffffedcb),
+                        iconSize: 65,
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                    ),
+                    Positioned(
+                      left: 205,
+                      top: 50,
+                      width: 460,
+                      height: 100,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            isFreeGame
+                                ? 'PARTIE LIBRE'
+                                : 'NIVEAU ${session.level.number}',
+                            style: const TextStyle(
+                              color: Color(0xffffcc69),
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              session.level.stage.title,
+                              style: const TextStyle(
+                                color: Color(0xffffefd5),
+                                fontSize: 40,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      left: 708,
+                      top: 76,
+                      width: 190,
+                      height: 60,
+                      child: _SceneMetric(
+                        icon: Icons.touch_app_rounded,
+                        label: '${session.movesLeft} coups',
+                      ),
+                    ),
+                    Positioned(
+                      left: 973,
+                      top: 76,
+                      width: 320,
+                      height: 60,
+                      child: _SceneMetric(
+                        icon: Icons.stars_rounded,
+                        label: '${displayed?.score ?? session.score} points',
+                      ),
+                    ),
+                    const Positioned(
+                      left: 1351,
+                      top: 70,
+                      width: 75,
+                      height: 75,
+                      child: GameHelpButton(
+                        kind: GameHelpKind.match3,
+                        color: Color(0xffffecd0),
+                        iconSize: 52,
+                      ),
+                    ),
+                    Positioned(
+                      left: 1190,
+                      top: 329,
+                      width: 430,
+                      height: 350,
+                      child: SingleChildScrollView(child: _objectives),
+                    ),
+                    if (!inputEnabled)
+                      Positioned(
+                        left: 193,
+                        top: 170,
+                        width: 555,
+                        child: Center(
+                          child: Chip(
+                            key: const Key('match3-resolving'),
+                            label: Text(
+                              cascade > 1 ? 'CASCADE ×$cascade' : 'ALIGNEMENT',
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (showResult ?? session.status != Match3Status.playing)
+          Positioned.fill(
+            child: SafeArea(
+              child: _ResultOverlay(
+                session: session,
+                onLevels: onLevels,
+                onRetry: onRetry,
+                onNext: onNext,
+                isFreeGame: isFreeGame,
+                onConfigure: onConfigure,
+              ),
+            ),
+          ),
+      ],
+    ),
+  );
+
+  Widget get _integratedBoard => Match3Board(
+    session: session,
+    displayed: displayed,
+    clearing: clearing,
+    inputEnabled: inputEnabled,
+    selected: selected,
+    onSelect: onSelect,
+    onSwap: onSwap,
+    integrated: true,
+  );
+
   Widget get _board => Match3Board(
     session: session,
     displayed: displayed,
@@ -119,6 +329,40 @@ class Match3Screen extends StatelessWidget {
   Widget get _objectives => _Objectives(session: session, displayed: displayed);
 }
 
+class _SceneMetric extends StatelessWidget {
+  const _SceneMetric({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(icon, color: const Color(0xffffecd0), size: 39),
+      const SizedBox(width: 10),
+      Flexible(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xffffecd0),
+              fontWeight: FontWeight.w900,
+              fontSize: 29,
+              shadows: [
+                Shadow(
+                  color: Color(0xff523017),
+                  blurRadius: 4,
+                  offset: Offset(1, 2),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 class Match3Board extends StatefulWidget {
   const Match3Board({
     required this.session,
@@ -128,9 +372,11 @@ class Match3Board extends StatefulWidget {
     required this.selected,
     required this.onSelect,
     required this.onSwap,
+    this.integrated = false,
     super.key,
   });
 
+  final bool integrated;
   final Match3Session session;
   final Match3BoardSnapshot? displayed;
   final Set<Match3Position> clearing;
@@ -162,14 +408,17 @@ class _Match3BoardState extends State<Match3Board> {
   Widget build(BuildContext context) => Align(
     alignment: Alignment.center,
     child: Padding(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(widget.integrated ? 8 : 28),
       child: AspectRatio(
         aspectRatio: 1,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: AppColors.deep,
+            color: const Color(0xffa97847),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.white, width: 3),
+            border: Border.all(
+              color: const Color(0xff744625),
+              width: widget.integrated ? 2 : 8,
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x40245b4a),
@@ -332,10 +581,14 @@ class _Match3Cell extends StatelessWidget {
         key: Key('match3-cell-${position.x}-${position.y}'),
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
+          image: const DecorationImage(
+            image: AssetImage('assets/optimized/sudoku/sandstone-tile.webp'),
+            fit: BoxFit.fill,
+          ),
           color: haloColor,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: selected ? AppColors.sun : const Color(0xfffffdf5),
+            color: selected ? AppColors.sun : const Color(0xffba9162),
             width: selected ? 4 : 2,
           ),
         ),
@@ -459,28 +712,37 @@ class _Objectives extends StatelessWidget {
   final Match3BoardSnapshot? displayed;
 
   @override
-  Widget build(BuildContext context) => GameStagePanel(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var i = 0; i < session.level.goals.length; i++)
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: i == session.level.goals.length - 1 ? 0 : 6,
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: const BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/optimized/sudoku/parchment-panel.webp'),
+        fit: BoxFit.fill,
+      ),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < session.level.goals.length; i++)
+            Padding(
+              padding: EdgeInsets.only(
+                bottom: i == session.level.goals.length - 1 ? 0 : 6,
+              ),
+              child: _GoalLine(
+                goal: session.level.goals[i],
+                blockerKinds: session.level.blockers
+                    .map((blocker) => blocker.kind)
+                    .toSet(),
+                progress: displayed?.goalProgress[i] ?? session.goalProgress(i),
+                color: session.level.goals[i].animal == null
+                    ? AppColors.primary
+                    : animalHaloColor(session.level.goals[i].animal!),
+              ),
             ),
-            child: _GoalLine(
-              goal: session.level.goals[i],
-              blockerKinds: session.level.blockers
-                  .map((blocker) => blocker.kind)
-                  .toSet(),
-              progress: displayed?.goalProgress[i] ?? session.goalProgress(i),
-              color: session.level.goals[i].animal == null
-                  ? AppColors.primary
-                  : animalHaloColor(session.level.goals[i].animal!),
-            ),
-          ),
-      ],
+        ],
+      ),
     ),
   );
 }
@@ -511,7 +773,7 @@ class _GoalLine extends StatelessWidget {
           child: ArtworkImage(goal.animal!.asset),
         )
       else
-        Icon(_icon, color: Colors.white, size: 20),
+        Icon(_icon, color: const Color(0xff563619), size: 24),
       const SizedBox(width: 8),
       Expanded(
         child: Column(
@@ -522,15 +784,17 @@ class _GoalLine extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xff563619),
+                fontSize: 18,
                 fontWeight: FontWeight.w800,
-                shadows: [Shadow(color: Color(0x66000000), blurRadius: 5)],
               ),
             ),
             Text(
               '$progress / ${goal.target}',
               style: TextStyle(
-                color: progress >= goal.target ? AppColors.sun : Colors.white,
+                color: progress >= goal.target
+                    ? const Color(0xff39784f)
+                    : const Color(0xff563619),
                 fontWeight: FontWeight.w900,
               ),
             ),
