@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../domain/custom_game.dart';
 import '../domain/models.dart';
 import '../../../shared/app_theme.dart';
+import '../../../shared/free_game_theme.dart';
 
 class CustomGameScreen extends StatefulWidget {
   const CustomGameScreen({
@@ -57,107 +58,31 @@ class _CustomGameScreenState extends State<CustomGameScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width >= 900;
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Transform.scale(
-              scale: wide ? 1.28 : 1.2,
-              alignment: wide ? Alignment.centerRight : Alignment.bottomCenter,
-              child: LevelBackdrop(level: _animalType),
-            ),
-          ),
-          Positioned.fill(child: _CustomBackdropVeil(wide: wide)),
-          SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 32,
-                  ),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1400),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _Header(
-                            onBack: () {
-                              widget.onButtonClick();
-                              widget.onBack();
-                            },
-                          ),
-                          SizedBox(
-                            height: wide ? 72 : constraints.maxHeight * .28,
-                          ),
-                          Align(
-                            alignment: wide
-                                ? Alignment.centerRight
-                                : Alignment.center,
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 760),
-                              child: _Settings(
-                                compact: constraints.maxWidth < 600,
-                                animalTypeIndex: _animalTypeIndex,
-                                width: _width,
-                                height: _height,
-                                animalCount: _animalCount,
-                                maxAnimals: _maxAnimals,
-                                onAnimalTypeChanged: (index) {
-                                  widget.onButtonClick();
-                                  setState(() => _animalTypeIndex = index);
-                                },
-                                onWidthChanged: (width) =>
-                                    _changeSize(width: width),
-                                onHeightChanged: (height) =>
-                                    _changeSize(height: height),
-                                onAnimalCountChanged: _changeAnimalCount,
-                                onStart: _start,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CustomBackdropVeil extends StatelessWidget {
-  const _CustomBackdropVeil({required this.wide});
-
-  final bool wide;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: wide ? Alignment.centerLeft : Alignment.topCenter,
-        end: wide ? Alignment.centerRight : Alignment.bottomCenter,
-        colors: wide
-            ? [
-                Colors.transparent,
-                AppColors.deep.withValues(alpha: .16),
-                AppColors.deep.withValues(alpha: .88),
-              ]
-            : [
-                Colors.transparent,
-                AppColors.deep.withValues(alpha: .32),
-                AppColors.deep.withValues(alpha: .92),
-              ],
-        stops: wide ? const [0, .48, 1] : const [0, .28, 1],
-      ),
+  Widget build(BuildContext context) => FreeGameScaffold(
+    backgroundAsset: _animalType.artAsset!,
+    backgroundKey: const Key('level-art'),
+    title: 'Crée ton refuge',
+    subtitle: 'Choisis le terrain et les animaux à retrouver.',
+    backKey: const Key('refuge-custom-back'),
+    onBack: () {
+      widget.onButtonClick();
+      widget.onBack();
+    },
+    child: _Settings(
+      compact: MediaQuery.sizeOf(context).width < 600,
+      animalTypeIndex: _animalTypeIndex,
+      width: _width,
+      height: _height,
+      animalCount: _animalCount,
+      maxAnimals: _maxAnimals,
+      onAnimalTypeChanged: (index) {
+        widget.onButtonClick();
+        setState(() => _animalTypeIndex = index);
+      },
+      onWidthChanged: (width) => _changeSize(width: width),
+      onHeightChanged: (height) => _changeSize(height: height),
+      onAnimalCountChanged: _changeAnimalCount,
+      onStart: _start,
     ),
   );
 }
@@ -195,19 +120,6 @@ class _Settings extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Crée ton refuge',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: Colors.white,
-            fontSize: compact ? 28 : 38,
-          ),
-        ),
-        const SizedBox(height: 6),
-        const Text(
-          'Choisis le terrain et les animaux à retrouver.',
-          style: TextStyle(color: Color(0xffe3eee8), fontSize: 16),
-        ),
-        const SizedBox(height: 24),
         _AnimalTypePicker(
           selectedIndex: animalTypeIndex,
           onChanged: onAnimalTypeChanged,
@@ -278,53 +190,6 @@ class _Settings extends StatelessWidget {
         ),
       ],
     ),
-  );
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.onBack});
-
-  final VoidCallback onBack;
-
-  @override
-  Widget build(BuildContext context) => Wrap(
-    alignment: WrapAlignment.spaceBetween,
-    spacing: 8,
-    runSpacing: 8,
-    children: [
-      FilledButton.tonalIcon(
-        key: const Key('back-from-custom'),
-        onPressed: onBack,
-        icon: const Icon(Icons.arrow_back_rounded),
-        label: const Text('Parcours'),
-      ),
-      const DecoratedBox(
-        decoration: BoxDecoration(
-          color: AppColors.sun,
-          borderRadius: BorderRadius.all(Radius.circular(99)),
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.tune_rounded, color: AppColors.deep, size: 20),
-              SizedBox(width: 7),
-              Flexible(
-                child: Text(
-                  'PARTIE LIBRE',
-                  style: TextStyle(
-                    color: AppColors.deep,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: .8,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
   );
 }
 

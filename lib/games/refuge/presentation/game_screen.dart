@@ -1,4 +1,5 @@
 import '../../../shared/board_camera.dart';
+import '../../../shared/animal_scene.dart';
 import '../../../shared/artwork.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
@@ -48,7 +49,22 @@ class GameScreen extends StatelessWidget {
   final ValueListenable<Duration>? elapsed;
 
   @override
-  Widget build(BuildContext context) => GameStageLayout(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final scale = min(
+        constraints.maxWidth / 1672,
+        constraints.maxHeight / 941,
+      );
+      if ((level.isCustom || level.number != 19) &&
+          scale >= .8 &&
+          MediaQuery.textScalerOf(context).scale(1) <= 1.3) {
+        return _integratedScene(context);
+      }
+      return _responsiveScene(context);
+    },
+  );
+
+  Widget _responsiveScene(BuildContext context) => GameStageLayout(
     background: LayoutBuilder(
       builder: (context, constraints) {
         final wide =
@@ -62,6 +78,7 @@ class GameScreen extends StatelessWidget {
       },
     ),
     backgroundOverlay: const _GameBackdropVeil(),
+    wooden: true,
     scrim: Colors.transparent,
     eyebrow: level.isCustom
         ? 'PARTIE LIBRE'
@@ -105,6 +122,234 @@ class GameScreen extends StatelessWidget {
           ),
         ),
     ],
+  );
+  Widget _integratedScene(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xff986a3e),
+    body: Stack(
+      children: [
+        Positioned.fill(
+          child: ArtworkImage(level.artAsset!, fit: BoxFit.cover),
+        ),
+        SafeArea(
+          child: SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: 1672,
+                height: 941,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image(
+                        key: const Key('refuge-scene-background'),
+                        image: AssetImage(
+                          animalSceneAsset(
+                            level.number,
+                            isFreeGame: level.isCustom,
+                          ),
+                        ),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: _BoardGrid(
+                        level: level,
+                        session: session,
+                        onReveal: onReveal,
+                        onFlag: onFlag,
+                        integrated: true,
+                      ),
+                    ),
+                    Positioned(
+                      left: 60,
+                      top: 42,
+                      width: 110,
+                      height: 110,
+                      child: IconButton(
+                        key: const Key('back-to-course'),
+                        tooltip: level.isCustom ? 'Accueil' : 'Parcours',
+                        onPressed: onHome,
+                        color: const Color(0xffffedcb),
+                        iconSize: 65,
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                    ),
+                    Positioned(
+                      left: 205,
+                      top: 50,
+                      width: 460,
+                      height: 100,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'BALISES DU REFUGE',
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: Color(0xffffcc69),
+                              fontSize: 28,
+                              height: 1,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              level.isCustom
+                                  ? 'Partie libre'
+                                  : 'Niveau ${level.number} · ${level.title}',
+                              style: const TextStyle(
+                                color: Color(0xffffefd5),
+                                fontSize: 40,
+                                height: 1,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      left: 708,
+                      top: 76,
+                      width: 190,
+                      height: 60,
+                      child: _RefugeMetric(
+                        icon: Icons.timer_rounded,
+                        label: formatDuration(session.elapsed),
+                        elapsed: elapsed,
+                      ),
+                    ),
+                    Positioned(
+                      left: 973,
+                      top: 76,
+                      width: 320,
+                      height: 60,
+                      child: _RefugeMetric(
+                        icon: Icons.pets_rounded,
+                        label: 'À localiser : ${session.remainingAnimals}',
+                      ),
+                    ),
+                    const Positioned(
+                      left: 1351,
+                      top: 70,
+                      width: 75,
+                      height: 75,
+                      child: GameHelpButton(
+                        kind: GameHelpKind.refuge,
+                        color: Color(0xffffecd0),
+                        iconSize: 52,
+                      ),
+                    ),
+                    Positioned(
+                      left: 1190,
+                      top: 329,
+                      width: 430,
+                      height: 350,
+                      child: Container(
+                        padding: const EdgeInsets.all(34),
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(
+                              'assets/optimized/sudoku/parchment-panel.webp',
+                            ),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        child: const SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.pets_rounded,
+                                size: 54,
+                                color: Color(0xff79502c),
+                              ),
+                              SizedBox(height: 18),
+                              Text(
+                                'OBSERVE ET BALISE',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xff563619),
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              SizedBox(height: 14),
+                              Text(
+                                'Touche une case pour observer.\nMaintiens-la ou fais un clic droit pour poser une balise.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xff563619),
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (generating) const Positioned.fill(child: _GenerationOverlay()),
+        if (finished)
+          Positioned.fill(
+            child: _EndOverlay(
+              level: level,
+              session: session,
+              newRecord: newRecord,
+              onReplaySame: onReplaySame,
+              onReplayNew: onReplayNew,
+              onNext: onNext,
+              onHome: onHome,
+            ),
+          ),
+      ],
+    ),
+  );
+}
+
+class _RefugeMetric extends StatelessWidget {
+  const _RefugeMetric({required this.icon, required this.label, this.elapsed});
+  final IconData icon;
+  final String label;
+  final ValueListenable<Duration>? elapsed;
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(icon, color: const Color(0xffffecd0), size: 39),
+      const SizedBox(width: 10),
+      Flexible(
+        child: elapsed == null
+            ? _text(label)
+            : ValueListenableBuilder<Duration>(
+                valueListenable: elapsed!,
+                builder: (context, value, _) => _text(formatDuration(value)),
+              ),
+      ),
+    ],
+  );
+  Widget _text(String value) => FittedBox(
+    fit: BoxFit.scaleDown,
+    child: Text(
+      value,
+      maxLines: 1,
+      style: const TextStyle(
+        color: Color(0xffffecd0),
+        fontSize: 29,
+        fontWeight: FontWeight.w900,
+        shadows: [
+          Shadow(color: Color(0xff523017), blurRadius: 4, offset: Offset(1, 2)),
+        ],
+      ),
+    ),
   );
 }
 
@@ -303,12 +548,14 @@ class _BoardGrid extends StatefulWidget {
     required this.session,
     required this.onReveal,
     required this.onFlag,
+    this.integrated = false,
   });
 
   final LevelDefinition level;
   final GameSession session;
   final ValueChanged<CellPosition> onReveal;
   final ValueChanged<CellPosition> onFlag;
+  final bool integrated;
 
   @override
   State<_BoardGrid> createState() => _BoardGridState();
@@ -337,10 +584,12 @@ class _BoardGridState extends State<_BoardGrid> {
           config.height * _cellSize + (config.height - 1) * BoardView.spacing;
       final contentWidth = boardWidth + BoardView.padding * 2;
       final contentHeight = boardHeight + BoardView.padding * 2;
-      final viewport = Size(
-        (constraints.maxWidth - 48).clamp(1, double.infinity),
-        constraints.maxHeight,
-      );
+      final viewport = widget.integrated
+          ? const Size(555, 531)
+          : Size(
+              (constraints.maxWidth - 48).clamp(1, double.infinity),
+              constraints.maxHeight,
+            );
       final fitScale = min(
         1.0,
         min(viewport.width / contentWidth, viewport.height / contentHeight),
@@ -357,6 +606,28 @@ class _BoardGridState extends State<_BoardGrid> {
       }
       return BoardCamera(
         viewerKey: const Key('refuge-board-viewer'),
+        wooden: true,
+        layoutBuilder: widget.integrated
+            ? (context, viewport, controls) => Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    left: 193,
+                    top: 225,
+                    width: 555,
+                    height: 531,
+                    child: viewport,
+                  ),
+                  Positioned(
+                    left: 1038,
+                    top: 295,
+                    width: 92,
+                    height: 404,
+                    child: controls,
+                  ),
+                ],
+              )
+            : null,
         transformationController: _controller,
         constrained: false,
         minScale: fitScale,
@@ -463,7 +734,11 @@ class _CellState extends State<_Cell> {
   void _pointerUp(PointerUpEvent event) {
     if (_pressPosition == null) return;
     _cancelLongPress();
-    if (!_dragging && !_longPressConsumed) widget.onReveal();
+    if (!_dragging &&
+        !_longPressConsumed &&
+        !BoardCamera.isNavigating(context)) {
+      widget.onReveal();
+    }
     _pressPosition = null;
   }
 
@@ -571,6 +846,14 @@ class _CellState extends State<_Cell> {
                       : const Duration(milliseconds: 120),
                   decoration: BoxDecoration(
                     color: color,
+                    image: covered
+                        ? const DecorationImage(
+                            image: AssetImage(
+                              'assets/optimized/sudoku/sandstone-tile.webp',
+                            ),
+                            fit: BoxFit.fill,
+                          )
+                        : null,
                     gradient: covered
                         ? LinearGradient(
                             begin: Alignment.topLeft,
