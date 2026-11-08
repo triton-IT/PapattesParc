@@ -421,6 +421,51 @@ void main() {
     }
   });
 
+  testWidgets('scène et caméra restent utilisables selon le format', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final campaign = buildMatch3Campaign(levels);
+    for (final size in const [
+      Size(360, 800),
+      Size(800, 360),
+      Size(1672, 941),
+    ]) {
+      tester.view.physicalSize = size;
+      final session = Match3Session(campaign.first, 1);
+      Match3Position? selected;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Match3Screen(
+            session: session,
+            selected: null,
+            onSelect: (position) => selected = position,
+            onSwap: (_, _) {},
+            onLevels: () {},
+            onRetry: () {},
+            onNext: null,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      if (size.width == 1672) {
+        expect(
+          find.byKey(const Key('match3-scene-background')),
+          findsOneWidget,
+        );
+      }
+      await tester.tap(find.byKey(const Key('match3-cell-0-0')));
+      expect(selected, const Match3Position(0, 0));
+      await tester.tap(find.byTooltip('Agrandir le plateau'));
+      await tester.pump();
+      await tester.tap(find.byTooltip('Recentrer le plateau'));
+      await tester.pump();
+      expect(tester.takeException(), isNull, reason: '$size');
+    }
+  });
+
   test('tous les paramètres libres créent un plateau jouable', () {
     var seed = 1;
     for (final biome in LevelBiome.values) {
