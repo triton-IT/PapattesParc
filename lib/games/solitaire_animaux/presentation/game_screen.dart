@@ -1,3 +1,4 @@
+import '../../../shared/park_catalog.dart';
 import '../../../shared/game_gesture_target.dart';
 import 'dart:async';
 import '../../../shared/game_activity.dart';
@@ -954,8 +955,8 @@ class _ResultOverlay extends StatelessWidget {
     child: GameResultViewport(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
-        child: Card(
-          margin: const EdgeInsets.all(20),
+        child: GameResultPanel(
+          biome: level?.stage.biome ?? LevelBiome.tropical,
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(

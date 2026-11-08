@@ -971,8 +971,8 @@ class _ResultOverlay extends StatelessWidget {
     child: GameResultViewport(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
-        child: Card(
-          margin: const EdgeInsets.all(20),
+        child: GameResultPanel(
+          biome: session.level.stage.biome,
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(

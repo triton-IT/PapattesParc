@@ -5,6 +5,7 @@ import 'formatters.dart';
 
 import 'app_theme.dart';
 import 'game_help.dart';
+import 'park_catalog.dart';
 
 enum GameLayoutMode { portrait, shortLandscape, wideLandscape }
 
@@ -589,4 +590,84 @@ class GameResultViewport extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// A handcrafted result sign, coloured to suit the current habitat.
+class GameResultPanel extends StatelessWidget {
+  const GameResultPanel({required this.biome, required this.child, super.key});
+
+  final LevelBiome biome;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = switch (biome) {
+      LevelBiome.savanna => const Color(0xff80602c),
+      LevelBiome.tropical => const Color(0xff476b27),
+      LevelBiome.riverside => const Color(0xff326c60),
+      LevelBiome.woodland => const Color(0xff52643a),
+      LevelBiome.steppe => const Color(0xff796737),
+      LevelBiome.mountain => const Color(0xff5d6b63),
+      LevelBiome.tundra => const Color(0xff4c6c72),
+    };
+    const ink = Color(0xff3f3a20);
+    final theme = Theme.of(context);
+    final buttonShape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(14),
+      side: const BorderSide(color: Color(0xff65431e), width: 2),
+    );
+    final buttonStyle = FilledButton.styleFrom(
+      backgroundColor: accent,
+      foregroundColor: const Color(0xfffff1cf),
+      minimumSize: const Size(0, 48),
+      shape: buttonShape,
+      textStyle: const TextStyle(
+        fontFamily: 'Nunito',
+        fontWeight: FontWeight.w900,
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: ResizeImage(
+              AssetImage('assets/optimized/sudoku/parchment-panel.webp'),
+              width: 192,
+              height: 192,
+            ),
+            centerSlice: Rect.fromLTRB(40, 40, 152, 152),
+            fit: BoxFit.fill,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(36, 30, 36, 30),
+          child: Theme(
+            data: theme.copyWith(
+              textTheme: theme.textTheme.apply(
+                bodyColor: ink,
+                displayColor: ink,
+              ),
+              iconTheme: theme.iconTheme.copyWith(color: accent),
+              filledButtonTheme: FilledButtonThemeData(style: buttonStyle),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: ink,
+                  minimumSize: const Size(0, 44),
+                  textStyle: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+            child: DefaultTextStyle.merge(
+              style: const TextStyle(color: ink),
+              child: child,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
