@@ -2,6 +2,7 @@ import 'artwork.dart';
 import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
+import 'wooden_sign.dart';
 
 enum GameHelpKind {
   refuge,
@@ -47,29 +48,8 @@ class GameHelpButton extends StatelessWidget {
 
   Future<void> _showHelp(BuildContext context) => showDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text(_title),
-      content: SizedBox(
-        width: 520,
-        child: SingleChildScrollView(
-          child: Column(
-            key: Key('help-content-${kind.name}'),
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _GameCoach(kind: kind, messages: _items),
-              if (kind == GameHelpKind.match3) const _Match3Legend(),
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        FilledButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('J’AI COMPRIS'),
-        ),
-      ],
-    ),
+    builder: (context) =>
+        _GameHelpDialog(kind: kind, title: _title, messages: _items),
   );
 
   String get _title => switch (kind) {
@@ -127,6 +107,97 @@ class GameHelpButton extends StatelessWidget {
       'Tu peux annuler, recommencer ou utiliser trois indices.',
     ],
   };
+}
+
+class _GameHelpDialog extends StatelessWidget {
+  const _GameHelpDialog({
+    required this.kind,
+    required this.title,
+    required this.messages,
+  });
+
+  final GameHelpKind kind;
+  final String title;
+  final List<String> messages;
+
+  @override
+  Widget build(BuildContext context) => Dialog(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    insetPadding: const EdgeInsets.all(12),
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 620),
+      child: DecoratedBox(
+        decoration: parchmentDecoration,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(36, 24, 36, 44),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              iconTheme: const IconThemeData(color: Color(0xff52643a)),
+              filledButtonTheme: FilledButtonThemeData(
+                style:
+                    FilledButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: const Color(0xffffedc2),
+                      shadowColor: Colors.transparent,
+                      elevation: 0,
+                      minimumSize: const Size(0, 52),
+                      padding: const EdgeInsets.symmetric(horizontal: 36),
+                      shape: const RoundedRectangleBorder(),
+                      textStyle: const TextStyle(
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ).copyWith(
+                      backgroundBuilder: (context, states, child) =>
+                          WoodenSign(child: child ?? const SizedBox.shrink()),
+                    ),
+              ),
+            ),
+            child: DefaultTextStyle.merge(
+              style: const TextStyle(color: Color(0xff3f3a20)),
+              child: Column(
+                key: Key('help-content-${kind.name}'),
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: const Color(0xff3f3a20),
+                                  fontWeight: FontWeight.w900,
+                                ),
+                          ),
+                          const SizedBox(height: 16),
+                          _GameCoach(kind: kind, messages: messages),
+                          if (kind == GameHelpKind.match3)
+                            const _Match3Legend(),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('J’AI COMPRIS'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class _GameCoach extends StatefulWidget {
@@ -243,7 +314,7 @@ class _SpeechBubble extends StatelessWidget {
       liveRegion: true,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 14, 14, 14),
-        child: Text(message),
+        child: Text(message, style: const TextStyle(color: Color(0xff493a24))),
       ),
     ),
   );
@@ -255,24 +326,45 @@ class _SpeechBubblePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(10, 0, size.width - 10, size.height),
-          const Radius.circular(18),
-        ),
+      ..moveTo(22, 1)
+      ..lineTo(size.width - 12, 1)
+      ..quadraticBezierTo(size.width - 1, 1, size.width - 1, 12)
+      ..lineTo(size.width - 1, size.height - 12)
+      ..quadraticBezierTo(
+        size.width - 1,
+        size.height - 1,
+        size.width - 12,
+        size.height - 1,
       )
-      ..moveTo(11, 24)
-      ..lineTo(0, 36)
-      ..lineTo(11, 44)
+      ..lineTo(22, size.height - 1)
+      ..quadraticBezierTo(11, size.height - 1, 11, size.height - 12)
+      ..lineTo(11, 34)
+      ..lineTo(2, 27)
+      ..lineTo(11, 21)
+      ..lineTo(11, 12)
+      ..quadraticBezierTo(11, 1, 22, 1)
       ..close();
-    canvas.drawShadow(path, AppColors.deep.withValues(alpha: .2), 4, false);
-    canvas.drawPath(path, Paint()..color = const Color(0xfffff4dc));
+    canvas.drawShadow(
+      path,
+      const Color(0xff624321).withValues(alpha: .25),
+      3,
+      false,
+    );
     canvas.drawPath(
       path,
       Paint()
-        ..color = AppColors.sun
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xfff8e4b8), Color(0xffeed09a)],
+        ).createShader(Offset.zero & size),
+    );
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = const Color(0xff987042)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 1.5,
     );
   }
 
