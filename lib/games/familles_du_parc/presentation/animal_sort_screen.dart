@@ -1,3 +1,4 @@
+import '../../../shared/wooden_sign.dart';
 import '../../../shared/artwork.dart';
 import '../../../shared/animal_scene.dart';
 import '../../../shared/board_camera.dart';
@@ -345,13 +346,7 @@ class AnimalSortScreen extends StatelessWidget {
   ) => SizedBox(
     width: double.infinity,
     height: 75,
-    child: DecoratedBox(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/optimized/sudoku/hint-sign.webp'),
-          fit: BoxFit.fill,
-        ),
-      ),
+    child: WoodenSign(
       child: TextButton.icon(
         key: key,
         onPressed: action,

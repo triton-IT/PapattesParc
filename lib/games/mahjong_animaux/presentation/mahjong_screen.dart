@@ -1,3 +1,4 @@
+import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/artwork.dart';
 import 'package:flutter/foundation.dart';
@@ -576,13 +577,7 @@ class _SceneCommands extends StatelessWidget {
   }) => SizedBox(
     width: double.infinity,
     height: 75,
-    child: DecoratedBox(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/optimized/sudoku/hint-sign.webp'),
-          fit: BoxFit.fill,
-        ),
-      ),
+    child: WoodenSign(
       child: TextButton.icon(
         key: key,
         onPressed: onPressed,
@@ -704,7 +699,7 @@ class _ResultOverlay extends StatelessWidget {
                       icon: const Icon(Icons.arrow_forward_rounded),
                       label: const Text('NIVEAU SUIVANT'),
                     ),
-                  FilledButton.tonalIcon(
+                  TextButton.icon(
                     key: const Key('mahjong-replay-same'),
                     onPressed: onReplaySame,
                     icon: const Icon(Icons.replay_rounded),
@@ -713,7 +708,7 @@ class _ResultOverlay extends StatelessWidget {
                     ),
                   ),
                   if (isFreeGame)
-                    FilledButton.tonalIcon(
+                    TextButton.icon(
                       key: const Key('mahjong-new-free-game'),
                       onPressed: onReplayNew,
                       icon: const Icon(Icons.casino_rounded),

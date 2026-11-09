@@ -1,3 +1,4 @@
+import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/animal_scene.dart';
 import '../../../shared/artwork.dart';
@@ -249,14 +250,7 @@ class GameScreen extends StatelessWidget {
                       height: 350,
                       child: Container(
                         padding: const EdgeInsets.all(34),
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                              'assets/optimized/sudoku/parchment-panel.webp',
-                            ),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
+                        decoration: parchmentDecoration,
                         child: const SingleChildScrollView(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1052,12 +1046,12 @@ class _EndOverlay extends StatelessWidget {
                       label: const Text('Niveau suivant'),
                     ),
                   if (won)
-                    FilledButton.tonalIcon(
+                    TextButton.icon(
                       onPressed: onReplayNew,
                       icon: const Icon(Icons.refresh_rounded),
                       label: const Text('Nouvelle observation'),
                     ),
-                  FilledButton.tonalIcon(
+                  TextButton.icon(
                     onPressed: onReplaySame,
                     icon: const Icon(Icons.replay_rounded),
                     label: Text(
@@ -1067,7 +1061,7 @@ class _EndOverlay extends StatelessWidget {
                     ),
                   ),
                   if (!won)
-                    FilledButton.tonalIcon(
+                    TextButton.icon(
                       onPressed: onReplayNew,
                       icon: const Icon(Icons.refresh_rounded),
                       label: const Text('Nouvelle observation'),

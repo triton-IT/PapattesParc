@@ -1,3 +1,4 @@
+import '../../../shared/game_stage_layout.dart';
 import '../../../shared/game_activity.dart';
 import 'dart:async';
 
@@ -215,15 +216,16 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
   }) async =>
       await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => GameConfirmDialog(
+          biome: _session!.level.stage.biome,
           title: Text(title),
           content: Text(message),
           actions: [
-            TextButton(
+            FilledButton(
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Continuer'),
             ),
-            FilledButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, true),
               child: Text(confirmLabel),
             ),

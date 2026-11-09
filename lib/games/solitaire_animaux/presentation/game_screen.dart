@@ -1,3 +1,4 @@
+import '../../../shared/wooden_sign.dart';
 import '../../../shared/park_catalog.dart';
 import '../../../shared/game_gesture_target.dart';
 import 'dart:async';
@@ -415,13 +416,7 @@ class _SceneAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
     height: 75,
-    child: DecoratedBox(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/optimized/sudoku/hint-sign.webp'),
-          fit: BoxFit.fill,
-        ),
-      ),
+    child: WoodenSign(
       child: TextButton.icon(
         onPressed: onPressed,
         style: TextButton.styleFrom(
@@ -1003,14 +998,14 @@ class _ResultOverlay extends StatelessWidget {
                   label: Text(level == null ? 'NOUVELLE DONNE' : 'REJOUER'),
                 ),
                 if (onNext != null)
-                  FilledButton.tonalIcon(
+                  TextButton.icon(
                     key: const Key('solitaire-next-level'),
                     onPressed: onNext,
                     icon: const Icon(Icons.arrow_forward_rounded),
                     label: const Text('NIVEAU SUIVANT'),
                   ),
                 if (onConfigure != null)
-                  FilledButton.tonalIcon(
+                  TextButton.icon(
                     key: const Key('solitaire-configure'),
                     onPressed: onConfigure,
                     icon: const Icon(Icons.tune_rounded),

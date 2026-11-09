@@ -1,3 +1,4 @@
+import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/artwork.dart';
 import 'package:flutter/foundation.dart';
@@ -850,14 +851,7 @@ class _GamePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: EdgeInsets.all(integrated ? 0 : 28),
-    decoration: integrated
-        ? null
-        : const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/optimized/sudoku/parchment-panel.webp'),
-              fit: BoxFit.fill,
-            ),
-          ),
+    decoration: integrated ? null : parchmentDecoration,
     child: Column(
       mainAxisSize: integrated ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -908,13 +902,7 @@ class _SceneAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
     height: 75,
-    child: DecoratedBox(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/optimized/sudoku/hint-sign.webp'),
-          fit: BoxFit.fill,
-        ),
-      ),
+    child: WoodenSign(
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
@@ -1000,14 +988,14 @@ class _ResultOverlay extends StatelessWidget {
                     icon: const Icon(Icons.arrow_forward_rounded),
                     label: const Text('NIVEAU SUIVANT'),
                   ),
-                FilledButton.tonalIcon(
+                TextButton.icon(
                   key: const Key('numberlink-replay'),
                   onPressed: onReplay,
                   icon: const Icon(Icons.replay_rounded),
                   label: const Text('REJOUER'),
                 ),
                 if (onNewGame != null)
-                  FilledButton.tonalIcon(
+                  TextButton.icon(
                     key: const Key('numberlink-new-free-game'),
                     onPressed: onNewGame,
                     icon: const Icon(Icons.casino_rounded),

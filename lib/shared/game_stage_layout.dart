@@ -1,3 +1,4 @@
+import 'wooden_sign.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -6,6 +7,24 @@ import 'formatters.dart';
 import 'app_theme.dart';
 import 'game_help.dart';
 import 'park_catalog.dart';
+
+class _StageHudBackground extends StatelessWidget {
+  const _StageHudBackground({required this.wooden, required this.child});
+
+  final bool wooden;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => wooden
+      ? WoodenSign(green: false, child: child)
+      : DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColors.deep.withValues(alpha: .88),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: child,
+        );
+}
 
 enum GameLayoutMode { portrait, shortLandscape, wideLandscape }
 
@@ -116,21 +135,8 @@ class GameStageLayout extends StatelessWidget {
                               : constraints.maxWidth,
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: wooden
-                                    ? const Color(0xff704322)
-                                    : AppColors.deep.withValues(alpha: .88),
-                                borderRadius: BorderRadius.circular(16),
-                                image: wooden
-                                    ? const DecorationImage(
-                                        image: AssetImage(
-                                          'assets/optimized/sudoku/hud-plank.webp',
-                                        ),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : null,
-                              ),
+                            child: _StageHudBackground(
+                              wooden: wooden,
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: wooden ? 14 : 4,
@@ -612,36 +618,70 @@ class GameResultPanel extends StatelessWidget {
     };
     const ink = Color(0xff3f3a20);
     final theme = Theme.of(context);
-    final buttonShape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(14),
-      side: const BorderSide(color: Color(0xff65431e), width: 2),
-    );
-    final buttonStyle = FilledButton.styleFrom(
-      backgroundColor: accent,
-      foregroundColor: const Color(0xfffff1cf),
-      minimumSize: const Size(0, 48),
-      shape: buttonShape,
-      textStyle: const TextStyle(
-        fontFamily: 'Nunito',
-        fontWeight: FontWeight.w900,
+    final compactHeight = MediaQuery.sizeOf(context).height <= 500;
+    Widget signBackground(
+      String asset,
+      Set<WidgetState> states,
+      Widget? child,
+    ) => Opacity(
+      opacity: states.contains(WidgetState.disabled) ? .55 : 1,
+      child: WoodenSign(
+        green: asset.endsWith('hint-sign.webp'),
+        child: child ?? const SizedBox.shrink(),
       ),
     );
+    const labelStyle = TextStyle(
+      fontFamily: 'Nunito',
+      fontWeight: FontWeight.w900,
+    );
+    final buttonStyle =
+        FilledButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          foregroundColor: const Color(0xffffedc2),
+          shadowColor: Colors.transparent,
+          elevation: 0,
+          minimumSize: Size(0, compactHeight ? 48 : 58),
+          padding: EdgeInsets.symmetric(
+            horizontal: 40,
+            vertical: compactHeight ? 6 : 12,
+          ),
+          shape: const RoundedRectangleBorder(),
+          textStyle: labelStyle,
+        ).copyWith(
+          backgroundBuilder: (context, states, child) => signBackground(
+            'assets/optimized/sudoku/hint-sign.webp',
+            states,
+            child,
+          ),
+        );
+    final secondaryStyle =
+        TextButton.styleFrom(
+          foregroundColor: const Color(0xffffedc2),
+          minimumSize: Size(0, compactHeight ? 48 : 58),
+          padding: EdgeInsets.symmetric(
+            horizontal: 40,
+            vertical: compactHeight ? 6 : 12,
+          ),
+          shape: const RoundedRectangleBorder(),
+          textStyle: labelStyle,
+        ).copyWith(
+          backgroundBuilder: (context, states, child) => signBackground(
+            'assets/optimized/sudoku/hud-plank.webp',
+            states,
+            child,
+          ),
+        );
     return Padding(
       padding: const EdgeInsets.all(12),
       child: DecoratedBox(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: ResizeImage(
-              AssetImage('assets/optimized/sudoku/parchment-panel.webp'),
-              width: 192,
-              height: 192,
-            ),
-            centerSlice: Rect.fromLTRB(40, 40, 152, 152),
-            fit: BoxFit.fill,
-          ),
-        ),
+        decoration: parchmentDecoration,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(36, 30, 36, 30),
+          padding: EdgeInsets.fromLTRB(
+            36,
+            compactHeight ? 10 : 30,
+            36,
+            compactHeight ? 10 : 30,
+          ),
           child: Theme(
             data: theme.copyWith(
               textTheme: theme.textTheme.apply(
@@ -650,16 +690,7 @@ class GameResultPanel extends StatelessWidget {
               ),
               iconTheme: theme.iconTheme.copyWith(color: accent),
               filledButtonTheme: FilledButtonThemeData(style: buttonStyle),
-              textButtonTheme: TextButtonThemeData(
-                style: TextButton.styleFrom(
-                  foregroundColor: ink,
-                  minimumSize: const Size(0, 44),
-                  textStyle: const TextStyle(
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
+              textButtonTheme: TextButtonThemeData(style: secondaryStyle),
             ),
             child: DefaultTextStyle.merge(
               style: const TextStyle(color: ink),
@@ -670,4 +701,64 @@ class GameResultPanel extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Confirmation sign used when leaving an unfinished game.
+class GameConfirmDialog extends StatelessWidget {
+  const GameConfirmDialog({
+    required this.biome,
+    required this.title,
+    required this.actions,
+    this.content,
+    super.key,
+  });
+
+  final LevelBiome biome;
+  final Widget title;
+  final Widget? content;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) => Dialog(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    insetPadding: const EdgeInsets.all(12),
+    child: SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: GameResultPanel(
+          biome: biome,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                DefaultTextStyle(
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                    color: const Color(0xff3f3a20),
+                    fontWeight: FontWeight.w900,
+                  ),
+                  child: title,
+                ),
+                if (content != null) ...[
+                  const SizedBox(height: 12),
+                  DefaultTextStyle(
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: const Color(0xff3f3a20),
+                    ),
+                    child: content!,
+                  ),
+                ],
+                const SizedBox(height: 16),
+                ...actions,
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
