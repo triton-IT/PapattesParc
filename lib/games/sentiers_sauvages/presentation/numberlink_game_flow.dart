@@ -1,3 +1,4 @@
+import '../../../shared/game_stage_layout.dart';
 import '../../../shared/game_activity.dart';
 import 'dart:async';
 
@@ -118,8 +119,7 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
     final result = _session!.begin(position);
     if (result == NumberlinkTraceResult.blocked) {
       _reject(
-        _coverageMessage ??
-            'Commence sur un animal, son enclos ou un sentier déjà tracé.',
+        _coverageMessage ?? 'Commence sur un animal ou un sentier déjà tracé.',
       );
     } else {
       unawaited(_audio.playEffect(SoundEffect.click));
@@ -135,7 +135,7 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
       case NumberlinkTraceResult.blocked:
         _reject(
           _coverageMessage ??
-              'Impossible : évite les autres sentiers et rejoins le bon enclos.',
+              'Impossible : évite les autres sentiers et rejoins le même animal.',
         );
       case NumberlinkTraceResult.connected:
         unawaited(_audio.playEffect(SoundEffect.animalFound));
@@ -216,15 +216,16 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
   }) async =>
       await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => GameConfirmDialog(
+          biome: _session!.level.stage.biome,
           title: Text(title),
           content: Text(message),
           actions: [
-            TextButton(
+            FilledButton(
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Continuer'),
             ),
-            FilledButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, true),
               child: Text(confirmLabel),
             ),

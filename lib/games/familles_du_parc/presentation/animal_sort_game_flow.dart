@@ -1,3 +1,4 @@
+import '../../../shared/game_stage_layout.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -202,15 +203,16 @@ class _AnimalSortGameFlowState extends State<AnimalSortGameFlow> {
   Future<bool> _confirm(String title, String message, String label) async =>
       await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => GameConfirmDialog(
+          biome: _session!.level.stage.biome,
           title: Text(title),
           content: Text(message),
           actions: [
-            TextButton(
+            FilledButton(
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Continuer'),
             ),
-            FilledButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, true),
               child: Text(label),
             ),

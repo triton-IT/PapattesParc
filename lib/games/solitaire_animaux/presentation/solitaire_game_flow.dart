@@ -1,3 +1,4 @@
+import '../../../shared/game_stage_layout.dart';
 import '../../../shared/game_activity.dart';
 import 'dart:async';
 
@@ -346,15 +347,16 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
   Future<bool> _confirmAbandon() async =>
       await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => GameConfirmDialog(
+          biome: _level?.stage.biome ?? LevelBiome.tropical,
           title: const Text('Abandonner cette partie ?'),
           content: const Text('La progression de cette donne sera perdue.'),
           actions: [
-            TextButton(
+            FilledButton(
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Continuer'),
             ),
-            FilledButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, true),
               child: const Text('Abandonner'),
             ),

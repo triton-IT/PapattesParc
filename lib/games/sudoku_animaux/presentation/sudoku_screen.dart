@@ -1,3 +1,4 @@
+import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/artwork.dart';
 import 'package:flutter/foundation.dart';
@@ -509,13 +510,7 @@ class _ScenePanel extends StatelessWidget {
           const SizedBox(height: 8),
           SizedBox(
             height: session.level.size > 4 ? 59 : 75,
-            child: DecoratedBox(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/optimized/sudoku/hint-sign.webp'),
-                  fit: BoxFit.fill,
-                ),
-              ),
+            child: WoodenSign(
               child: TextButton.icon(
                 key: const Key('sudoku-hint'),
                 onPressed: session.hintsRemaining == 0 ? null : onHint,
@@ -789,12 +784,7 @@ class _GamePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.fromLTRB(38, 38, 38, 38),
-    decoration: const BoxDecoration(
-      image: DecorationImage(
-        image: AssetImage('assets/optimized/sudoku/parchment-panel.webp'),
-        fit: BoxFit.fill,
-      ),
-    ),
+    decoration: parchmentDecoration,
     child: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1069,8 +1059,8 @@ class _ResultOverlay extends StatelessWidget {
     child: GameResultViewport(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
-        child: Card(
-          margin: const EdgeInsets.all(20),
+        child: GameResultPanel(
+          biome: session.level.stage.biome,
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -1098,14 +1088,14 @@ class _ResultOverlay extends StatelessWidget {
                     icon: const Icon(Icons.arrow_forward_rounded),
                     label: const Text('NIVEAU SUIVANT'),
                   ),
-                FilledButton.tonalIcon(
+                TextButton.icon(
                   key: const Key('sudoku-replay'),
                   onPressed: onReplay,
                   icon: const Icon(Icons.replay_rounded),
                   label: const Text('REJOUER'),
                 ),
                 if (onNewGame != null)
-                  FilledButton.tonalIcon(
+                  TextButton.icon(
                     key: const Key('sudoku-new-free-game'),
                     onPressed: onNewGame,
                     icon: const Icon(Icons.casino_rounded),

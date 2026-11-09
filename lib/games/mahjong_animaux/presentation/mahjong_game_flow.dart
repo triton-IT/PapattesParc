@@ -1,3 +1,4 @@
+import '../../../shared/game_stage_layout.dart';
 import '../../../shared/generation_service.dart';
 import '../../../shared/generation_overlay.dart';
 import '../../../shared/game_activity.dart';
@@ -215,15 +216,16 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
     if (_session!.hasMoved && !_finished) {
       final leave = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => GameConfirmDialog(
+          biome: _session!.biome,
           title: const Text('Abandonner cette partie ?'),
           content: const Text('La progression de cette partie sera perdue.'),
           actions: [
-            TextButton(
+            FilledButton(
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Continuer'),
             ),
-            FilledButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, true),
               child: const Text('Quitter'),
             ),
@@ -307,6 +309,7 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
       _MahjongScreen.playing => MahjongScreen(
         elapsed: _clock,
         session: _session!,
+        levelNumber: _level?.number ?? 1,
         backgroundAsset:
             (_level?.stage ??
                     widget.stages.firstWhere(

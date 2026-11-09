@@ -1,3 +1,4 @@
+import '../../../shared/game_stage_layout.dart';
 import '../../../shared/game_activity.dart';
 import 'dart:async';
 
@@ -205,15 +206,16 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
     if (_session?.status == Match3Status.playing && _hasMoved) {
       final leave = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => GameConfirmDialog(
+          biome: _session!.level.stage.biome,
           title: const Text('Abandonner ce niveau ?'),
           content: const Text('La progression de cette partie sera perdue.'),
           actions: [
-            TextButton(
+            FilledButton(
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Continuer'),
             ),
-            FilledButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, true),
               child: const Text('Quitter'),
             ),

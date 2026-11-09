@@ -1,3 +1,4 @@
+import '../../../shared/game_stage_layout.dart';
 import '../../../shared/generation_service.dart';
 import '../../../shared/generation_overlay.dart';
 import '../../../shared/settings_store.dart';
@@ -12,7 +13,6 @@ import '../data/progress_store.dart';
 import '../domain/game_session.dart';
 import '../domain/levels.dart';
 import '../domain/models.dart';
-import '../../../shared/app_theme.dart';
 import '../../../shared/game_audio.dart';
 import 'custom_game_screen.dart';
 import 'game_screen.dart';
@@ -252,7 +252,8 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
     if (_session?.status == GameStatus.running) {
       final leave = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => GameConfirmDialog(
+          biome: _level!.biome,
           title: const Text('Abandonner la partie en cours ?'),
           actions: [
             FilledButton(
@@ -262,8 +263,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
               },
               child: const Text('Continuer'),
             ),
-            FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            TextButton(
               onPressed: () {
                 _playClick();
                 Navigator.pop(context, true);

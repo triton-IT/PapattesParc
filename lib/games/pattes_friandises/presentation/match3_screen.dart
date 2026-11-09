@@ -1,3 +1,4 @@
+import '../../../shared/wooden_sign.dart';
 import 'dart:math' as math;
 import '../../../shared/animal_scene.dart';
 import '../../../shared/board_camera.dart';
@@ -713,12 +714,7 @@ class _Objectives extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-    decoration: const BoxDecoration(
-      image: DecorationImage(
-        image: AssetImage('assets/optimized/sudoku/parchment-panel.webp'),
-        fit: BoxFit.fill,
-      ),
-    ),
+    decoration: parchmentDecoration,
     child: Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -853,8 +849,8 @@ class _ResultOverlay extends StatelessWidget {
       child: GameResultViewport(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
-          child: Card(
-            margin: const EdgeInsets.all(20),
+          child: GameResultPanel(
+            biome: session.level.stage.biome,
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -878,7 +874,7 @@ class _ResultOverlay extends StatelessWidget {
                         ? isFreeGame
                               ? '${session.score} points'
                               : '${session.score} points · ${session.footprintsForScore()} empreinte(s)'
-                        : 'Les paniers peuvent être préparés autrement. Réessaie sans limite.',
+                        : 'La mission peut être réussie autrement. Réessaie sans limite.',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 18),
@@ -889,7 +885,7 @@ class _ResultOverlay extends StatelessWidget {
                       icon: const Icon(Icons.arrow_forward_rounded),
                       label: const Text('NIVEAU SUIVANT'),
                     ),
-                  FilledButton.tonalIcon(
+                  TextButton.icon(
                     key: const Key('match3-retry'),
                     onPressed: onRetry,
                     icon: const Icon(Icons.refresh_rounded),
