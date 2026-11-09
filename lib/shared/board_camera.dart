@@ -46,6 +46,9 @@ class _BoardCameraState extends State<BoardCamera> {
   Size _viewport = const Size(320, 240);
   TransformationController get _camera =>
       widget.transformationController ?? _own;
+  // The Z axis stays at 1, so Matrix4.getMaxScaleOnAxis() reports at least 1
+  // even when the two-dimensional board is displayed at a smaller scale.
+  double get _scale => _camera.value.entry(0, 0);
   @override
   void dispose() {
     _own.dispose();
@@ -83,10 +86,7 @@ class _BoardCameraState extends State<BoardCamera> {
       if (distance > 1) ratio = (current[1] - current[0]).distance / distance;
     }
     final world = _camera.toScene(before);
-    final scale = (_camera.value.getMaxScaleOnAxis() * ratio).clamp(
-      widget.minScale,
-      widget.maxScale,
-    );
+    final scale = (_scale * ratio).clamp(widget.minScale, widget.maxScale);
     _camera.value = Matrix4.diagonal3Values(scale, scale, 1)
       ..setTranslationRaw(
         after.dx - world.dx * scale,
@@ -97,10 +97,7 @@ class _BoardCameraState extends State<BoardCamera> {
 
   void _zoom(double factor, Size viewport) {
     final scene = _camera.toScene(viewport.center(Offset.zero));
-    final scale = (_camera.value.getMaxScaleOnAxis() * factor).clamp(
-      widget.minScale,
-      widget.maxScale,
-    );
+    final scale = (_scale * factor).clamp(widget.minScale, widget.maxScale);
     _camera.value = Matrix4.diagonal3Values(scale, scale, 1)
       ..setTranslationRaw(
         viewport.width / 2 - scene.dx * scale,

@@ -557,6 +557,9 @@ class _BoardGrid extends StatefulWidget {
 
 class _BoardGridState extends State<_BoardGrid> {
   static const _cellSize = 72.0;
+  // Inset the camera viewport from the illustrated frame, including when
+  // the player zooms or pans the board.
+  static const _integratedViewport = Rect.fromLTWH(213, 245, 515, 491);
 
   final TransformationController _controller = TransformationController();
   GameSession? _session;
@@ -579,7 +582,7 @@ class _BoardGridState extends State<_BoardGrid> {
       final contentWidth = boardWidth + BoardView.padding * 2;
       final contentHeight = boardHeight + BoardView.padding * 2;
       final viewport = widget.integrated
-          ? const Size(555, 531)
+          ? _integratedViewport.size
           : Size(
               (constraints.maxWidth - 48).clamp(1, double.infinity),
               constraints.maxHeight,
@@ -606,10 +609,10 @@ class _BoardGridState extends State<_BoardGrid> {
                 clipBehavior: Clip.none,
                 children: [
                   Positioned(
-                    left: 193,
-                    top: 225,
-                    width: 555,
-                    height: 531,
+                    left: _integratedViewport.left,
+                    top: _integratedViewport.top,
+                    width: _integratedViewport.width,
+                    height: _integratedViewport.height,
                     child: viewport,
                   ),
                   Positioned(
