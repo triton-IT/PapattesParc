@@ -12,6 +12,23 @@ class SudokuSession {
   Duration elapsed = Duration.zero;
   int hintsUsed = 0;
   bool hasMoved = false;
+  final List<(List<int?>, List<Set<int>>)> _history = [];
+  bool get canUndo => _history.isNotEmpty && status == SudokuStatus.playing;
+  void _saveUndo() => _history.add((
+    List.of(entries),
+    [for (final note in notes) Set.of(note)],
+  ));
+  bool undo() {
+    if (!canUndo) return false;
+    final (values, savedNotes) = _history.removeLast();
+    entries.setAll(0, values);
+    for (var i = 0; i < notes.length; i++) {
+      notes[i]
+        ..clear()
+        ..addAll(savedNotes[i]);
+    }
+    return true;
+  }
 
   int get footprints => hintsUsed == 0
       ? 3
@@ -24,6 +41,7 @@ class SudokuSession {
 
   SudokuPlacementResult place(int index, int animal) {
     if (level.solution[index] != animal) return SudokuPlacementResult.wrong;
+    _saveUndo();
     entries[index] = animal;
     notes[index].clear();
     _removePeerNotes(index, animal);
@@ -37,12 +55,14 @@ class SudokuSession {
 
   void clear(int index) {
     if (entries[index] == null && notes[index].isEmpty) return;
+    _saveUndo();
     entries[index] = null;
     notes[index].clear();
     hasMoved = true;
   }
 
   void toggleNote(int index, int animal) {
+    _saveUndo();
     final candidates = notes[index];
     candidates.contains(animal)
         ? candidates.remove(animal)
