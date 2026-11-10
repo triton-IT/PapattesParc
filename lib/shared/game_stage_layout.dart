@@ -83,6 +83,7 @@ class GameStageLayout extends StatelessWidget {
     this.backTooltip = 'Retour',
     this.metrics = const [],
     this.actions = const [],
+    this.fixedActions = const [],
     this.overlays = const [],
     this.backgroundOverlay,
     this.scrim = const Color(0x2618382f),
@@ -100,6 +101,7 @@ class GameStageLayout extends StatelessWidget {
   final GameHelpKind helpKind;
   final List<GameStageMetric> metrics;
   final List<Widget> actions;
+  final List<Widget> fixedActions;
   final GameStageBuilder builder;
   final List<Widget> overlays;
   final Widget? backgroundOverlay;
@@ -151,6 +153,7 @@ class GameStageLayout extends StatelessWidget {
                                   helpKind: helpKind,
                                   metrics: metrics,
                                   actions: actions,
+                                  fixedActions: fixedActions,
                                   wide: landscape,
                                   wooden: wooden,
                                 ),
@@ -199,12 +202,14 @@ class GameStageAction extends StatelessWidget {
     required this.icon,
     required this.tooltip,
     required this.onPressed,
+    this.badgeLabel,
     super.key,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback? onPressed;
+  final String? badgeLabel;
 
   @override
   Widget build(BuildContext context) => IconButton(
@@ -217,7 +222,9 @@ class GameStageAction extends StatelessWidget {
       width: AppGeometry.touchTarget,
       height: AppGeometry.touchTarget,
     ),
-    icon: Icon(icon),
+    icon: badgeLabel == null
+        ? Icon(icon)
+        : Badge(label: Text(badgeLabel!), child: Icon(icon)),
   );
 }
 
@@ -316,6 +323,7 @@ class _GameStageHud extends StatelessWidget {
     required this.helpKind,
     required this.metrics,
     required this.actions,
+    required this.fixedActions,
     required this.wide,
     required this.wooden,
   });
@@ -329,6 +337,7 @@ class _GameStageHud extends StatelessWidget {
   final GameHelpKind helpKind;
   final List<GameStageMetric> metrics;
   final List<Widget> actions;
+  final List<Widget> fixedActions;
   final bool wide;
 
   @override
@@ -407,6 +416,7 @@ class _GameStageHud extends StatelessWidget {
           ),
         ],
         if (spaciousWooden) const Spacer(),
+        ...fixedActions,
         const SizedBox(width: 8),
         GameHelpButton(
           kind: helpKind,

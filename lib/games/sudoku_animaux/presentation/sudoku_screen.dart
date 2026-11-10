@@ -30,6 +30,8 @@ class SudokuScreen extends StatelessWidget {
     required this.onToggleNotes,
     required this.onClear,
     required this.onHint,
+    this.onUndo,
+    this.onRestart,
     required this.onBack,
     required this.onReplay,
     required this.onLevels,
@@ -51,6 +53,7 @@ class SudokuScreen extends StatelessWidget {
   final VoidCallback onToggleNotes;
   final VoidCallback onClear;
   final VoidCallback onHint;
+  final VoidCallback? onUndo, onRestart;
   final VoidCallback onBack;
   final VoidCallback onReplay;
   final VoidCallback onLevels;
@@ -122,6 +125,20 @@ class SudokuScreen extends StatelessWidget {
     backKey: const Key('sudoku-back'),
     onBack: onBack,
     helpKind: GameHelpKind.sudoku,
+    fixedActions: [
+      GameStageAction(
+        key: const Key('sudoku-undo'),
+        icon: Icons.undo_rounded,
+        tooltip: 'Annuler',
+        onPressed: session.canUndo ? onUndo : null,
+      ),
+      GameStageAction(
+        key: const Key('sudoku-restart'),
+        icon: Icons.refresh_rounded,
+        tooltip: 'Recommencer',
+        onPressed: onRestart,
+      ),
+    ],
     metrics: [
       GameStageMetric(
         icon: Icons.timer_rounded,
@@ -344,6 +361,8 @@ class SudokuScreen extends StatelessWidget {
                           onToggleNotes: onToggleNotes,
                           onClear: onClear,
                           onHint: onHint,
+                          onUndo: onUndo,
+                          onRestart: onRestart,
                         ),
                       ),
                     ],
@@ -469,20 +488,50 @@ class _ScenePanel extends StatelessWidget {
     required this.onToggleNotes,
     required this.onClear,
     required this.onHint,
+    this.onUndo,
+    this.onRestart,
   });
   final SudokuSession session;
   final int? selectedIndex;
   final bool noteMode;
   final ValueChanged<int> onSelectAnimal;
   final VoidCallback onToggleNotes, onClear, onHint;
+  final VoidCallback? onUndo, onRestart;
   @override
   Widget build(BuildContext context) {
     final columns = session.level.animals.length <= 4 ? 4 : 5;
-    final tileSize = (430 - (columns - 1) * 6) / columns;
+    final tileSize = min(
+      (430 - (columns - 1) * 6) / columns,
+      session.level.size > 4 ? 64.0 : 82.0,
+    );
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: _SudokuActionButton(
+                    buttonKey: const Key('sudoku-undo'),
+                    tooltip: 'Annuler',
+                    onPressed: session.canUndo ? onUndo : null,
+                    icon: Icons.undo_rounded,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: _SudokuActionButton(
+                    buttonKey: const Key('sudoku-restart'),
+                    tooltip: 'Recommencer',
+                    onPressed: onRestart,
+                    icon: Icons.refresh_rounded,
+                  ),
+                ),
+              ),
+            ],
+          ),
           Wrap(
             alignment: WrapAlignment.center,
             spacing: 6,
@@ -498,16 +547,18 @@ class _ScenePanel extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           _NotePaper(
-            illustrated: true,
             compact: session.level.size > 4,
-            enabled: selectedIndex != null,
+            enabled:
+                selectedIndex != null &&
+                session.entries[selectedIndex!] == null,
             active: noteMode,
+            onClearEnabled: selectedIndex != null,
             onToggle: onToggleNotes,
             onClear: onClear,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           SizedBox(
             height: session.level.size > 4 ? 59 : 75,
             child: WoodenSign(
@@ -817,8 +868,10 @@ class _GamePanel extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _NotePaper(
-          enabled: selectedIndex != null,
+          enabled:
+              selectedIndex != null && session.entries[selectedIndex!] == null,
           active: noteMode,
+          onClearEnabled: selectedIndex != null,
           onToggle: onToggleNotes,
           onClear: onClear,
         ),
@@ -852,13 +905,13 @@ class _GamePanel extends StatelessWidget {
 class _NotePaper extends StatelessWidget {
   const _NotePaper({
     this.compact = false,
-    this.illustrated = false,
     required this.enabled,
     required this.active,
+    required this.onClearEnabled,
     required this.onToggle,
     required this.onClear,
   });
-  final bool enabled, active, compact, illustrated;
+  final bool enabled, active, compact, onClearEnabled;
   final VoidCallback onToggle, onClear;
 
   @override
@@ -866,93 +919,96 @@ class _NotePaper extends StatelessWidget {
     final scale = compact
         ? 1.0
         : (MediaQuery.sizeOf(context).width / 900).clamp(1.0, 1.7);
-    return Container(
-      decoration: BoxDecoration(
-        color: illustrated
-            ? null
-            : (active ? const Color(0xffffdc91) : const Color(0xffecd3a3)),
-        image: illustrated
-            ? DecorationImage(
-                image: const AssetImage(
-                  'assets/optimized/sudoku/notes-paper.webp',
+    return Row(
+      children: [
+        Expanded(
+          child: DecoratedBox(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: ExactAssetImage(
+                  'assets/optimized/sudoku/notes-plank.webp',
+                  scale: 4,
                 ),
                 fit: BoxFit.fill,
-                colorFilter: active
-                    ? const ColorFilter.mode(
-                        Color(0x55ffc83d),
-                        BlendMode.srcATop,
-                      )
-                    : null,
-              )
-            : null,
-        borderRadius: BorderRadius.circular(8),
-        border: illustrated
-            ? null
-            : Border.all(color: const Color(0xffbd9364), width: 2),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextButton.icon(
-                  key: const Key('sudoku-notes'),
-                  onPressed: enabled ? onToggle : null,
-                  style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xff80532e),
-                    disabledForegroundColor: const Color(
-                      0xff80532e,
-                    ).withValues(alpha: .65),
-                    minimumSize: Size(40, 44 * scale),
+              ),
+            ),
+            child: Semantics(
+              toggled: active,
+              child: TextButton(
+                key: const Key('sudoku-notes'),
+                onPressed: enabled ? onToggle : null,
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xffffedc2),
+                  disabledForegroundColor: const Color(0xffe1c9a0),
+                  minimumSize: Size(40, 72 * scale),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 30 * scale,
+                    vertical: 10 * scale,
                   ),
-                  icon: const Icon(Icons.edit_rounded),
-                  label: Text(
-                    'NOTES',
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    active
+                        ? 'MES PETITS MÉMOS : OUI'
+                        : 'MES PETITS MÉMOS : NON',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
+                      color: active ? const Color(0xffc9ee9c) : null,
                       fontWeight: FontWeight.w900,
                       fontSize: 15 * scale,
                     ),
                   ),
                 ),
               ),
-              IconButton(
-                key: const Key('sudoku-clear'),
-                tooltip: 'Gomme',
-                onPressed: enabled ? onClear : null,
-                color: const Color(0xff80532e),
-                disabledColor: const Color(0xff80532e).withValues(alpha: .45),
-                icon: const Icon(Icons.backspace_outlined),
-              ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(18, 0, 18, 8 * scale),
-            child: CustomPaint(
-              painter: illustrated ? null : _PaperLines(),
-              child: SizedBox(height: 26 * scale, width: double.infinity),
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 10),
+        _SudokuActionButton(
+          buttonKey: const Key('sudoku-clear'),
+          tooltip: 'Gomme',
+          onPressed: onClearEnabled ? onClear : null,
+          icon: Icons.backspace_outlined,
+        ),
+      ],
     );
   }
 }
 
-class _PaperLines extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xffbd9669)
-      ..strokeWidth = 1.5;
-    for (final y in [size.height * .25, size.height * .75]) {
-      for (double x = 0; x < size.width; x += 12) {
-        canvas.drawLine(Offset(x, y), Offset(min(x + 7, size.width), y), paint);
-      }
-    }
-  }
+class _SudokuActionButton extends StatelessWidget {
+  const _SudokuActionButton({
+    required this.buttonKey,
+    required this.tooltip,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  final Key buttonKey;
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final IconData icon;
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: 54,
+    child: DecoratedBox(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/optimized/sudoku/camera-stone.webp'),
+          fit: BoxFit.fill,
+        ),
+      ),
+      child: IconButton(
+        key: buttonKey,
+        tooltip: tooltip,
+        onPressed: onPressed,
+        color: const Color(0xff245b4a),
+        disabledColor: const Color(0xff245b4a).withValues(alpha: .4),
+        icon: Icon(icon, size: 28),
+      ),
+    ),
+  );
 }
 
 class _AnimalButton extends StatelessWidget {

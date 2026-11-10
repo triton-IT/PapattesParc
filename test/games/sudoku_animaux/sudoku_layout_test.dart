@@ -47,7 +47,8 @@ void main() {
         if (levelIndex == 18) {
           expect(
             find.byWidgetPredicate(
-              (widget) => widget is ArtworkImage &&
+              (widget) =>
+                  widget is ArtworkImage &&
                   widget.asset == 'assets/level_art/level-19-dholes.png',
             ),
             findsOneWidget,
@@ -66,6 +67,12 @@ void main() {
           find.byKey(Key('sudoku-animal-${session.level.animals.length - 1}')),
           findsOneWidget,
         );
+        if (dimensions == const Size(1672, 941) && levelIndex != 18) {
+          expect(
+            tester.getBottomRight(find.byKey(const Key('sudoku-hint'))).dy,
+            lessThanOrEqualTo(679),
+          );
+        }
         expect(tester.takeException(), isNull);
       }
     }
@@ -218,7 +225,11 @@ void main() {
       (2, false, 'assets/optimized/sudoku/giraffes-scene.webp'),
       (3, false, 'assets/optimized/sudoku/madagascar-scene.webp'),
       (4, false, 'assets/optimized/sudoku/grande-savane-scene.webp'),
-      (9, false, 'assets/optimized/sudoku/tamarins-armadillo-sloth-scene-v2.webp'),
+      (
+        9,
+        false,
+        'assets/optimized/sudoku/tamarins-armadillo-sloth-scene-v2.webp',
+      ),
       (17, false, 'assets/optimized/sudoku/tiger-river-scene-v2.webp'),
       (30, false, 'assets/optimized/sudoku/urials-turs-caucasus-scene.webp'),
       (31, false, 'assets/optimized/sudoku/brown-bear-valley-scene.webp'),

@@ -9,6 +9,24 @@ import 'package:papatte_parc/shared/park_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test(
+    'annuler restaure les notes et les cases sans rembourser les indices',
+    () {
+      final level = buildSudokuCampaign(levels)[14];
+      final session = SudokuSession(level);
+      final (first, peer) = _emptyPeers(level);
+      final value = level.solution[first];
+      session.toggleNote(peer, value);
+      session.place(first, value);
+      expect(session.notes[peer], isNot(contains(value)));
+      expect(session.undo(), isTrue);
+      expect(session.entries[first], isNull);
+      expect(session.notes[peer], contains(value));
+      session.hint(first);
+      expect(session.undo(), isTrue);
+      expect(session.hintsUsed, 1);
+    },
+  );
   test('les 45 missions sont déterministes, valides et uniques', () {
     final stopwatch = Stopwatch()..start();
     final campaign = buildSudokuCampaign(levels);

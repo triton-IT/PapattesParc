@@ -191,6 +191,40 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
     setState(() {});
   }
 
+  void _undo() {
+    if (!_session!.undo()) return;
+    setState(() {
+      _selectedIndex = null;
+      _noteMode = false;
+    });
+    unawaited(_audio.playEffect(SoundEffect.click));
+  }
+
+  Future<void> _restart() async {
+    if (_session!.hasMoved) {
+      final restart = await showDialog<bool>(
+        context: context,
+        builder: (context) => GameConfirmDialog(
+          biome: _session!.level.stage.biome,
+          title: const Text('Recommencer cette partie ?'),
+          content: const Text('La progression de cette partie sera perdue.'),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Continuer'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Recommencer'),
+            ),
+          ],
+        ),
+      );
+      if (restart != true || !mounted) return;
+    }
+    _installSession(_level!);
+  }
+
   void _hint() {
     _clock.flush();
     final target = _session!.hint(_selectedIndex);
@@ -340,6 +374,8 @@ class _SudokuGameFlowState extends State<SudokuGameFlow> {
         onToggleNotes: _toggleNotes,
         onClear: _clear,
         onHint: _hint,
+        onUndo: _undo,
+        onRestart: () => unawaited(_restart()),
         onBack: () => unawaited(_requestBack()),
         onReplay: () => _startSession(_level!),
         onLevels: _showLevels,

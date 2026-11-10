@@ -88,7 +88,7 @@ class GameHelpButton extends StatelessWidget {
     GameHelpKind.sudoku => const [
       'Les emplacements de la parade ont été mélangés. Replace les animaux avant l’ouverture du parc.',
       'Chaque animal doit apparaître une seule fois dans chaque ligne, chaque colonne et chaque enclos.',
-      'Sélectionne une case puis un animal. Le mode Notes conserve tes candidats et trois indices peuvent remplir une case si tu bloques.',
+      'Pour garder un animal en petit mémo, choisis d’abord une case vide, active « Mes petits mémos », puis choisis un animal. Si tu bloques, trois indices peuvent remplir une case.',
     ],
     GameHelpKind.repasAnimaux => const [
       'Guide le soigneur avec les flèches, les touches WASD, un glissement ou le pavé directionnel.',
