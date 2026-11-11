@@ -25,6 +25,7 @@ flutter:
   assets:
     - assets/audio/
     - assets/optimized/
+    - assets/optimized/clay_type/
     - assets/optimized/level_art/
     - assets/optimized/animal_markers/
     - assets/optimized/match3/
@@ -39,3 +40,6 @@ flutter:
     - family: Nunito
       fonts:
         - asset: assets/fonts/Nunito-Variable.ttf
+    - family: PapattesModelage
+      fonts:
+        - asset: assets/fonts/PapattesModelage.ttf

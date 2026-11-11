@@ -1,3 +1,4 @@
+import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/park_catalog.dart';
 import '../../../shared/game_gesture_target.dart';
@@ -244,7 +245,7 @@ class SolitaireGameScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          const ClayText(
                             'SOLITAIRE DES ANIMAUX',
                             maxLines: 1,
                             style: TextStyle(
@@ -255,7 +256,7 @@ class SolitaireGameScreen extends StatelessWidget {
                           ),
                           FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: Text(
+                            child: ClayText(
                               '${level == null ? 'Partie libre' : 'Niveau ${level!.number}'} · ${session.mode.label}',
                               style: const TextStyle(
                                 color: Color(0xffffefd5),
@@ -388,7 +389,7 @@ class _SceneMetric extends StatelessWidget {
     ],
   );
   Widget _text(String value) => FittedBox(
-    child: Text(
+    child: ClayText(
       value,
       maxLines: 1,
       style: const TextStyle(

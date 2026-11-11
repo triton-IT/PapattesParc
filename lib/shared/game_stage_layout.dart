@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'formatters.dart';
+import 'clay_text.dart';
 
 import 'app_theme.dart';
 import 'game_help.dart';
@@ -89,6 +90,7 @@ class GameStageLayout extends StatelessWidget {
     this.scrim = const Color(0x2618382f),
     this.backgroundColor = AppColors.deep,
     this.wooden = false,
+    this.clayText = true,
     super.key,
   });
 
@@ -108,6 +110,7 @@ class GameStageLayout extends StatelessWidget {
   final Color scrim;
   final Color backgroundColor;
   final bool wooden;
+  final bool clayText;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -156,6 +159,7 @@ class GameStageLayout extends StatelessWidget {
                                   fixedActions: fixedActions,
                                   wide: landscape,
                                   wooden: wooden,
+                                  clayText: clayText,
                                 ),
                               ),
                             ),
@@ -326,9 +330,11 @@ class _GameStageHud extends StatelessWidget {
     required this.fixedActions,
     required this.wide,
     required this.wooden,
+    required this.clayText,
   });
 
   final bool wooden;
+  final bool clayText;
   final String eyebrow;
   final String title;
   final Key backKey;
@@ -352,7 +358,12 @@ class _GameStageHud extends StatelessWidget {
       children: [
         for (var i = 0; i < metrics.length; i++) ...[
           if (i > 0) const SizedBox(width: 8),
-          _Metric(metric: metrics[i], wooden: wooden, scale: scale),
+          _Metric(
+            metric: metrics[i],
+            wooden: wooden,
+            scale: scale,
+            clayText: clayText,
+          ),
         ],
         if (metrics.isNotEmpty && actions.isNotEmpty) const SizedBox(width: 6),
         ...actions,
@@ -370,7 +381,12 @@ class _GameStageHud extends StatelessWidget {
         if (spaciousWooden)
           SizedBox(
             width: MediaQuery.sizeOf(context).width * .30,
-            child: _HudTitle(eyebrow: eyebrow, title: title, scale: scale),
+            child: _HudTitle(
+              eyebrow: eyebrow,
+              title: title,
+              scale: scale,
+              clayText: clayText,
+            ),
           )
         else
           Expanded(
@@ -378,10 +394,9 @@ class _GameStageHud extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                _HudText(
                   eyebrow,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  clay: clayText,
                   style: TextStyle(
                     color: AppColors.sun,
                     fontSize: 11 * scale,
@@ -389,10 +404,9 @@ class _GameStageHud extends StatelessWidget {
                     letterSpacing: 1,
                   ),
                 ),
-                Text(
+                _HudText(
                   title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  clay: clayText,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18 * scale,
@@ -448,18 +462,19 @@ class _HudTitle extends StatelessWidget {
     required this.eyebrow,
     required this.title,
     required this.scale,
+    required this.clayText,
   });
   final String eyebrow, title;
   final double scale;
+  final bool clayText;
   @override
   Widget build(BuildContext context) => Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
+      _HudText(
         eyebrow,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        clay: clayText,
         style: TextStyle(
           color: AppColors.sun,
           fontSize: 11 * scale,
@@ -467,10 +482,9 @@ class _HudTitle extends StatelessWidget {
           letterSpacing: 1,
         ),
       ),
-      Text(
+      _HudText(
         title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        clay: clayText,
         style: TextStyle(
           color: Colors.white,
           fontSize: 18 * scale,
@@ -480,6 +494,22 @@ class _HudTitle extends StatelessWidget {
       ),
     ],
   );
+}
+
+class _HudText extends StatelessWidget {
+  const _HudText(this.text, {required this.style, required this.clay});
+  final String text;
+  final TextStyle style;
+  final bool clay;
+
+  @override
+  Widget build(BuildContext context) => clay
+      ? FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: ClayText(text, style: style),
+        )
+      : Text(text, maxLines: 1, overflow: TextOverflow.ellipsis, style: style);
 }
 
 class _BackButton extends StatelessWidget {
@@ -519,11 +549,17 @@ class _BackButton extends StatelessWidget {
 }
 
 class _Metric extends StatelessWidget {
-  const _Metric({required this.metric, this.wooden = false, this.scale = 1});
+  const _Metric({
+    required this.metric,
+    this.wooden = false,
+    this.scale = 1,
+    this.clayText = false,
+  });
 
   final double scale;
 
   final bool wooden;
+  final bool clayText;
 
   final GameStageMetric metric;
 
@@ -569,8 +605,9 @@ class _Metric extends StatelessWidget {
           if (metric.elapsed case final elapsed?)
             ValueListenableBuilder<Duration>(
               valueListenable: elapsed,
-              builder: (context, value, _) => Text(
+              builder: (context, value, _) => _HudText(
                 formatDuration(value),
+                clay: clayText,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14 * scale,
@@ -579,8 +616,9 @@ class _Metric extends StatelessWidget {
               ),
             )
           else
-            Text(
+            _HudText(
               metric.label,
+              clay: clayText,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14 * scale,

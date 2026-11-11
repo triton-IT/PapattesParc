@@ -13,6 +13,7 @@ import '../../../shared/app_theme.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/game_help.dart';
 import '../../../shared/game_stage_layout.dart';
+import '../../../shared/clay_text.dart';
 import '../domain/sudoku_session.dart';
 
 class SudokuScreen extends StatelessWidget {
@@ -117,6 +118,7 @@ class SudokuScreen extends StatelessWidget {
           )
         : ArtworkImage(session.level.stage.artAsset!, fit: BoxFit.cover),
     wooden: true,
+    clayText: true,
     scrim: Colors.transparent,
     eyebrow: 'SUDOKU DES ANIMAUX',
     title:
@@ -278,38 +280,23 @@ class SudokuScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
+                            const ClayText(
                               'SUDOKU DES ANIMAUX',
-                              maxLines: 1,
                               style: TextStyle(
                                 color: Color(0xffffcc69),
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
-                                shadows: [
-                                  Shadow(
-                                    color: Color(0xff4d2813),
-                                    blurRadius: 4,
-                                    offset: Offset(1, 2),
-                                  ),
-                                ],
                               ),
                             ),
                             FittedBox(
                               fit: BoxFit.scaleDown,
                               alignment: Alignment.centerLeft,
-                              child: Text(
+                              child: ClayText(
                                 title,
                                 style: const TextStyle(
                                   color: Color(0xffffefd5),
                                   fontSize: 40,
                                   fontWeight: FontWeight.w900,
-                                  shadows: [
-                                    Shadow(
-                                      color: Color(0xff4d2813),
-                                      blurRadius: 4,
-                                      offset: Offset(1, 2),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ),
@@ -415,16 +402,12 @@ class _SceneMetric extends StatelessWidget {
   );
   Widget _text(String value) => FittedBox(
     fit: BoxFit.scaleDown,
-    child: Text(
+    child: ClayText(
       value,
-      maxLines: 1,
       style: const TextStyle(
         color: Color(0xffffecd0),
         fontWeight: FontWeight.w900,
         fontSize: 29,
-        shadows: [
-          Shadow(color: Color(0xff523017), blurRadius: 4, offset: Offset(1, 2)),
-        ],
       ),
     ),
   );

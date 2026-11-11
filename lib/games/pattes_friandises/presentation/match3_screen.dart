@@ -1,3 +1,4 @@
+import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import 'dart:math' as math;
 import '../../../shared/animal_scene.dart';
@@ -207,7 +208,7 @@ class Match3Screen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          ClayText(
                             isFreeGame
                                 ? 'PARTIE LIBRE'
                                 : 'NIVEAU ${session.level.number}',
@@ -219,7 +220,7 @@ class Match3Screen extends StatelessWidget {
                           ),
                           FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: Text(
+                            child: ClayText(
                               session.level.stage.title,
                               style: const TextStyle(
                                 color: Color(0xffffefd5),
@@ -343,7 +344,7 @@ class _SceneMetric extends StatelessWidget {
       Flexible(
         child: FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
+          child: ClayText(
             label,
             style: const TextStyle(
               color: Color(0xffffecd0),

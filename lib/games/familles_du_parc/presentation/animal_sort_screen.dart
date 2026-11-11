@@ -1,3 +1,4 @@
+import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/artwork.dart';
 import '../../../shared/animal_scene.dart';
@@ -226,7 +227,7 @@ class AnimalSortScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          const ClayText(
                             'RÉSERVES DU PARC',
                             style: TextStyle(
                               color: Color(0xffffcc69),
@@ -236,7 +237,7 @@ class AnimalSortScreen extends StatelessWidget {
                           ),
                           FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: Text(
+                            child: ClayText(
                               freeGame
                                   ? 'Partie libre'
                                   : 'Niveau ${session.level.number}',
@@ -387,7 +388,7 @@ class _SceneMetric extends StatelessWidget {
       Flexible(
         child: FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
+          child: ClayText(
             label,
             style: const TextStyle(
               color: Color(0xffffecd0),

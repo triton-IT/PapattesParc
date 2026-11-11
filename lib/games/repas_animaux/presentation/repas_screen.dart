@@ -1,3 +1,4 @@
+import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/artwork.dart';
@@ -182,7 +183,7 @@ class RepasScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          const ClayText(
                             'LE REPAS DES ANIMAUX',
                             maxLines: 1,
                             style: TextStyle(
@@ -201,7 +202,7 @@ class RepasScreen extends StatelessWidget {
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(
+                            child: ClayText(
                               freeGameLabel ?? 'Niveau ${session.level.number}',
                               style: const TextStyle(
                                 color: Color(0xffffefd5),
@@ -711,7 +712,7 @@ class _SceneMetric extends StatelessWidget {
       Flexible(
         child: FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
+          child: ClayText(
             label,
             maxLines: 1,
             style: const TextStyle(
