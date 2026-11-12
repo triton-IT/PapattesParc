@@ -1,3 +1,4 @@
+import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/artwork.dart';
@@ -185,7 +186,7 @@ class MahjongScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          const ClayText(
                             'MAHJONG DES ANIMAUX',
                             maxLines: 1,
                             style: TextStyle(
@@ -204,7 +205,7 @@ class MahjongScreen extends StatelessWidget {
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(
+                            child: ClayText(
                               title,
                               style: const TextStyle(
                                 color: Color(0xffffefd5),
@@ -527,7 +528,7 @@ class _SceneMetric extends StatelessWidget {
   );
   Widget _text(String value) => FittedBox(
     fit: BoxFit.scaleDown,
-    child: Text(
+    child: ClayText(
       value,
       maxLines: 1,
       style: const TextStyle(

@@ -1,3 +1,4 @@
+import 'package:papatte_parc/shared/clay_text.dart';
 import '../support/app_harness.dart';
 import 'package:papatte_parc/shared/campaign_selection_controller.dart';
 import 'package:papatte_parc/shared/artwork.dart';
@@ -180,7 +181,12 @@ void main() {
     expect(find.byKey(const Key('numberlink-result-overlay')), findsOneWidget);
     await tester.tap(find.byKey(const Key('numberlink-next')));
     await tester.pump();
-    expect(find.text('Niveau 2 · 5 × 5'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is ClayText && widget.text == 'Niveau 2 · 5 × 5',
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const Key('numberlink-back')));
     await tester.pump();
     expect(find.byKey(const Key('numberlink-level-grid')), findsOneWidget);
@@ -446,7 +452,13 @@ void main() {
     await settleGeneration(tester);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('sudoku-board')), findsOneWidget);
-    expect(find.textContaining('Partie libre · 9 × 9'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ClayText && widget.text.contains('Partie libre · 9 × 9'),
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const Key('sudoku-back')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('sudoku-custom-size')), findsOneWidget);
@@ -542,9 +554,21 @@ void main() {
     await tester.tap(find.byKey(const Key('campaign-play-selected')));
     await tester.pump();
 
-    expect(find.textContaining('Niveau 1 · Terrier'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ClayText && widget.text.contains('Niveau 1 · Terrier'),
+      ),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('cell-0-0')), findsOneWidget);
-    expect(find.textContaining('À localiser : 5'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ClayText && widget.text.contains('À localiser : 5'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('une grille personnalisée reprend les choix du joueur', (
@@ -575,7 +599,9 @@ void main() {
       }),
       findsOneWidget,
     );
-    await tester.tap(find.text('Lions d’Afrique').last);
+    await tester.tap(
+      find.text('Lions d’Afrique').last,
+    );
     await tester.pumpAndSettle();
     final preview = tester.widget<ArtworkImage>(
       find.byKey(const Key('level-art')),
@@ -585,9 +611,20 @@ void main() {
     await tester.tap(find.byKey(const Key('start-custom-game')));
     await tester.pump();
 
-    expect(find.text('PARTIE LIBRE'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is ClayText && widget.text == 'PARTIE LIBRE',
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Lions d’Afrique'), findsOneWidget);
-    expect(find.textContaining('À localiser : 10'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ClayText && widget.text.contains('À localiser : 10'),
+      ),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('cell-7-7')), findsOneWidget);
   });
 

@@ -1,3 +1,4 @@
+import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/animal_scene.dart';
@@ -184,7 +185,7 @@ class GameScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          const ClayText(
                             'BALISES DU REFUGE',
                             maxLines: 1,
                             style: TextStyle(
@@ -196,7 +197,7 @@ class GameScreen extends StatelessWidget {
                           ),
                           FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: Text(
+                            child: ClayText(
                               level.isCustom
                                   ? 'Partie libre'
                                   : 'Niveau ${level.number} · ${level.title}',
@@ -332,7 +333,7 @@ class _RefugeMetric extends StatelessWidget {
   );
   Widget _text(String value) => FittedBox(
     fit: BoxFit.scaleDown,
-    child: Text(
+    child: ClayText(
       value,
       maxLines: 1,
       style: const TextStyle(

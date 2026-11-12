@@ -7,8 +7,67 @@ import 'package:papatte_parc/games/sudoku_animaux/domain/campaign.dart';
 import 'package:papatte_parc/games/sudoku_animaux/domain/sudoku_session.dart';
 import 'package:papatte_parc/games/sudoku_animaux/presentation/sudoku_screen.dart';
 import 'package:papatte_parc/shared/artwork.dart';
+import 'package:papatte_parc/shared/clay_text.dart';
 
 void main() {
+  testWidgets('le bandeau modelé est partagé par toute la campagne', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1672, 941));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final campaign = buildSudokuCampaign(levels);
+
+    Widget screen(SudokuSession session, {bool free = false}) => MaterialApp(
+      home: SudokuScreen(
+        session: session,
+        selectedIndex: null,
+        noteMode: false,
+        wrongIndex: null,
+        finished: false,
+        newRecord: false,
+        isFreeGame: free,
+        onSelectCell: (_) {},
+        onSelectAnimal: (_) {},
+        onToggleNotes: () {},
+        onClear: () {},
+        onHint: () {},
+        onBack: () {},
+        onReplay: () {},
+        onLevels: () {},
+        onNext: () {},
+      ),
+    );
+
+    void expectBandeau(String title) {
+      expect(find.byType(ClayText), findsNWidgets(4));
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is ClayText && widget.text == title,
+        ),
+        findsOneWidget,
+      );
+    }
+
+    for (final level in campaign) {
+      await tester.pumpWidget(screen(SudokuSession(level)));
+      expectBandeau('Niveau ${level.number} · ${level.size} × ${level.size}');
+      expect(tester.takeException(), isNull);
+    }
+
+    final freeSession = SudokuSession(campaign.first);
+    await tester.pumpWidget(screen(freeSession, free: true));
+    expectBandeau(
+      'Partie libre · ${freeSession.level.size} × ${freeSession.level.size}',
+    );
+
+    await tester.binding.setSurfaceSize(const Size(360, 800));
+    await tester.pumpWidget(screen(freeSession, free: true));
+    expectBandeau(
+      'Partie libre · ${freeSession.level.size} × ${freeSession.level.size}',
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('plateau et animaux restent disponibles selon la taille', (
     tester,
   ) async {

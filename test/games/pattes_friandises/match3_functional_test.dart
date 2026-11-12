@@ -7,6 +7,7 @@ import 'package:papatte_parc/games/pattes_friandises/domain/models.dart';
 import 'package:papatte_parc/games/pattes_friandises/presentation/match3_screen.dart';
 import 'package:papatte_parc/games/refuge/domain/levels.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
+import 'package:papatte_parc/shared/clay_text.dart';
 import 'package:papatte_parc/shared/park_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -413,10 +414,13 @@ void main() {
         ),
       );
 
-      expect(find.text('NIVEAU 1'), findsOneWidget);
-      expect(find.text(session.level.stage.title), findsOneWidget);
-      expect(find.text('${session.movesLeft} coups'), findsOneWidget);
-      expect(find.text('${session.score} points'), findsOneWidget);
+      Finder hudText(String value) => find.byWidgetPredicate(
+        (widget) => widget is ClayText && widget.text == value,
+      );
+      expect(hudText('NIVEAU 1'), findsOneWidget);
+      expect(hudText(session.level.stage.title), findsOneWidget);
+      expect(hudText('${session.movesLeft} coups'), findsOneWidget);
+      expect(hudText('${session.score} points'), findsOneWidget);
       expect(tester.takeException(), isNull, reason: '$size');
     }
   });

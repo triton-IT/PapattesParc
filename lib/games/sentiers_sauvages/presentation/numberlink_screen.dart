@@ -1,3 +1,4 @@
+import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/artwork.dart';
@@ -213,7 +214,7 @@ class NumberlinkScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          const ClayText(
                             'SENTIERS SAUVAGES',
                             maxLines: 1,
                             style: TextStyle(
@@ -231,7 +232,7 @@ class NumberlinkScreen extends StatelessWidget {
                           ),
                           FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: Text(
+                            child: ClayText(
                               '${isFreeGame ? 'Partie libre' : 'Niveau ${session.level.number}'} · ${session.level.size} × ${session.level.size}',
                               style: const TextStyle(
                                 color: Color(0xffffefd5),
@@ -345,7 +346,7 @@ class _SceneMetric extends StatelessWidget {
   );
   Widget _text(String value) => FittedBox(
     fit: BoxFit.scaleDown,
-    child: Text(
+    child: ClayText(
       value,
       maxLines: 1,
       style: const TextStyle(
