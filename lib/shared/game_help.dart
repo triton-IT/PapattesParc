@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
 import 'wooden_sign.dart';
+import 'clay_hud_icon.dart';
 
 enum GameHelpKind {
   refuge,
@@ -21,6 +22,7 @@ class GameHelpButton extends StatelessWidget {
     this.color,
     this.compact = false,
     this.iconSize,
+    this.clay = false,
     super.key,
   });
 
@@ -28,6 +30,7 @@ class GameHelpButton extends StatelessWidget {
   final GameHelpKind kind;
   final Color? color;
   final bool compact;
+  final bool clay;
 
   @override
   Widget build(BuildContext context) => IconButton(
@@ -43,7 +46,9 @@ class GameHelpButton extends StatelessWidget {
           )
         : null,
     onPressed: () => _showHelp(context),
-    icon: const Icon(Icons.help_outline_rounded),
+    icon: clay
+        ? ClayHudIcon(ClayHudIconKind.help, size: iconSize ?? 24)
+        : const Icon(Icons.help_outline_rounded),
   );
 
   Future<void> _showHelp(BuildContext context) => showDialog<void>(
