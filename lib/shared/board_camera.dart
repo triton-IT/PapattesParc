@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'clay_hud_icon.dart';
 
 /// Keeps navigation separate from a board's one-pointer gameplay gestures.
 class BoardCamera extends StatefulWidget {
@@ -207,7 +208,9 @@ class _BoardCameraState extends State<BoardCamera> {
                         IconButton(
                           tooltip: 'Agrandir le plateau',
                           onPressed: () => _zoom(1.4, _viewport),
-                          icon: const Icon(Icons.zoom_in),
+                          icon: widget.wooden
+                              ? const ClaySymbol(Icons.zoom_in)
+                              : const Icon(Icons.zoom_in),
                         ),
                       ),
                       if (integrated) const SizedBox(height: 20),
@@ -215,7 +218,9 @@ class _BoardCameraState extends State<BoardCamera> {
                         IconButton(
                           tooltip: 'Réduire le plateau',
                           onPressed: () => _zoom(1 / 1.4, _viewport),
-                          icon: const Icon(Icons.zoom_out),
+                          icon: widget.wooden
+                              ? const ClaySymbol(Icons.zoom_out)
+                              : const Icon(Icons.zoom_out),
                         ),
                       ),
                       if (integrated) const SizedBox(height: 20),
@@ -229,7 +234,9 @@ class _BoardCameraState extends State<BoardCamera> {
                                   _navigation.value = _moveMode;
                                 })
                               : null,
-                          icon: const Icon(Icons.pan_tool_outlined),
+                          icon: widget.wooden
+                              ? const ClaySymbol(Icons.pan_tool_outlined)
+                              : const Icon(Icons.pan_tool_outlined),
                         ),
                       ),
                       if (integrated) const SizedBox(height: 20),
@@ -241,7 +248,9 @@ class _BoardCameraState extends State<BoardCamera> {
                               _camera.value = _overview!.clone();
                             }
                           },
-                          icon: const Icon(Icons.center_focus_strong),
+                          icon: widget.wooden
+                              ? const ClaySymbol(Icons.center_focus_strong)
+                              : const Icon(Icons.center_focus_strong),
                         ),
                       ),
                     ],

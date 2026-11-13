@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'formatters.dart';
 import 'clay_text.dart';
+import 'clay_hud_icon.dart';
 
 import 'app_theme.dart';
 import 'game_help.dart';
@@ -227,8 +228,8 @@ class GameStageAction extends StatelessWidget {
       height: AppGeometry.touchTarget,
     ),
     icon: badgeLabel == null
-        ? Icon(icon)
-        : Badge(label: Text(badgeLabel!), child: Icon(icon)),
+        ? ClaySymbol(icon)
+        : Badge(label: Text(badgeLabel!), child: ClaySymbol(icon)),
   );
 }
 
@@ -437,6 +438,7 @@ class _GameStageHud extends StatelessWidget {
           color: Colors.white,
           compact: true,
           iconSize: 24 * scale,
+          clay: wooden,
         ),
       ],
     );
@@ -543,7 +545,7 @@ class _BackButton extends StatelessWidget {
       onPressed: onPressed,
       color: Colors.white,
       iconSize: 24 * scale,
-      icon: const Icon(Icons.arrow_back_rounded),
+      icon: ClayHudIcon(ClayHudIconKind.back, size: 24 * scale),
     ),
   );
 }
@@ -600,7 +602,10 @@ class _Metric extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(metric.icon, size: 17 * scale, color: Colors.white),
+          if (metric.icon == Icons.timer_rounded)
+            ClayHudIcon(ClayHudIconKind.timer, size: 17 * scale)
+          else
+            ClaySymbol(metric.icon, size: 17 * scale, color: Colors.white),
           const SizedBox(width: 5),
           if (metric.elapsed case final elapsed?)
             ValueListenableBuilder<Duration>(

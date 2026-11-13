@@ -188,10 +188,13 @@ class _ClayTextState extends State<ClayText> {
     return Semantics(
       label: widget.text,
       child: ExcludeSemantics(
-        child: SizedBox(
-          width: painter.width,
-          height: fontSize * 1.25,
-          child: CustomPaint(painter: painter),
+        child: Opacity(
+          opacity: style.color?.a ?? 1,
+          child: SizedBox(
+            width: painter.width,
+            height: fontSize * 1.25,
+            child: CustomPaint(painter: painter),
+          ),
         ),
       ),
     );
@@ -271,6 +274,32 @@ class _ClayPainter extends CustomPainter {
         0,
         0,
         .57,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+      ]);
+    } else if (color.r < .94 && color.r > .5) {
+      final red = (color.r / .94).clamp(0.0, 1.0);
+      final green = (color.g / .88).clamp(0.0, 1.0);
+      final blue = (color.b / .76).clamp(0.0, 1.0);
+      paint.colorFilter = ColorFilter.matrix([
+        red,
+        0,
+        0,
+        0,
+        0,
+        0,
+        green,
+        0,
+        0,
+        0,
+        0,
+        0,
+        blue,
         0,
         0,
         0,

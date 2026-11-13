@@ -1,3 +1,4 @@
+import '../../../shared/clay_hud_icon.dart';
 import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
@@ -171,7 +172,7 @@ class RepasScreen extends StatelessWidget {
                         onPressed: onLevels,
                         color: const Color(0xffffedcb),
                         iconSize: 65,
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                        icon: const ClayHudIcon(ClayHudIconKind.back, size: 65),
                       ),
                     ),
                     Positioned(
@@ -247,6 +248,7 @@ class RepasScreen extends StatelessWidget {
                       width: 75,
                       height: 75,
                       child: GameHelpButton(
+                        clay: true,
                         kind: GameHelpKind.repasAnimaux,
                         color: Color(0xffffecd0),
                         iconSize: 52,
@@ -707,7 +709,10 @@ class _SceneMetric extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Icon(icon, color: const Color(0xffffecd0), size: 39),
+      if (icon == Icons.timer_rounded)
+        const ClayHudIcon(ClayHudIconKind.timer, size: 39)
+      else
+        ClaySymbol(icon, color: const Color(0xffffecd0), size: 39),
       const SizedBox(width: 10),
       Flexible(
         child: FittedBox(
@@ -777,8 +782,8 @@ class _SceneCommands extends StatelessWidget {
               foregroundColor: const Color(0xffffedc2),
               disabledForegroundColor: const Color(0xffa98f6c),
             ),
-            icon: Icon(icon, size: 35),
-            label: Text(
+            icon: ClaySymbol(icon, size: 35),
+            label: ClayText(
               label,
               style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w900),
             ),
@@ -862,7 +867,7 @@ class _ControlButton extends StatelessWidget {
             onPressed: onPressed,
             color: const Color(0xff226957),
             iconSize: 28,
-            icon: Icon(icon),
+            icon: ClaySymbol(icon),
           ),
         ),
       );
@@ -881,7 +886,7 @@ class _ControlButton extends StatelessWidget {
         onPressed: onPressed,
         color: Colors.white,
         disabledColor: Colors.white.withValues(alpha: .3),
-        icon: Icon(icon),
+        icon: ClaySymbol(icon),
       ),
     );
   }
@@ -1005,7 +1010,7 @@ class _ResultOverlay extends StatelessWidget {
                 TextButton.icon(
                   key: const Key('repas-retry'),
                   onPressed: onRetry,
-                  icon: const Icon(Icons.refresh_rounded),
+                  icon: const ClaySymbol(Icons.refresh_rounded),
                   label: const Text('REJOUER'),
                 ),
                 if (onConfigure != null)

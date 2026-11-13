@@ -1,3 +1,4 @@
+import '../../../shared/clay_hud_icon.dart';
 import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
@@ -202,7 +203,7 @@ class NumberlinkScreen extends StatelessWidget {
                         onPressed: onBack,
                         color: const Color(0xffffedcb),
                         iconSize: 65,
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                        icon: const ClayHudIcon(ClayHudIconKind.back, size: 65),
                       ),
                     ),
                     Positioned(
@@ -279,6 +280,7 @@ class NumberlinkScreen extends StatelessWidget {
                       width: 75,
                       height: 75,
                       child: GameHelpButton(
+                        clay: true,
                         kind: GameHelpKind.numberlink,
                         color: const Color(0xffffecd0),
                         iconSize: 52,
@@ -332,7 +334,10 @@ class _SceneMetric extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Icon(icon, color: const Color(0xffffecd0), size: 39),
+      if (icon == Icons.timer_rounded)
+        const ClayHudIcon(ClayHudIconKind.timer, size: 39)
+      else
+        ClaySymbol(icon, color: const Color(0xffffecd0), size: 39),
       const SizedBox(width: 10),
       Flexible(
         child: elapsed == null
@@ -915,9 +920,9 @@ class _SceneAction extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 35),
+              ClaySymbol(icon, size: 35),
               const SizedBox(width: 8),
-              Text(
+              ClayText(
                 label,
                 style: const TextStyle(
                   fontSize: 27,

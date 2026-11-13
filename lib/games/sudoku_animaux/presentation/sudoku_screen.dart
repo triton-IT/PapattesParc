@@ -1,3 +1,4 @@
+import '../../../shared/clay_hud_icon.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/artwork.dart';
@@ -268,7 +269,10 @@ class SudokuScreen extends StatelessWidget {
                           onPressed: onBack,
                           color: const Color(0xffffedcb),
                           iconSize: 65,
-                          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                          icon: const ClayHudIcon(
+                            ClayHudIconKind.back,
+                            size: 65,
+                          ),
                         ),
                       ),
                       Positioned(
@@ -330,6 +334,7 @@ class SudokuScreen extends StatelessWidget {
                         width: 75,
                         height: 75,
                         child: GameHelpButton(
+                          clay: true,
                           kind: GameHelpKind.sudoku,
                           color: const Color(0xffffecd0),
                           iconSize: 52,
@@ -388,7 +393,10 @@ class _SceneMetric extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Icon(icon, color: const Color(0xffffecd0), size: 39),
+      if (icon == Icons.timer_rounded)
+        const ClayHudIcon(ClayHudIconKind.timer, size: 39)
+      else
+        ClaySymbol(icon, color: const Color(0xffffecd0), size: 39),
       const SizedBox(width: 10),
       Flexible(
         child: elapsed == null
@@ -552,8 +560,8 @@ class _ScenePanel extends StatelessWidget {
                   foregroundColor: const Color(0xffffedc2),
                   disabledForegroundColor: const Color(0xffe1c9a0),
                 ),
-                icon: const Icon(Icons.lightbulb_rounded, size: 35),
-                label: Text(
+                icon: const ClaySymbol(Icons.lightbulb_rounded, size: 35),
+                label: ClayText(
                   'INDICE ${session.hintsRemaining}/3',
                   style: const TextStyle(
                     fontSize: 30,
@@ -868,7 +876,7 @@ class _GamePanel extends StatelessWidget {
             minimumSize: const Size(40, 46),
             padding: const EdgeInsets.symmetric(horizontal: 6),
           ),
-          icon: const Icon(Icons.lightbulb_rounded),
+          icon: const ClaySymbol(Icons.lightbulb_rounded),
           label: Text(
             'INDICE ${session.hintsRemaining}/3',
             style: TextStyle(
@@ -988,7 +996,7 @@ class _SudokuActionButton extends StatelessWidget {
         onPressed: onPressed,
         color: const Color(0xff245b4a),
         disabledColor: const Color(0xff245b4a).withValues(alpha: .4),
-        icon: Icon(icon, size: 28),
+        icon: ClaySymbol(icon, size: 28),
       ),
     ),
   );

@@ -1,3 +1,4 @@
+import '../../../shared/clay_hud_icon.dart';
 import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/park_catalog.dart';
@@ -233,7 +234,7 @@ class SolitaireGameScreen extends StatelessWidget {
                         onPressed: onBack,
                         color: const Color(0xffffedcb),
                         iconSize: 65,
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                        icon: const ClayHudIcon(ClayHudIconKind.back, size: 65),
                       ),
                     ),
                     Positioned(
@@ -297,6 +298,7 @@ class SolitaireGameScreen extends StatelessWidget {
                       width: 75,
                       height: 75,
                       child: GameHelpButton(
+                        clay: true,
                         kind: GameHelpKind.solitaire,
                         color: Color(0xffffecd0),
                         iconSize: 52,
@@ -376,7 +378,10 @@ class _SceneMetric extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Icon(icon, color: const Color(0xffffecd0), size: 39),
+      if (icon == Icons.timer_rounded)
+        const ClayHudIcon(ClayHudIconKind.timer, size: 39)
+      else
+        ClaySymbol(icon, color: const Color(0xffffecd0), size: 39),
       const SizedBox(width: 10),
       Flexible(
         child: elapsed == null
@@ -424,8 +429,8 @@ class _SceneAction extends StatelessWidget {
           foregroundColor: const Color(0xffffedc2),
           disabledForegroundColor: const Color(0xffbba989),
         ),
-        icon: Icon(icon, size: 35),
-        label: Text(
+        icon: ClaySymbol(icon, size: 35),
+        label: ClayText(
           label,
           style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w900),
         ),

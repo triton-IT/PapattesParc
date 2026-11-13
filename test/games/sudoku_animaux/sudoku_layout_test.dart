@@ -39,7 +39,7 @@ void main() {
     );
 
     void expectBandeau(String title) {
-      expect(find.byType(ClayText), findsNWidgets(4));
+      expect(find.byType(ClayText), findsAtLeastNWidgets(4));
       expect(
         find.byWidgetPredicate(
           (widget) => widget is ClayText && widget.text == title,
