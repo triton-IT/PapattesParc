@@ -109,9 +109,9 @@ class GameHelpButton extends StatelessWidget {
       'Relie toutes les paires et couvre toute la grille. Trois indices peuvent révéler un sentier sans le tracer à ta place.',
     ],
     GameHelpKind.animalSort => const [
-      'Sélectionne une réserve, puis une réserve vide ou contenant le même repas.',
-      'Toutes les portions identiques visibles se déplacent ensemble, dans la limite des quatre places disponibles.',
-      'Regroupe quatre aliments identiques dans chaque réserve. Chaque espèce possède son repas illustré.',
+      'Sélectionne une réserve, puis une réserve vide ou dont la portion du bas est identique.',
+      'Les portions identiques en bas se déplacent ensemble, dans la limite des quatre places disponibles. Les autres descendent.',
+      'Regroupe quatre portions identiques dans chaque réserve. Les aliments correspondent aux animaux du niveau.',
       'Tu peux annuler, recommencer ou utiliser trois indices.',
     ],
   };

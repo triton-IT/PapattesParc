@@ -41,7 +41,7 @@ class _AnimalSortCustomGameScreenState
     return FreeGameScaffold(
       backgroundAsset: stage.artAsset!,
       title: 'Prépare le garde-manger',
-      subtitle: 'Choisis le biome et le nombre de régimes à classer.',
+      subtitle: 'Choisis le biome et le nombre de repas à classer.',
       backKey: const Key('animal-sort-custom-back'),
       onBack: widget.onBack,
       child: Column(
@@ -59,18 +59,18 @@ class _AnimalSortCustomGameScreenState
           ),
           const SizedBox(height: 18),
           FreeGameDropdown<int>(
-            label: 'NOMBRE D’ESPÈCES',
+            label: 'NOMBRE DE REPAS',
             value: _speciesCount,
             icon: Icons.pets_rounded,
             items: [
               for (var count = 3; count <= 8; count++)
-                DropdownMenuItem(value: count, child: Text('$count régimes')),
+                DropdownMenuItem(value: count, child: Text('$count repas')),
             ],
             onChanged: (value) => setState(() => _speciesCount = value),
           ),
           const SizedBox(height: 18),
           FreeGameSummary(
-            '$_speciesCount régimes · ${_speciesCount + 2} réserves · '
+            '$_speciesCount repas · ${_speciesCount + 2} réserves · '
             '${_speciesCount <= 4
                 ? 'Accessible'
                 : _speciesCount <= 6

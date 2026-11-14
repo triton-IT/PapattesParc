@@ -53,8 +53,8 @@ class AnimalSortLevelSelectScreen extends StatelessWidget {
           stats: [
             CampaignMissionStat(
               Icons.pets_rounded,
-              '${mission.animals.length}',
-              'régimes',
+              '${mission.foods.length}',
+              'repas',
             ),
             CampaignMissionStat(
               Icons.view_column_rounded,
