@@ -6,7 +6,7 @@ import '../support/app_harness.dart';
 
 void main() {
   const games = <(String, String, String)>[
-    ('game-refuge', 'refuge', 'board-background'),
+    ('game-refuge', 'refuge', 'refuge-board-viewer'),
     ('game-pattes-friandises', 'match3', 'match3-cell-0-0'),
     ('game-mahjong-animaux', 'mahjong', 'mahjong-board'),
     ('game-solitaire-animaux', 'solitaire', 'solitaire-board'),
