@@ -58,15 +58,6 @@ void main() {
             ArtworkResolver.provider(level.stage.artAsset!),
             tester.element(find.byType(MaterialApp)),
           ),
-          for (final asset in const [
-            'assets/food_sort/ui/basket.png',
-            'assets/food_sort/ui/cart-landscape.png',
-            'assets/food_sort/ui/cart-portrait.png',
-          ])
-            precacheArtwork(
-              ArtworkResolver.provider(asset),
-              tester.element(find.byType(MaterialApp)),
-            ),
           for (final animal in level.animals)
             precacheArtwork(
               ArtworkResolver.provider(animal.foodAsset),
@@ -136,7 +127,7 @@ void main() {
     expect(viewer.transformationController!.value.getMaxScaleOnAxis(), 1);
   });
 
-  testWidgets('les dix paniers restent sur le chariot', (tester) async {
+  testWidgets('les dix paniers restent dans le plateau', (tester) async {
     final level = buildAnimalSortCampaign(levels).last;
     final session = AnimalSortSession(level);
     for (final size in const [Size(360, 800), Size(1366, 768)]) {
@@ -172,15 +163,6 @@ void main() {
             ArtworkResolver.provider(level.stage.artAsset!),
             tester.element(find.byType(MaterialApp)),
           ),
-          for (final asset in const [
-            'assets/food_sort/ui/basket.png',
-            'assets/food_sort/ui/cart-landscape.png',
-            'assets/food_sort/ui/cart-portrait.png',
-          ])
-            precacheArtwork(
-              ArtworkResolver.provider(asset),
-              tester.element(find.byType(MaterialApp)),
-            ),
           for (final animal in level.animals)
             precacheArtwork(
               ArtworkResolver.provider(animal.foodAsset),

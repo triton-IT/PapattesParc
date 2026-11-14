@@ -1,4 +1,5 @@
 import '../../../shared/clay_hud_icon.dart';
+import '../../../shared/clay_animal_frame.dart';
 import '../../../shared/wooden_sign.dart';
 import '../../../shared/board_camera.dart';
 import '../../../shared/artwork.dart';
@@ -67,34 +68,7 @@ class SudokuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TooltipTheme(
-    data: TooltipThemeData(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xffffe9be), Color(0xffe6c58f)],
-        ),
-        border: Border.all(color: const Color(0xff895b32), width: 2),
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x663b2412),
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      textStyle: const TextStyle(
-        color: Color(0xff563619),
-        fontFamily: 'Nunito',
-        fontSize: 14,
-        fontWeight: FontWeight.w800,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      margin: const EdgeInsets.all(8),
-      verticalOffset: 12,
-      preferBelow: true,
-    ),
+    data: parkTooltipTheme,
     child: LayoutBuilder(
       builder: (context, constraints) {
         final sceneScale = min(
@@ -939,15 +913,14 @@ class _NotePaper extends StatelessWidget {
                 ),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text(
+                  child: ClayText(
                     active
                         ? 'MES PETITS MÉMOS : OUI'
                         : 'MES PETITS MÉMOS : NON',
-                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: active ? const Color(0xffc9ee9c) : null,
                       fontWeight: FontWeight.w900,
-                      fontSize: 15 * scale,
+                      fontSize: (compact ? 19 : 17) * scale,
                     ),
                   ),
                 ),
@@ -1028,49 +1001,25 @@ class _AnimalButton extends StatelessWidget {
         key: Key('sudoku-animal-$index'),
         onTap: enabled ? onTap : null,
         borderRadius: BorderRadius.circular(8),
-        child: Container(
+        child: SizedBox(
           width: size,
           height: size,
-          padding: EdgeInsets.all(size * .09),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.lerp(
-                  animalHaloColor(animal),
-                  const Color(0xffffdeb0),
-                  .25,
-                )!,
-                Color.lerp(
-                  animalHaloColor(animal),
-                  const Color(0xff513b27),
-                  .28,
-                )!,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xff65452e), width: 2),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x77542f1b),
-                blurRadius: 4,
-                offset: Offset(1, 3),
+          child: ClayAnimalFrame(
+            color: animalHaloColor(animal),
+            padding: EdgeInsets.all(size * .09),
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x66542f1b),
+                    blurRadius: 3,
+                    offset: Offset(1, 3),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: DecoratedBox(
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x66542f1b),
-                  blurRadius: 3,
-                  offset: Offset(1, 3),
-                ),
-              ],
+              child: ArtworkImage(animal.asset, fit: BoxFit.contain),
             ),
-            child: ArtworkImage(animal.asset, fit: BoxFit.contain),
           ),
         ),
       ),
@@ -1114,52 +1063,59 @@ class _ResultOverlay extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.pets_rounded, size: 54, color: AppColors.sun),
-                Text(
+                const GameResultIcon(
+                  Icons.pets_rounded,
+                  size: 54,
+                  color: AppColors.sun,
+                ),
+                GameResultText(
                   'PARADE PRÊTE !',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),
-                Text(
+                GameResultText(
                   '${formatDuration(session.elapsed)} · '
                   '${isFreeGame ? '${session.hintsUsed} indice(s)' : '${session.footprints} empreinte(s)'}'
                   '${newRecord ? '\nNouveau record !' : ''}',
                   textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 18),
                 if (onNext != null)
                   FilledButton.icon(
                     key: const Key('sudoku-next'),
                     onPressed: onNext,
-                    icon: const Icon(Icons.arrow_forward_rounded),
-                    label: const Text('NIVEAU SUIVANT'),
+                    icon: const GameResultIcon(Icons.arrow_forward_rounded),
+                    label: const GameResultText('NIVEAU SUIVANT'),
                   ),
                 TextButton.icon(
                   key: const Key('sudoku-replay'),
                   onPressed: onReplay,
-                  icon: const Icon(Icons.replay_rounded),
-                  label: const Text('REJOUER'),
+                  icon: const GameResultIcon(Icons.replay_rounded),
+                  label: const GameResultText('REJOUER'),
                 ),
                 if (onNewGame != null)
                   TextButton.icon(
                     key: const Key('sudoku-new-free-game'),
                     onPressed: onNewGame,
-                    icon: const Icon(Icons.casino_rounded),
-                    label: const Text('NOUVELLE GRILLE'),
+                    icon: const GameResultIcon(Icons.casino_rounded),
+                    label: const GameResultText('NOUVELLE GRILLE'),
                   ),
                 if (onConfigure != null)
                   TextButton.icon(
                     key: const Key('sudoku-configure'),
                     onPressed: onConfigure,
-                    icon: const Icon(Icons.tune_rounded),
-                    label: const Text('MODIFIER LES RÉGLAGES'),
+                    icon: const GameResultIcon(Icons.tune_rounded),
+                    label: const GameResultText('MODIFIER LES RÉGLAGES'),
                   ),
                 TextButton.icon(
                   key: const Key('sudoku-levels'),
                   onPressed: onLevels,
-                  icon: const Icon(Icons.grid_view_rounded),
-                  label: const Text('RETOUR AUX NIVEAUX'),
+                  icon: const GameResultIcon(Icons.grid_view_rounded),
+                  label: const GameResultText('RETOUR AUX NIVEAUX'),
                 ),
               ],
             ),

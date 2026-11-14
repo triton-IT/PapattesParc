@@ -180,6 +180,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
   }
 
   void _startSession(int seed) {
+    _currentSeed = seed;
     _clock.reset();
     _session = SolitaireSession(mode: _mode, seed: seed);
     _selected = null;
@@ -193,6 +194,8 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
     );
     setState(() => _screen = _SolitaireScreen.playing);
   }
+
+  int _currentSeed = 0;
 
   int _newSeed() => DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919;
 
@@ -340,16 +343,25 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
 
   Future<void> _requestReplay() async {
     if (_autoFinishing) return;
-    if (_session!.hasMoved && !_finished && !await _confirmAbandon()) return;
-    _replay();
+    if (_session!.hasMoved &&
+        !_finished &&
+        !await _confirmAbandon(restart: true)) {
+      return;
+    }
+    if (!mounted) return;
+    _startSession(_currentSeed);
   }
 
-  Future<bool> _confirmAbandon() async =>
+  Future<bool> _confirmAbandon({bool restart = false}) async =>
       await showDialog<bool>(
         context: context,
         builder: (context) => GameConfirmDialog(
           biome: _level?.stage.biome ?? LevelBiome.tropical,
-          title: const Text('Abandonner cette partie ?'),
+          title: Text(
+            restart
+                ? 'Recommencer cette partie ?'
+                : 'Abandonner cette partie ?',
+          ),
           content: const Text('La progression de cette donne sera perdue.'),
           actions: [
             FilledButton(
@@ -358,7 +370,7 @@ class _SolitaireGameFlowState extends State<SolitaireGameFlow> {
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Abandonner'),
+              child: Text(restart ? 'Recommencer' : 'Abandonner'),
             ),
           ],
         ),

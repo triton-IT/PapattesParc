@@ -282,7 +282,58 @@ class _ClayPainter extends CustomPainter {
         1,
         0,
       ]);
-    } else if (color.r < .94 && color.r > .5) {
+    } else if (color.g > .75 && color.g > color.r * 1.1) {
+      // Active controls may use a pale-green clay rather than cream.
+      paint.colorFilter = const ColorFilter.matrix([
+        .92,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.13,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+      ]);
+    } else if (color.r <= .5) {
+      // Dark clay lettering on parchment keeps the texture of the atlas.
+      final red = (color.r / .80).clamp(0.0, 1.0);
+      final green = (color.g / .75).clamp(0.0, 1.0);
+      final blue = (color.b / .68).clamp(0.0, 1.0);
+      paint.colorFilter = ColorFilter.matrix([
+        red,
+        0,
+        0,
+        0,
+        0,
+        0,
+        green,
+        0,
+        0,
+        0,
+        0,
+        0,
+        blue,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+      ]);
+    } else if (color.r < .94) {
       final red = (color.r / .94).clamp(0.0, 1.0);
       final green = (color.g / .88).clamp(0.0, 1.0);
       final blue = (color.b / .76).clamp(0.0, 1.0);

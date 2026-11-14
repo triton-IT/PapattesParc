@@ -9,6 +9,25 @@ import 'package:papatte_parc/shared/park_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test('annuler restaure une paire et un mélange', () {
+    final level = buildMahjongCampaign(levels).first;
+    final session = MahjongSession(
+      layout: level.layout,
+      biome: level.stage.biome,
+      seed: 73,
+    );
+    final pair = session.availablePair!;
+    session.select(pair.first);
+    session.select(pair.second);
+    expect(session.snapshot(pair.first).isPresent, isFalse);
+    expect(session.undo(), isTrue);
+    expect(session.snapshot(pair.first).isPresent, isTrue);
+    final before = session.tiles.map((tile) => tile.tile.animal).toList();
+    expect(session.shuffle(), isTrue);
+    expect(session.undo(), isTrue);
+    expect(session.tiles.map((tile) => tile.tile.animal), before);
+    expect(session.shufflesRemaining, 3);
+  });
   test('les 45 plateaux sont pairs, déterministes et jouables', () {
     final campaign = buildMahjongCampaign(levels);
     final stopwatch = Stopwatch()..start();

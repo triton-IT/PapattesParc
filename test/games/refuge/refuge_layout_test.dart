@@ -1,10 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:papatte_parc/games/refuge/domain/board_generator.dart';
 import 'package:papatte_parc/games/refuge/domain/game_session.dart';
 import 'package:papatte_parc/games/refuge/domain/levels.dart';
+import 'package:papatte_parc/games/refuge/domain/models.dart';
 import 'package:papatte_parc/games/refuge/presentation/game_screen.dart';
+import 'package:papatte_parc/shared/clay_text.dart';
 
 void main() {
+  for (final size in [const Size(1672, 941), const Size(360, 800)]) {
+    testWidgets('recommencer demande confirmation à $size', (tester) async {
+      await tester.binding.setSurfaceSize(size);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final level = levels[1];
+      final board = generateCertifiedBoard(
+        level.config,
+        const CellPosition(3, 3),
+        71,
+      )!;
+      final session = GameSession(level.config)
+        ..prepare(board, practice: false);
+      var restarts = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: GameScreen(
+            level: level,
+            session: session,
+            generating: false,
+            finished: false,
+            newRecord: false,
+            onHome: () {},
+            onReveal: (_) {},
+            onFlag: (_) {},
+            onReplaySame: () => restarts++,
+            onReplayNew: () {},
+            onNext: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('OBSERVE ET BALISE'), findsNothing);
+      await tester.tap(find.byKey(const Key('refuge-restart')));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('mode entraînement'), findsOneWidget);
+      await tester.tap(find.text('Continuer'));
+      await tester.pumpAndSettle();
+      expect(restarts, 0);
+      await tester.tap(find.byKey(const Key('refuge-restart')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Recommencer'));
+      await tester.pumpAndSettle();
+      expect(restarts, 1);
+    });
+  }
   testWidgets('décor et commandes du refuge restent interactifs', (
     tester,
   ) async {
@@ -31,6 +79,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    for (final text in ['ANNULER', 'INDICE 3/3', 'RECOMMENCER']) {
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is ClayText && widget.text == text,
+        ),
+        findsOneWidget,
+      );
+    }
     final scene = tester.widget<Image>(
       find.byKey(const Key('refuge-scene-background')),
     );

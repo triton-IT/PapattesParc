@@ -130,7 +130,7 @@ void main() {
       await tester.pump();
     }
     await tester.pumpAndSettle();
-    expect(find.text('REPAS DISTRIBUÉ !'), findsOneWidget);
+    expect(find.bySemanticsLabel('REPAS DISTRIBUÉ !'), findsOneWidget);
 
     await _pumpRoot(tester, refugeStore, const Size(1366, 768));
     expect(find.text('Sentiers sauvages'), findsOneWidget);
@@ -417,7 +417,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('match3-start-custom')), findsNothing);
     expect(find.byKey(const Key('match3-cell-0-0')), findsOneWidget);
-    expect(find.text('Livrer les paniers'), findsOneWidget);
+    expect(find.bySemanticsLabel('Livrer les paniers'), findsOneWidget);
     await tester.tap(find.byKey(const Key('match3-back-to-levels')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('match3-custom-goal')), findsOneWidget);
@@ -812,16 +812,21 @@ void main() {
     final level = levels.first;
     final wonSession = _wonSession(level);
     var nextPressed = false;
+    var newObservationPressed = false;
     await _pumpGame(
       tester,
       level,
       wonSession,
       const Size(1366, 768),
       onNext: () => nextPressed = true,
+      onReplayNew: () => newObservationPressed = true,
     );
     expect(find.byKey(const Key('end-overlay')), findsOneWidget);
-    expect(find.text('REFUGE SÉCURISÉ !'), findsOneWidget);
-    await tester.tap(find.text('Niveau suivant'));
+    expect(find.bySemanticsLabel('REFUGE SÉCURISÉ !'), findsOneWidget);
+    expect(find.bySemanticsLabel('Revoir cette grille · entraînement'), findsNothing);
+    await tester.tap(find.bySemanticsLabel('Nouvelle observation'));
+    expect(newObservationPressed, isTrue);
+    await tester.tap(find.bySemanticsLabel('Niveau suivant'));
     expect(nextPressed, isTrue);
 
     final lostSession = _lostSession(level);
@@ -833,9 +838,9 @@ void main() {
       const Size(360, 800),
       onReplaySame: () => replayPressed = true,
     );
-    expect(find.text('UN ANIMAL S’EST ÉLOIGNÉ'), findsOneWidget);
-    await tester.ensureVisible(find.text('Revoir cette grille'));
-    await tester.tap(find.text('Revoir cette grille'));
+    expect(find.bySemanticsLabel('UN ANIMAL S’EST ÉLOIGNÉ'), findsOneWidget);
+    await tester.ensureVisible(find.bySemanticsLabel('Revoir cette grille'));
+    await tester.tap(find.bySemanticsLabel('Revoir cette grille'));
     expect(replayPressed, isTrue);
     expect(tester.takeException(), isNull);
 
@@ -846,9 +851,10 @@ void main() {
       _wonSession(customLevel),
       const Size(800, 1280),
     );
-    expect(find.text('Niveau suivant'), findsNothing);
-    expect(find.text('Revoir cette grille'), findsOneWidget);
-    expect(find.text('Retour à l’accueil'), findsOneWidget);
+    expect(find.bySemanticsLabel('Niveau suivant'), findsNothing);
+    expect(find.bySemanticsLabel('Revoir cette grille'), findsNothing);
+    expect(find.bySemanticsLabel('Nouvelle observation'), findsOneWidget);
+    expect(find.bySemanticsLabel('Retour à l’accueil'), findsOneWidget);
   });
 
   testWidgets(
@@ -1183,6 +1189,7 @@ Future<void> _pumpGame(
   GameSession session,
   Size size, {
   VoidCallback? onReplaySame,
+  VoidCallback? onReplayNew,
   VoidCallback? onNext,
 }) async {
   tester.view.devicePixelRatio = 1;
@@ -1201,7 +1208,7 @@ Future<void> _pumpGame(
         onReveal: (_) {},
         onFlag: (_) {},
         onReplaySame: onReplaySame ?? () {},
-        onReplayNew: () {},
+        onReplayNew: onReplayNew ?? () {},
         onNext: onNext ?? () {},
       ),
     ),

@@ -25,6 +25,9 @@ class GameScreen extends StatelessWidget {
     this.elapsed,
     required this.level,
     required this.session,
+    this.hinted,
+    this.onHint,
+    this.onUndo,
     required this.generating,
     required this.finished,
     required this.newRecord,
@@ -39,6 +42,9 @@ class GameScreen extends StatelessWidget {
 
   final LevelDefinition level;
   final GameSession session;
+  final CellPosition? hinted;
+  final VoidCallback? onHint;
+  final VoidCallback? onUndo;
   final bool generating;
   final bool finished;
   final bool newRecord;
@@ -104,11 +110,35 @@ class GameScreen extends StatelessWidget {
         label: formatDuration(session.elapsed),
       ),
     ],
+    fixedActions: [
+      GameStageAction(
+        key: const Key('refuge-undo'),
+        icon: Icons.undo_rounded,
+        tooltip: 'Annuler',
+        onPressed: session.canUndo ? onUndo : null,
+      ),
+      GameStageAction(
+        key: const Key('refuge-hint'),
+        icon: Icons.lightbulb_rounded,
+        badgeLabel: level.isCustom ? null : '${3 - session.hintsUsed}',
+        tooltip: level.isCustom
+            ? 'Indice'
+            : 'Indice ${3 - session.hintsUsed}/3',
+        onPressed: _canHint ? onHint : null,
+      ),
+      GameStageAction(
+        key: const Key('refuge-restart'),
+        icon: Icons.refresh_rounded,
+        tooltip: 'Recommencer',
+        onPressed: _canRestart ? () => _confirmRestart(context) : null,
+      ),
+    ],
     builder: (context, layout) => BoardView(
       level: level,
       session: session,
       onReveal: onReveal,
       onFlag: onFlag,
+      hinted: hinted,
     ),
     overlays: [
       if (generating) const Positioned.fill(child: _GenerationOverlay()),
@@ -160,6 +190,7 @@ class GameScreen extends StatelessWidget {
                         session: session,
                         onReveal: onReveal,
                         onFlag: onFlag,
+                        hinted: hinted,
                         integrated: true,
                       ),
                     ),
@@ -251,41 +282,97 @@ class GameScreen extends StatelessWidget {
                       top: 329,
                       width: 430,
                       height: 350,
-                      child: Container(
-                        padding: const EdgeInsets.all(34),
-                        decoration: parchmentDecoration,
-                        child: const SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.pets_rounded,
-                                size: 54,
-                                color: Color(0xff79502c),
-                              ),
-                              SizedBox(height: 18),
-                              Text(
-                                'OBSERVE ET BALISE',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xff563619),
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w900,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 75,
+                            child: WoodenSign(
+                              child: TextButton.icon(
+                                key: const Key('refuge-undo'),
+                                onPressed: session.canUndo ? onUndo : null,
+                                icon: const ClaySymbol(
+                                  Icons.undo_rounded,
+                                  size: 35,
+                                ),
+                                label: const ClayText(
+                                  'ANNULER',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xffffedc2),
+                                  disabledForegroundColor: const Color(
+                                    0xffe1c9a0,
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: 14),
-                              Text(
-                                'Touche une case pour observer.\nMaintiens-la ou fais un clic droit pour poser une balise.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xff563619),
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 75,
+                            child: WoodenSign(
+                              child: TextButton.icon(
+                                key: const Key('refuge-hint'),
+                                onPressed: _canHint ? onHint : null,
+                                icon: const ClaySymbol(
+                                  Icons.lightbulb_rounded,
+                                  size: 35,
+                                ),
+                                label: ClayText(
+                                  level.isCustom
+                                      ? 'INDICE'
+                                      : 'INDICE ${3 - session.hintsUsed}/3',
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xffffedc2),
+                                  disabledForegroundColor: const Color(
+                                    0xffe1c9a0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 75,
+                            child: WoodenSign(
+                              child: TextButton.icon(
+                                key: const Key('refuge-restart'),
+                                onPressed: _canRestart
+                                    ? () => _confirmRestart(context)
+                                    : null,
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xffffedc2),
+                                  disabledForegroundColor: const Color(
+                                    0xffe1c9a0,
+                                  ),
+                                ),
+                                icon: const ClaySymbol(
+                                  Icons.refresh_rounded,
+                                  size: 35,
+                                ),
+                                label: const ClayText(
+                                  'RECOMMENCER',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -310,6 +397,35 @@ class GameScreen extends StatelessWidget {
       ],
     ),
   );
+
+  bool get _canRestart => !generating && !finished && session.board != null;
+  bool get _canHint => _canRestart && (level.isCustom || session.hintsUsed < 3);
+
+  Future<void> _confirmRestart(BuildContext context) async {
+    final restart = await showDialog<bool>(
+      context: context,
+      builder: (context) => GameConfirmDialog(
+        biome: level.biome,
+        title: const Text('Recommencer cette grille ?'),
+        content: Text(
+          level.isCustom
+              ? 'La progression de cette partie sera perdue.'
+              : 'La progression de cette partie sera perdue. La grille sera rejouée en mode entraînement.',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Continuer'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Recommencer'),
+          ),
+        ],
+      ),
+    );
+    if (restart == true && context.mounted) onReplaySame();
+  }
 }
 
 class _RefugeMetric extends StatelessWidget {
@@ -409,6 +525,7 @@ class BoardView extends StatelessWidget {
     required this.session,
     required this.onReveal,
     required this.onFlag,
+    this.hinted,
     super.key,
   });
 
@@ -418,6 +535,7 @@ class BoardView extends StatelessWidget {
   final GameSession session;
   final ValueChanged<CellPosition> onReveal;
   final ValueChanged<CellPosition> onFlag;
+  final CellPosition? hinted;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -483,6 +601,7 @@ class BoardView extends StatelessWidget {
                         session: session,
                         onReveal: onReveal,
                         onFlag: onFlag,
+                        hinted: hinted,
                       ),
                     ),
                   ),
@@ -548,6 +667,7 @@ class _BoardGrid extends StatefulWidget {
     required this.session,
     required this.onReveal,
     required this.onFlag,
+    this.hinted,
     this.integrated = false,
   });
 
@@ -555,6 +675,7 @@ class _BoardGrid extends StatefulWidget {
   final GameSession session;
   final ValueChanged<CellPosition> onReveal;
   final ValueChanged<CellPosition> onFlag;
+  final CellPosition? hinted;
   final bool integrated;
 
   @override
@@ -651,14 +772,28 @@ class _BoardGridState extends State<_BoardGrid> {
                       children: [
                         for (var x = 0; x < config.width; x++) ...[
                           if (x > 0) const SizedBox(width: BoardView.spacing),
-                          _Cell(
-                            key: Key('cell-$x-$y'),
-                            size: _cellSize,
-                            coveredColor: biomeCoveredColor(widget.level.biome),
-                            animalAsset: widget.level.animalMarkerAsset,
-                            snapshot: widget.session.cell(CellPosition(x, y)),
-                            onReveal: () => widget.onReveal(CellPosition(x, y)),
-                            onFlag: () => widget.onFlag(CellPosition(x, y)),
+                          DecoratedBox(
+                            position: DecorationPosition.foreground,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: widget.hinted == CellPosition(x, y)
+                                    ? Colors.yellowAccent
+                                    : Colors.transparent,
+                                width: 4,
+                              ),
+                            ),
+                            child: _Cell(
+                              key: Key('cell-$x-$y'),
+                              size: _cellSize,
+                              coveredColor: biomeCoveredColor(
+                                widget.level.biome,
+                              ),
+                              animalAsset: widget.level.animalMarkerAsset,
+                              snapshot: widget.session.cell(CellPosition(x, y)),
+                              onReveal: () =>
+                                  widget.onReveal(CellPosition(x, y)),
+                              onFlag: () => widget.onFlag(CellPosition(x, y)),
+                            ),
                           ),
                         ],
                       ],
@@ -1008,12 +1143,12 @@ class _EndOverlay extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(
+                  GameResultIcon(
                     won ? Icons.verified_rounded : Icons.pets_rounded,
                     color: AppColors.sun,
                     size: 44,
                   ),
-                  Text(
+                  GameResultText(
                     won ? 'REFUGE SÉCURISÉ !' : 'UN ANIMAL S’EST ÉLOIGNÉ',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -1021,66 +1156,81 @@ class _EndOverlay extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  GameResultText(
                     level.isCustom
                         ? level.title
                         : 'Niveau ${level.number} · ${level.title}',
                     textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontSize: 20),
                   ),
-                  Text(level.species, textAlign: TextAlign.center),
+                  GameResultText(
+                    level.species,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontSize: 20),
+                  ),
                   const SizedBox(height: 8),
-                  Text(
+                  GameResultText(
                     '${level.config.width} × ${level.config.height} · ${level.config.animalCount} animaux · ${formatDuration(session.elapsed)}',
                     textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontSize: 20),
                   ),
                   if (newRecord || session.isPractice)
-                    Text(
+                    GameResultText(
                       newRecord
                           ? 'Nouveau meilleur temps !'
                           : 'Entraînement · record non enregistré',
                       textAlign: TextAlign.center,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium?.copyWith(fontSize: 20),
                     ),
                   const SizedBox(height: 8),
-                  Text(
+                  GameResultText(
                     won
                         ? 'Tous les animaux sont en sécurité.'
                         : 'Observe les indices avant de t’approcher.',
                     textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontSize: 20),
                   ),
                   const SizedBox(height: 12),
                   if (won && !level.isCustom && level.number < levels.length)
                     FilledButton.icon(
                       onPressed: onNext,
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text('Niveau suivant'),
+                      icon: const GameResultIcon(Icons.arrow_forward_rounded),
+                      label: const GameResultText('Niveau suivant'),
                     ),
                   if (won)
                     TextButton.icon(
                       onPressed: onReplayNew,
                       icon: const ClaySymbol(Icons.refresh_rounded),
-                      label: const Text('Nouvelle observation'),
+                      label: const GameResultText('Nouvelle observation'),
                     ),
-                  TextButton.icon(
-                    onPressed: onReplaySame,
-                    icon: const Icon(Icons.replay_rounded),
-                    label: Text(
-                      won && !level.isCustom
-                          ? 'Revoir cette grille · entraînement'
-                          : 'Revoir cette grille',
+                  if (!won)
+                    TextButton.icon(
+                      onPressed: onReplaySame,
+                      icon: const GameResultIcon(Icons.replay_rounded),
+                      label: const GameResultText('Revoir cette grille'),
                     ),
-                  ),
                   if (!won)
                     TextButton.icon(
                       onPressed: onReplayNew,
                       icon: const ClaySymbol(Icons.refresh_rounded),
-                      label: const Text('Nouvelle observation'),
+                      label: const GameResultText('Nouvelle observation'),
                     ),
                   TextButton.icon(
                     onPressed: onHome,
-                    icon: Icon(
+                    icon: GameResultIcon(
                       level.isCustom ? Icons.home_rounded : Icons.map_rounded,
                     ),
-                    label: Text(
+                    label: GameResultText(
                       level.isCustom
                           ? 'Retour à l’accueil'
                           : 'Retour au parcours',

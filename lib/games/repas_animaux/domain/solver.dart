@@ -2,6 +2,58 @@ import 'dart:collection';
 
 import 'models.dart';
 
+/// Finds a first step on a complete solution, bounded to keep hints responsive.
+RepasDirection? nextRepasSolutionStep({
+  required Set<RepasPosition> floor,
+  required Set<RepasPosition> targets,
+  required Set<RepasPosition> crates,
+  required RepasPosition keeper,
+  int maxStates = 30000,
+}) {
+  final queue = Queue<(RepasPosition, Set<RepasPosition>, RepasDirection?)>()
+    ..add((keeper, crates, null));
+  final visited = <String>{};
+  while (queue.isNotEmpty && visited.length < maxStates) {
+    final (current, boxes, first) = queue.removeFirst();
+    final paths = <RepasPosition, RepasDirection?>{current: null};
+    final walking = Queue<RepasPosition>()..add(current);
+    while (walking.isNotEmpty) {
+      final pos = walking.removeFirst();
+      for (final direction in RepasDirection.values) {
+        final next = pos + direction.offset;
+        if (floor.contains(next) &&
+            !boxes.contains(next) &&
+            !paths.containsKey(next)) {
+          paths[next] = paths[pos] ?? direction;
+          walking.add(next);
+        }
+      }
+    }
+    if (!visited.add(_stateKey(paths.keys.toSet(), boxes))) continue;
+    if (targets.every(boxes.contains)) return first;
+    for (final box in boxes) {
+      for (final direction in RepasDirection.values) {
+        final destination = box + direction.offset;
+        final behind = box - direction.offset;
+        if (!paths.containsKey(behind) ||
+            !floor.contains(destination) ||
+            boxes.contains(destination) ||
+            _isDeadCorner(destination, floor, targets)) {
+          continue;
+        }
+        queue.add((
+          box,
+          {...boxes}
+            ..remove(box)
+            ..add(destination),
+          first ?? paths[behind] ?? direction,
+        ));
+      }
+    }
+  }
+  return null;
+}
+
 int? minimumRepasPushes(RepasLevelDefinition level, {int maxStates = 100000}) =>
     minimumRepasPushesFor(
       floor: level.floor,

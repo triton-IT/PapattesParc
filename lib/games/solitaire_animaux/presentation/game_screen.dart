@@ -133,7 +133,7 @@ class SolitaireGameScreen extends StatelessWidget {
         label: '${session.foundationCount}/52',
       ),
     ],
-    actions: [
+    fixedActions: [
       GameStageAction(
         key: const Key('solitaire-undo'),
         tooltip: 'Annuler',
@@ -148,7 +148,7 @@ class SolitaireGameScreen extends StatelessWidget {
       ),
       GameStageAction(
         key: const Key('solitaire-new-game'),
-        tooltip: level == null ? 'Nouvelle donne' : 'Recommencer',
+        tooltip: 'Recommencer',
         onPressed: onNewGame,
         icon: Icons.refresh_rounded,
       ),
@@ -330,9 +330,7 @@ class SolitaireGameScreen extends StatelessWidget {
                           _SceneAction(
                             key: const Key('solitaire-new-game'),
                             icon: Icons.refresh_rounded,
-                            label: level == null
-                                ? 'NOUVELLE DONNE'
-                                : 'RECOMMENCER',
+                            label: 'RECOMMENCER',
                             onPressed: onNewGame,
                           ),
                         ],
@@ -964,8 +962,12 @@ class _ResultOverlay extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.pets_rounded, size: 54, color: AppColors.sun),
-                Text(
+                const GameResultIcon(
+                  Icons.pets_rounded,
+                  size: 54,
+                  color: AppColors.sun,
+                ),
+                GameResultText(
                   level == null
                       ? 'PATIENCE RÉUSSIE !'
                       : 'NIVEAU ${level!.number} RÉUSSI !',
@@ -978,7 +980,7 @@ class _ResultOverlay extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       for (var index = 0; index < 3; index++)
-                        Icon(
+                        GameResultIcon(
                           Icons.pets_rounded,
                           color: index < footprints
                               ? AppColors.sun
@@ -989,39 +991,44 @@ class _ResultOverlay extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                 ],
-                Text(
+                GameResultText(
                   '${session.mode.label} · ${formatDuration(session.elapsed)}\n'
                   '${session.redealCount} recyclage(s)'
                   '${level == null ? '' : ' · objectif ${level!.targetRedeals}'}'
                   '${newRecord ? '\nNouveau record !' : ''}',
                   textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 18),
                 FilledButton.icon(
                   key: const Key('solitaire-replay'),
                   onPressed: onReplay,
-                  icon: const Icon(Icons.replay_rounded),
-                  label: Text(level == null ? 'NOUVELLE DONNE' : 'REJOUER'),
+                  icon: const GameResultIcon(Icons.replay_rounded),
+                  label: GameResultText(
+                    level == null ? 'NOUVELLE DONNE' : 'REJOUER',
+                  ),
                 ),
                 if (onNext != null)
                   TextButton.icon(
                     key: const Key('solitaire-next-level'),
                     onPressed: onNext,
-                    icon: const Icon(Icons.arrow_forward_rounded),
-                    label: const Text('NIVEAU SUIVANT'),
+                    icon: const GameResultIcon(Icons.arrow_forward_rounded),
+                    label: const GameResultText('NIVEAU SUIVANT'),
                   ),
                 if (onConfigure != null)
                   TextButton.icon(
                     key: const Key('solitaire-configure'),
                     onPressed: onConfigure,
-                    icon: const Icon(Icons.tune_rounded),
-                    label: const Text('MODIFIER LES RÉGLAGES'),
+                    icon: const GameResultIcon(Icons.tune_rounded),
+                    label: const GameResultText('MODIFIER LES RÉGLAGES'),
                   ),
                 TextButton.icon(
                   key: const Key('solitaire-result-levels'),
                   onPressed: onLevels,
-                  icon: const Icon(Icons.grid_view_rounded),
-                  label: const Text('RETOUR AUX NIVEAUX'),
+                  icon: const GameResultIcon(Icons.grid_view_rounded),
+                  label: const GameResultText('RETOUR AUX NIVEAUX'),
                 ),
               ],
             ),

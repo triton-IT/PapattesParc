@@ -15,11 +15,67 @@ class GameSession {
   CellPosition? triggeredAnimal;
   Duration elapsed = Duration.zero;
   bool isPractice = false;
+  int hintsUsed = 0;
   int _revealedSafeCells = 0;
   int _flagCount = 0;
   bool _timerStarted = false;
+  final List<(List<bool>, List<bool>, int, int)> _history = [];
+
+  bool get canUndo => _history.isNotEmpty && status == GameStatus.running;
+
+  void _saveUndo() => _history.add((
+    List.of(_revealed),
+    List.of(_flagged),
+    _revealedSafeCells,
+    _flagCount,
+  ));
+
+  bool undo() {
+    if (!canUndo) return false;
+    final (revealed, flagged, safeCells, flags) = _history.removeLast();
+    _revealed.setAll(0, revealed);
+    _flagged.setAll(0, flagged);
+    _revealedSafeCells = safeCells;
+    _flagCount = flags;
+    return true;
+  }
 
   int get remainingAnimals => config.animalCount - _flagCount;
+
+  /// Returns a position and the action: observe, flag, or remove a wrong flag.
+  (CellPosition, String)? hint() {
+    if (status != GameStatus.running || board == null) return null;
+    for (var i = 0; i < config.cellCount; i++) {
+      final p = _position(i);
+      if (_flagged[i] && !board!.isAnimal(p)) return (p, 'retire cette balise');
+    }
+    for (var i = 0; i < config.cellCount; i++) {
+      if (!_revealed[i]) continue;
+      final p = _position(i);
+      final neighbours = _neighbours(p).toList();
+      final flags = neighbours.where((n) => _flagged[_index(n)]).length;
+      final hidden = neighbours
+          .where((n) => !_revealed[_index(n)] && !_flagged[_index(n)])
+          .toList();
+      if (hidden.isEmpty) continue;
+      final remaining = board!.adjacentAnimals(p) - flags;
+      if (remaining == 0) return (hidden.first, 'observe cette case');
+      if (remaining == hidden.length) {
+        return (hidden.first, 'pose une balise ici');
+      }
+    }
+    final hidden = [
+      for (var i = 0; i < config.cellCount; i++)
+        if (!_revealed[i] && !_flagged[i]) _position(i),
+    ];
+    if (hidden.isNotEmpty && remainingAnimals == 0) {
+      return (hidden.first, 'observe cette case');
+    }
+    if (hidden.isNotEmpty && remainingAnimals == hidden.length) {
+      return (hidden.first, 'pose une balise ici');
+    }
+    return null;
+  }
 
   void prepare(GeneratedBoard generatedBoard, {required bool practice}) {
     board = generatedBoard;
@@ -39,6 +95,7 @@ class GameSession {
     _startPracticeTimer();
     final index = _index(position);
     if (_revealed[index] || _flagged[index]) return;
+    _saveUndo();
     if (board!.isAnimal(position)) {
       _revealed[index] = true;
       triggeredAnimal = position;
@@ -54,6 +111,10 @@ class GameSession {
     _startPracticeTimer();
     final index = _index(position);
     if (_revealed[index]) return FlagResult.ignored;
+    if (!_flagged[index] && _flagCount == config.animalCount) {
+      return FlagResult.limitReached;
+    }
+    _saveUndo();
     if (_flagged[index]) {
       _flagged[index] = false;
       _flagCount--;

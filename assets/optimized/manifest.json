@@ -467,45 +467,6 @@
       }
     ]
   },
-  "assets/food_sort/ui/basket.png": {
-    "sha256": "bbc33fa9f4ed0c5a592a63a7f37e1f4c287a1953a6275c595b33c003542eee58",
-    "sourceBytes": 1454273,
-    "variants": [
-      {
-        "width": 1254,
-        "height": 1254,
-        "path": "assets/optimized/food_sort/ui/basket-1254.webp",
-        "bytes": 899536,
-        "sha256": "0fa7aec28e09de311e1c007f6186d6ce150bd4297a153c687064ffb096690661"
-      }
-    ]
-  },
-  "assets/food_sort/ui/cart-landscape.png": {
-    "sha256": "3b3afccebc914e97813158912998bcc4d087eb00360420ab25ef938562a808e3",
-    "sourceBytes": 1182716,
-    "variants": [
-      {
-        "width": 1374,
-        "height": 723,
-        "path": "assets/optimized/food_sort/ui/cart-landscape-1374.webp",
-        "bytes": 790018,
-        "sha256": "9be5cd1f1215099e6d45ee0ff1792ed3e5ac11824e0b5c73537c9fc78836f4e7"
-      }
-    ]
-  },
-  "assets/food_sort/ui/cart-portrait.png": {
-    "sha256": "d5f821ae852e44753c412035fb7fad806b10d1b9ad2586fdced99e91025bf769",
-    "sourceBytes": 1198650,
-    "variants": [
-      {
-        "width": 849,
-        "height": 1001,
-        "path": "assets/optimized/food_sort/ui/cart-portrait-849.webp",
-        "bytes": 762956,
-        "sha256": "424c60a5a1e2974dcbfaa8996053058815687df23cbc62b533c6479f6a2839a5"
-      }
-    ]
-  },
   "assets/food_sort/urial.png": {
     "sha256": "33bccc77a558dce846f79a94e7f6e60ac353bb69a01cea587142cb7f4978fda8",
     "sourceBytes": 29294,

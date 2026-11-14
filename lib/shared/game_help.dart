@@ -71,13 +71,15 @@ class GameHelpButton extends StatelessWidget {
   List<String> get _items => switch (kind) {
     GameHelpKind.refuge => const [
       'Observe les nombres : ils indiquent combien d’animaux se trouvent dans les cases voisines.',
-      'Touche une case pour l’observer. Maintiens-la pour poser ou retirer une balise.',
+      'Touche une case pour l’observer. Maintiens-la ou fais un clic droit pour poser ou retirer une balise.',
       'Localise tous les animaux sans révéler leur case. Pince pour zoomer et déplace le plateau si nécessaire.',
+      'L’indice signale une case à observer, une balise à poser ou une balise incorrecte.',
     ],
     GameHelpKind.match3 => const [
       'Échange deux animaux voisins pour en aligner au moins trois et remplir les objectifs avant la fin des coups.',
       'Nettoie les éléments demandés avec des alignements et fais descendre les paniers. Les formes de quatre animaux ou les lignes plus longues créent des bonus.',
       'Les nouveaux alignements forment des cascades : chaque étape compte dans les objectifs et rapporte davantage de points.',
+      'L’indice indique deux animaux que tu peux échanger.',
     ],
     GameHelpKind.mahjong => const [
       'Sélectionne deux animaux identiques pour retirer leur paire.',
@@ -99,6 +101,7 @@ class GameHelpButton extends StatelessWidget {
       'Guide le soigneur avec les flèches, les touches WASD, un glissement ou le pavé directionnel.',
       'Pousse chaque caisse de nourriture sur un point de nourrissage. Une caisse ne peut être ni tirée ni pousser une autre caisse.',
       'Annule autant de déplacements que nécessaire ou recommence le niveau si une caisse est bloquée.',
+      'L’indice indique un déplacement sur une solution trouvée depuis la position actuelle.',
     ],
     GameHelpKind.numberlink => const [
       'Relie les animaux identiques en traçant un sentier horizontal ou vertical.',

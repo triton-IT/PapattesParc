@@ -35,6 +35,7 @@ class NumberlinkScreen extends StatelessWidget {
     required this.onHint,
     required this.onBack,
     required this.onRestart,
+    this.onUndo,
     required this.onReplay,
     required this.onLevels,
     required this.onNext,
@@ -53,6 +54,7 @@ class NumberlinkScreen extends StatelessWidget {
   final VoidCallback onHint;
   final VoidCallback onBack;
   final VoidCallback onRestart;
+  final VoidCallback? onUndo;
   final VoidCallback onReplay;
   final VoidCallback onLevels;
   final VoidCallback? onNext;
@@ -109,13 +111,19 @@ class NumberlinkScreen extends StatelessWidget {
         wooden: true,
         child: NumberlinkBoard(
           session: session,
+          undoRevision: session.undoRevision,
           enabled: !finished,
           onBegin: onBegin,
           onTrace: onTrace,
           onEndTrace: onEndTrace,
         ),
       ),
-      panel: _GamePanel(session: session, onHint: onHint, onRestart: onRestart),
+      panel: _GamePanel(
+        session: session,
+        onHint: onHint,
+        onRestart: onRestart,
+        onUndo: onUndo,
+      ),
     ),
     overlays: [
       if (finished)
@@ -185,6 +193,7 @@ class NumberlinkScreen extends StatelessWidget {
                         ),
                         child: NumberlinkBoard(
                           session: session,
+                          undoRevision: session.undoRevision,
                           enabled: !finished,
                           onBegin: onBegin,
                           onTrace: onTrace,
@@ -297,6 +306,7 @@ class NumberlinkScreen extends StatelessWidget {
                         integrated: true,
                         onHint: onHint,
                         onRestart: onRestart,
+                        onUndo: onUndo,
                       ),
                     ),
                   ],
@@ -369,6 +379,7 @@ class _SceneMetric extends StatelessWidget {
 class NumberlinkBoard extends StatefulWidget {
   const NumberlinkBoard({
     required this.session,
+    this.undoRevision = 0,
     required this.enabled,
     required this.onBegin,
     required this.onTrace,
@@ -377,6 +388,7 @@ class NumberlinkBoard extends StatefulWidget {
   });
 
   final NumberlinkSession session;
+  final int undoRevision;
   final bool enabled;
   final NumberlinkTraceCallback onBegin;
   final NumberlinkTraceCallback onTrace;
@@ -404,7 +416,11 @@ class _NumberlinkBoardState extends State<NumberlinkBoard> {
   @override
   void didUpdateWidget(NumberlinkBoard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.session == widget.session && widget.enabled) return;
+    if (oldWidget.session == widget.session &&
+        widget.enabled &&
+        oldWidget.undoRevision == widget.undoRevision) {
+      return;
+    }
     _cursor = const NumberlinkPosition(0, 0);
     _pointerOrigin = null;
     _lastPosition = null;
@@ -847,12 +863,14 @@ class _GamePanel extends StatelessWidget {
     this.integrated = false,
     required this.onHint,
     required this.onRestart,
+    this.onUndo,
   });
 
   final NumberlinkSession session;
   final bool integrated;
   final VoidCallback onHint;
   final VoidCallback onRestart;
+  final VoidCallback? onUndo;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -863,6 +881,13 @@ class _GamePanel extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        _SceneAction(
+          key: const Key('numberlink-undo'),
+          icon: Icons.undo_rounded,
+          label: 'ANNULER',
+          onPressed: session.canUndo ? onUndo : null,
+        ),
+        const SizedBox(height: 20),
         _SceneAction(
           key: const Key('numberlink-hint'),
           icon: Icons.lightbulb_rounded,
@@ -973,52 +998,59 @@ class _ResultOverlay extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.pets_rounded, size: 54, color: AppColors.sun),
-                Text(
+                const GameResultIcon(
+                  Icons.pets_rounded,
+                  size: 54,
+                  color: AppColors.sun,
+                ),
+                GameResultText(
                   'SENTIERS TERMINÉS !',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),
-                Text(
+                GameResultText(
                   '${formatDuration(session.elapsed)} · '
                   '${isFreeGame ? '${session.hintsUsed} indice(s)' : '${session.footprints} empreinte(s)'}'
                   '${newRecord ? '\nNouveau record !' : ''}',
                   textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 18),
                 if (onNext != null)
                   FilledButton.icon(
                     key: const Key('numberlink-next'),
                     onPressed: onNext,
-                    icon: const Icon(Icons.arrow_forward_rounded),
-                    label: const Text('NIVEAU SUIVANT'),
+                    icon: const GameResultIcon(Icons.arrow_forward_rounded),
+                    label: const GameResultText('NIVEAU SUIVANT'),
                   ),
                 TextButton.icon(
                   key: const Key('numberlink-replay'),
                   onPressed: onReplay,
-                  icon: const Icon(Icons.replay_rounded),
-                  label: const Text('REJOUER'),
+                  icon: const GameResultIcon(Icons.replay_rounded),
+                  label: const GameResultText('REJOUER'),
                 ),
                 if (onNewGame != null)
                   TextButton.icon(
                     key: const Key('numberlink-new-free-game'),
                     onPressed: onNewGame,
-                    icon: const Icon(Icons.casino_rounded),
-                    label: const Text('NOUVELLE GRILLE'),
+                    icon: const GameResultIcon(Icons.casino_rounded),
+                    label: const GameResultText('NOUVELLE GRILLE'),
                   ),
                 if (onConfigure != null)
                   TextButton.icon(
                     key: const Key('numberlink-configure'),
                     onPressed: onConfigure,
-                    icon: const Icon(Icons.tune_rounded),
-                    label: const Text('MODIFIER LES RÉGLAGES'),
+                    icon: const GameResultIcon(Icons.tune_rounded),
+                    label: const GameResultText('MODIFIER LES RÉGLAGES'),
                   ),
                 TextButton.icon(
                   key: const Key('numberlink-levels'),
                   onPressed: onLevels,
-                  icon: const Icon(Icons.route_rounded),
-                  label: const Text('RETOUR AUX NIVEAUX'),
+                  icon: const GameResultIcon(Icons.route_rounded),
+                  label: const GameResultText('RETOUR AUX NIVEAUX'),
                 ),
               ],
             ),

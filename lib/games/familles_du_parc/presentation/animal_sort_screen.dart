@@ -5,7 +5,6 @@ import '../../../shared/artwork.dart';
 import '../../../shared/animal_scene.dart';
 import '../../../shared/board_camera.dart';
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
@@ -92,7 +91,7 @@ class AnimalSortScreen extends StatelessWidget {
         label: '${session.moves} déplacement${session.moves == 1 ? '' : 's'}',
       ),
     ],
-    actions: [
+    fixedActions: [
       GameStageAction(
         key: const Key('animal-sort-undo'),
         icon: Icons.undo_rounded,
@@ -456,17 +455,18 @@ class _AnimalSortBoard extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: _CartGroundShadow(portrait: !landscape),
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: ArtworkImage(
-                      landscape
-                          ? 'assets/food_sort/ui/cart-landscape.png'
-                          : 'assets/food_sort/ui/cart-portrait.png',
-                      fit: BoxFit.fill,
+                  const Positioned(
+                    top: 8,
+                    left: 0,
+                    right: 0,
+                    child: Text(
+                      'Prends la portion du dessus',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xff633b20),
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
                   for (var index = 0; index < count; index++)
@@ -606,29 +606,6 @@ class _PlacedBasket extends StatelessWidget {
   );
 }
 
-class _CartGroundShadow extends CustomPainter {
-  const _CartGroundShadow({required this.portrait});
-
-  final bool portrait;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = portrait
-        ? const Rect.fromLTWH(58, 428, 284, 22)
-        : const Rect.fromLTWH(105, 354, 550, 24);
-    canvas.drawOval(
-      rect,
-      Paint()
-        ..color = const Color(0x66152620)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_CartGroundShadow oldDelegate) =>
-      oldDelegate.portrait != portrait;
-}
-
 class _FoodBasket extends StatelessWidget {
   const _FoodBasket({
     required this.index,
@@ -657,7 +634,7 @@ class _FoodBasket extends StatelessWidget {
       button: true,
       label: animals.isEmpty
           ? 'Panier ${index + 1}, vide'
-          : 'Panier ${index + 1}, ${animals.length} portions, '
+          : 'Panier ${index + 1}, ${animals.length} portions, en commençant par la portion du dessus : '
                 '${animals.reversed.map((a) => '${a.foodLabel} pour ${a.label}').join(', ')}',
       child: InkWell(
         key: Key('animal-sort-zone-$index'),
@@ -671,29 +648,32 @@ class _FoodBasket extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              if (emphasized)
-                Positioned.fill(
-                  child: Transform.scale(
-                    scale: 1.05,
-                    child: ImageFiltered(
-                      imageFilter: ui.ImageFilter.blur(sigmaX: 7, sigmaY: 7),
-                      child: ArtworkImage(
-                        'assets/food_sort/ui/basket.png',
-                        fit: BoxFit.fill,
-                        color: selected
-                            ? AppColors.sun
-                            : hintSource
-                            ? const Color(0xff64b5f6)
-                            : AppColors.success,
-                        colorBlendMode: BlendMode.srcIn,
-                      ),
+              Positioned(
+                left: 18,
+                right: 18,
+                top: 18,
+                bottom: 8,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: const Color(0xff754723),
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(28),
+                      top: Radius.circular(5),
                     ),
+                    border: Border.all(
+                      color: emphasized
+                          ? AppColors.sun
+                          : const Color(0xffc99653),
+                      width: emphasized ? 5 : 4,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x55000000),
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
                   ),
-                ),
-              Positioned.fill(
-                child: ArtworkImage(
-                  'assets/food_sort/ui/basket.png',
-                  fit: BoxFit.fill,
                 ),
               ),
               for (var depth = animalSortZoneCapacity - 1; depth >= 0; depth--)
@@ -711,6 +691,16 @@ class _FoodBasket extends StatelessWidget {
                       lift: (animalSortZoneCapacity - animals.length) * 34 + 14,
                     ),
                   ),
+              if (animals.isNotEmpty)
+                Positioned(
+                  right: 0,
+                  top: 24 + (animalSortZoneCapacity - animals.length) * 34,
+                  child: const Icon(
+                    Icons.arrow_left_rounded,
+                    color: Color(0xffffdb70),
+                    size: 32,
+                  ),
+                ),
               Positioned(
                 left: 0,
                 top: 35,
@@ -880,28 +870,31 @@ class _ResultOverlay extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(
+                const GameResultIcon(
                   Icons.shopping_basket_rounded,
                   size: 54,
                   color: AppColors.sun,
                 ),
                 const SizedBox(height: 10),
-                Text(
+                GameResultText(
                   'REPAS PRÉPARÉS !',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),
-                Text(
+                GameResultText(
                   '${session.moves} déplacements${newRecord ? ' · Nouveau record !' : ''}',
                   textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     for (var index = 0; index < 3; index++)
-                      Icon(
+                      GameResultIcon(
                         Icons.pets_rounded,
                         size: 32,
                         color: index < session.footprints()
@@ -914,29 +907,29 @@ class _ResultOverlay extends StatelessWidget {
                 if (freeGame) ...[
                   FilledButton.icon(
                     onPressed: onNewGame,
-                    icon: const Icon(Icons.shuffle_rounded),
-                    label: const Text('NOUVEAU MÉLANGE'),
+                    icon: const GameResultIcon(Icons.shuffle_rounded),
+                    label: const GameResultText('NOUVEAU MÉLANGE'),
                   ),
                   TextButton(
                     onPressed: onConfigure,
-                    child: const Text('MODIFIER LA PARTIE'),
+                    child: const GameResultText('MODIFIER LA PARTIE'),
                   ),
                 ] else ...[
                   if (onNext != null)
                     FilledButton.icon(
                       onPressed: onNext,
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text('NIVEAU SUIVANT'),
+                      icon: const GameResultIcon(Icons.arrow_forward_rounded),
+                      label: const GameResultText('NIVEAU SUIVANT'),
                     ),
                   TextButton(
                     onPressed: onLevels,
-                    child: const Text('RETOUR AUX NIVEAUX'),
+                    child: const GameResultText('RETOUR AUX NIVEAUX'),
                   ),
                 ],
                 TextButton.icon(
                   onPressed: onReplay,
-                  icon: const Icon(Icons.replay_rounded),
-                  label: const Text('REJOUER'),
+                  icon: const GameResultIcon(Icons.replay_rounded),
+                  label: const GameResultText('REJOUER'),
                 ),
               ],
             ),

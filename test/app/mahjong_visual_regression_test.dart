@@ -160,6 +160,8 @@ MahjongScreen _screen(
   onBlocked: () {},
   onHint: () {},
   onShuffle: () {},
+  onUndo: () {},
+  onRestart: () {},
   onBack: () {},
   onReplaySame: () {},
   onReplayNew: () {},

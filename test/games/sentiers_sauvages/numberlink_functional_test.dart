@@ -14,6 +14,15 @@ import 'package:papatte_parc/shared/park_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test('annuler restaure les étapes du sentier', () {
+    final session = NumberlinkSession(_smallLevel());
+    session.begin(const NumberlinkPosition(0, 0));
+    session.trace(const NumberlinkPosition(1, 0));
+    expect(session.undo(), isTrue);
+    expect(session.pathFor(0), [const NumberlinkPosition(0, 0)]);
+    expect(session.undo(), isTrue);
+    expect(session.pathFor(0), isEmpty);
+  });
   test('les 45 niveaux sont distincts, couvrants et certifiés uniques', () {
     final campaign = buildNumberlinkCampaign(levels);
     final second = buildNumberlinkCampaign(levels);

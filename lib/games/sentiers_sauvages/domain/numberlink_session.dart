@@ -8,6 +8,24 @@ class NumberlinkSession {
   final Map<int, List<NumberlinkPosition>> _paths;
   final Set<int> _hintedPairIds = {};
   int? _activePairId;
+  int undoRevision = 0;
+  final List<Map<int, List<NumberlinkPosition>>> _history = [];
+  bool get canUndo => _history.isNotEmpty && status == NumberlinkStatus.playing;
+  void _saveUndo() => _history.add({
+    for (final entry in _paths.entries) entry.key: List.of(entry.value),
+  });
+  bool undo() {
+    if (!canUndo) return false;
+    final snapshot = _history.removeLast();
+    for (final entry in snapshot.entries) {
+      _paths[entry.key]!
+        ..clear()
+        ..addAll(entry.value);
+    }
+    _activePairId = null;
+    undoRevision++;
+    return true;
+  }
 
   NumberlinkStatus status = NumberlinkStatus.playing;
   Duration elapsed = Duration.zero;
@@ -59,6 +77,7 @@ class NumberlinkSession {
     final endpoint = level.pairAtEndpoint(position);
     if (endpoint != null) {
       final path = _paths[endpoint.id]!;
+      if (path.length != 1 || path.first != position) _saveUndo();
       if (path.length > 1) hasStarted = true;
       path
         ..clear()
@@ -70,6 +89,7 @@ class NumberlinkSession {
       final index = entry.value.indexOf(position);
       if (index < 0) continue;
       if (index < entry.value.length - 1) {
+        _saveUndo();
         entry.value.removeRange(index + 1, entry.value.length);
         hasStarted = true;
       }
@@ -93,6 +113,7 @@ class NumberlinkSession {
     final ownIndex = path.indexOf(position);
     if (ownIndex >= 0) {
       if (ownIndex == path.length - 1) return NumberlinkTraceResult.blocked;
+      _saveUndo();
       path.removeRange(ownIndex + 1, path.length);
       hasStarted = true;
       return NumberlinkTraceResult.retracted;
@@ -104,6 +125,7 @@ class NumberlinkSession {
       if (endpoint.id != pairId || position != pair.otherEndpoint(path.first)) {
         return NumberlinkTraceResult.blocked;
       }
+      _saveUndo();
       path.add(position);
       hasStarted = true;
       _activePairId = null;
@@ -115,6 +137,7 @@ class NumberlinkSession {
     }
     if (pairAt(position) != null) return NumberlinkTraceResult.blocked;
 
+    _saveUndo();
     path.add(position);
     hasStarted = true;
     return NumberlinkTraceResult.extended;

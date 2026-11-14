@@ -2,8 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:papatte_parc/shared/game_stage_layout.dart';
 import 'package:papatte_parc/shared/park_catalog.dart';
+import 'package:papatte_parc/shared/clay_text.dart';
 
 void main() {
+  testWidgets('modelled result text wraps and retains its accessible label', (
+    tester,
+  ) async {
+    const label = 'REPAS PRÉPARÉS !\nNouveau record !';
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 120,
+              child: GameResultText(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 28),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(ClayText), findsNWidgets(6));
+    expect(find.bySemanticsLabel(label), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('result actions remain accessible on a short screen', (
     tester,
   ) async {

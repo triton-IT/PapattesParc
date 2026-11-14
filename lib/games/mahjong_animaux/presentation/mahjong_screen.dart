@@ -33,6 +33,8 @@ class MahjongScreen extends StatelessWidget {
     required this.onBlocked,
     required this.onHint,
     required this.onShuffle,
+    this.onUndo,
+    this.onRestart,
     required this.onBack,
     required this.onReplaySame,
     required this.onReplayNew,
@@ -54,6 +56,7 @@ class MahjongScreen extends StatelessWidget {
   final VoidCallback onBlocked;
   final VoidCallback onHint;
   final VoidCallback onShuffle;
+  final VoidCallback? onUndo, onRestart;
   final VoidCallback onBack;
   final VoidCallback onReplaySame;
   final VoidCallback onReplayNew;
@@ -88,6 +91,20 @@ class MahjongScreen extends StatelessWidget {
     backKey: const Key('mahjong-back'),
     onBack: onBack,
     helpKind: GameHelpKind.mahjong,
+    fixedActions: [
+      GameStageAction(
+        key: const Key('mahjong-undo'),
+        icon: Icons.undo_rounded,
+        tooltip: 'Annuler',
+        onPressed: session.canUndo ? onUndo : null,
+      ),
+      GameStageAction(
+        key: const Key('mahjong-restart'),
+        icon: Icons.refresh_rounded,
+        tooltip: 'Recommencer',
+        onPressed: onRestart,
+      ),
+    ],
     metrics: [
       GameStageMetric(
         icon: Icons.timer_rounded,
@@ -267,6 +284,8 @@ class MahjongScreen extends StatelessWidget {
                         session: session,
                         onHint: onHint,
                         onShuffle: onShuffle,
+                        onUndo: onUndo,
+                        onRestart: onRestart,
                       ),
                     ),
                   ],
@@ -553,20 +572,37 @@ class _SceneCommands extends StatelessWidget {
     required this.session,
     required this.onHint,
     required this.onShuffle,
+    this.onUndo,
+    this.onRestart,
   });
   final MahjongSession session;
   final VoidCallback onHint, onShuffle;
+  final VoidCallback? onUndo, onRestart;
   @override
   Widget build(BuildContext context) => Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
+      _button(
+        key: const Key('mahjong-undo'),
+        icon: Icons.undo_rounded,
+        label: 'ANNULER',
+        onPressed: session.canUndo ? onUndo : null,
+      ),
+      const SizedBox(height: 10),
+      _button(
+        key: const Key('mahjong-restart'),
+        icon: Icons.refresh_rounded,
+        label: 'RECOMMENCER',
+        onPressed: onRestart,
+      ),
+      const SizedBox(height: 10),
       _button(
         key: const Key('mahjong-hint'),
         icon: Icons.lightbulb_rounded,
         label: 'INDICE',
         onPressed: session.availablePair == null ? null : onHint,
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: 10),
       _button(
         key: const Key('mahjong-shuffle'),
         icon: Icons.shuffle_rounded,
@@ -582,7 +618,7 @@ class _SceneCommands extends StatelessWidget {
     required VoidCallback? onPressed,
   }) => SizedBox(
     width: double.infinity,
-    height: 75,
+    height: 65,
     child: WoodenSign(
       child: TextButton.icon(
         key: key,
@@ -681,35 +717,38 @@ class _ResultOverlay extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(
+                  GameResultIcon(
                     won ? Icons.pets_rounded : Icons.block_rounded,
                     size: 54,
                     color: won ? AppColors.sun : AppColors.danger,
                   ),
-                  Text(
+                  GameResultText(
                     won ? 'PLATEAU TERMINÉ !' : 'PLUS DE PAIRES',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  GameResultText(
                     won
                         ? '${formatDuration(session.elapsed)} · ${session.shufflesUsed} mélange(s)${isFreeGame ? '' : ' · ${session.footprints} empreinte(s)'}${newRecord ? '\nNouveau record !' : ''}'
                         : 'Les trois mélanges ont été utilisés. Essaie un autre ordre.',
                     textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontSize: 20),
                   ),
                   const SizedBox(height: 18),
                   if (won && !isFreeGame && onNext != null)
                     FilledButton.icon(
                       onPressed: onNext,
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text('NIVEAU SUIVANT'),
+                      icon: const GameResultIcon(Icons.arrow_forward_rounded),
+                      label: const GameResultText('NIVEAU SUIVANT'),
                     ),
                   TextButton.icon(
                     key: const Key('mahjong-replay-same'),
                     onPressed: onReplaySame,
-                    icon: const Icon(Icons.replay_rounded),
-                    label: Text(
+                    icon: const GameResultIcon(Icons.replay_rounded),
+                    label: GameResultText(
                       isFreeGame ? 'REJOUER CETTE PARTIE' : 'REJOUER',
                     ),
                   ),
@@ -717,19 +756,19 @@ class _ResultOverlay extends StatelessWidget {
                     TextButton.icon(
                       key: const Key('mahjong-new-free-game'),
                       onPressed: onReplayNew,
-                      icon: const Icon(Icons.casino_rounded),
-                      label: const Text('NOUVELLE PARTIE'),
+                      icon: const GameResultIcon(Icons.casino_rounded),
+                      label: const GameResultText('NOUVELLE PARTIE'),
                     ),
                   if (onConfigure != null)
                     TextButton.icon(
                       onPressed: onConfigure,
-                      icon: const Icon(Icons.tune_rounded),
-                      label: const Text('MODIFIER LES RÉGLAGES'),
+                      icon: const GameResultIcon(Icons.tune_rounded),
+                      label: const GameResultText('MODIFIER LES RÉGLAGES'),
                     ),
                   TextButton.icon(
                     onPressed: onLevels,
-                    icon: const Icon(Icons.grid_view_rounded),
-                    label: const Text('RETOUR AUX NIVEAUX'),
+                    icon: const GameResultIcon(Icons.grid_view_rounded),
+                    label: const GameResultText('RETOUR AUX NIVEAUX'),
                   ),
                 ],
               ),

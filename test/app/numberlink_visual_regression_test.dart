@@ -228,6 +228,7 @@ NumberlinkScreen _screen(NumberlinkSession session, {required bool finished}) =>
       onHint: session.hint,
       onBack: () {},
       onRestart: () {},
+      onUndo: () {},
       onReplay: () {},
       onLevels: () {},
       onNext: () {},

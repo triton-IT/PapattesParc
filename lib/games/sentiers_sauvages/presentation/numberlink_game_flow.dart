@@ -157,6 +157,12 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
 
   void _endTrace() => _session!.endTrace();
 
+  void _undo() {
+    if (!_session!.undo()) return;
+    unawaited(_audio.playEffect(SoundEffect.click));
+    setState(() {});
+  }
+
   void _hint() {
     _clock.flush();
     final pairId = _session!.hint();
@@ -339,6 +345,7 @@ class _NumberlinkGameFlowState extends State<NumberlinkGameFlow> {
         onHint: _hint,
         onBack: () => unawaited(_requestBack()),
         onRestart: () => unawaited(_requestRestart()),
+        onUndo: _undo,
         onReplay: () => _startSession(_level!),
         onLevels: _showLevels,
         onNext: _freeConfig == null && _level!.number < _levels.length

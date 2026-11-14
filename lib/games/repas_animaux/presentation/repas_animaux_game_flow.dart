@@ -4,6 +4,7 @@ import '../../../shared/generation_overlay.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../shared/game_audio.dart';
 import '../../../shared/park_catalog.dart';
@@ -13,11 +14,22 @@ import '../domain/campaign.dart';
 import '../domain/generator.dart';
 import '../domain/models.dart';
 import '../domain/repas_session.dart';
+import '../domain/solver.dart';
 import 'custom_game_screen.dart';
 import 'level_select_screen.dart';
 import 'repas_screen.dart';
 
 enum _RepasScreen { levels, custom, playing }
+
+RepasDirection? _solveHint(
+  (Set<RepasPosition>, Set<RepasPosition>, Set<RepasPosition>, RepasPosition)
+  data,
+) => nextRepasSolutionStep(
+  floor: data.$1,
+  targets: data.$2,
+  crates: data.$3,
+  keeper: data.$4,
+);
 
 class RepasAnimauxGameFlow extends StatefulWidget {
   const RepasAnimauxGameFlow({
@@ -53,6 +65,7 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
   bool _newRecord = false;
   bool _generating = false;
   int _nonce = 0;
+  bool _solvingHint = false;
 
   @override
   void initState() {
@@ -149,6 +162,52 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
     if (!_session!.undo()) return;
     unawaited(_audio.playEffect(SoundEffect.click));
     setState(() {});
+  }
+
+  Future<void> _hint() async {
+    final session = _session!;
+    if (_solvingHint || (_freeConfig == null && session.hintsUsed >= 3)) return;
+    final keeper = session.keeper;
+    final crates = {...session.crates};
+    setState(() => _solvingHint = true);
+    RepasDirection? direction;
+    try {
+      direction = await compute(_solveHint, (
+        session.level.floor,
+        session.level.targets,
+        crates,
+        keeper,
+      ));
+    } catch (_) {
+      if (mounted) {
+        setState(() => _solvingHint = false);
+        _toast('Impossible de calculer un indice. Réessaie.');
+      }
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _solvingHint = false);
+    if (_session != session ||
+        session.keeper != keeper ||
+        !setEquals(session.crates, crates) ||
+        _finished) {
+      return;
+    }
+    if (direction == null) {
+      _toast(
+        'Aucune solution trouvée depuis cette position. Essaie d’annuler un déplacement.',
+      );
+      return;
+    }
+    setState(() => session.hintsUsed++);
+    _toast(
+      'Indice : ${switch (direction) {
+        RepasDirection.north => 'monte',
+        RepasDirection.east => 'va à droite',
+        RepasDirection.south => 'descends',
+        RepasDirection.west => 'va à gauche',
+      }}.',
+    );
   }
 
   Future<void> _requestRestart() async {
@@ -287,6 +346,7 @@ class _RepasAnimauxGameFlowState extends State<RepasAnimauxGameFlow> {
             : 'PARTIE LIBRE · ${_freeConfig!.difficulty.label}',
         onMove: _move,
         onUndo: _undo,
+        onHint: _solvingHint ? null : () => unawaited(_hint()),
         onRestart: () => unawaited(_requestRestart()),
         onLevels: () => unawaited(_requestLevels()),
         onRetry: () => _startSession(_level!),

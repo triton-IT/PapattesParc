@@ -15,6 +15,14 @@ void main() {
       Icons.zoom_out,
       Icons.pan_tool_outlined,
       Icons.center_focus_strong,
+      Icons.touch_app_rounded,
+      Icons.stars_rounded,
+      Icons.layers_rounded,
+      Icons.replay_circle_filled_rounded,
+      Icons.inventory_2_rounded,
+      Icons.directions_walk_rounded,
+      Icons.route_rounded,
+      Icons.restaurant_rounded,
     ];
     await tester.pumpWidget(
       MaterialApp(

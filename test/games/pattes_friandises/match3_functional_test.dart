@@ -7,11 +7,102 @@ import 'package:papatte_parc/games/pattes_friandises/domain/models.dart';
 import 'package:papatte_parc/games/pattes_friandises/presentation/match3_screen.dart';
 import 'package:papatte_parc/games/refuge/domain/levels.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
+import 'package:papatte_parc/shared/clay_animal_frame.dart';
 import 'package:papatte_parc/shared/clay_text.dart';
 import 'package:papatte_parc/shared/park_catalog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  testWidgets('les objectifs animaux gardent leur libellé et leur cadre', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final level = buildMatch3Campaign(levels).firstWhere(
+      (level) => level.goals.any((goal) => goal.animal == AnimalKind.tamarin),
+    );
+    final session = Match3Session(level, 1);
+    for (final size in [const Size(360, 800), const Size(1672, 941)]) {
+      await tester.binding.setSurfaceSize(size);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildAppTheme(),
+          home: Match3Screen(
+            session: session,
+            selected: null,
+            onSelect: (_) {},
+            onSwap: (_, _) {},
+            onLevels: () {},
+            onRetry: () {},
+            onNext: null,
+          ),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate((w) => w is ClayText && w.text == 'Tamarin'),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('match3-goal-animal-tamarin')),
+          matching: find.byType(ClayAnimalFrame),
+        ),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull, reason: '$size');
+    }
+  });
+
+  test('annuler restaure le plateau, les objectifs et les coups', () {
+    final level = buildMatch3Campaign(levels).first;
+    final session = Match3Session(level, 71);
+    final before = [
+      for (var y = 0; y < 8; y++)
+        for (var x = 0; x < 8; x++) session.cell(Match3Position(x, y)),
+    ];
+    final hint = session.availableHint()!;
+    final moves = session.movesLeft;
+    expect(session.swap(hint.$1, hint.$2).changed, isTrue);
+    final after = [
+      for (var y = 0; y < 8; y++)
+        for (var x = 0; x < 8; x++)
+          (
+            session.cell(Match3Position(x, y)).tile?.animal,
+            session.cell(Match3Position(x, y)).tile?.special,
+          ),
+    ];
+    expect(session.undo(), isTrue);
+    expect(session.movesLeft, moves);
+    expect(session.score, 0);
+    expect(
+      [
+        for (var y = 0; y < 8; y++)
+          for (var x = 0; x < 8; x++) session.cell(Match3Position(x, y)).tile,
+      ],
+      [for (final cell in before) cell.tile],
+    );
+    session.swap(hint.$1, hint.$2);
+    expect([
+      for (var y = 0; y < 8; y++)
+        for (var x = 0; x < 8; x++)
+          (
+            session.cell(Match3Position(x, y)).tile?.animal,
+            session.cell(Match3Position(x, y)).tile?.special,
+          ),
+    ], after);
+  });
+  test(
+    'un indice propose un échange réellement jouable sans modifier le plateau',
+    () {
+      for (final level in buildMatch3Campaign(levels)) {
+        final session = Match3Session(level, level.number * 7919);
+        final moves = session.movesLeft;
+        final hint = session.availableHint();
+        expect(hint, isNotNull);
+        expect(session.movesLeft, moves);
+        expect(session.swap(hint!.$1, hint.$2).changed, isTrue);
+      }
+    },
+  );
   test('les 45 niveaux démarrent sans alignement et avec un coup possible', () {
     final campaign = buildMatch3Campaign(levels);
 
@@ -380,7 +471,10 @@ void main() {
           ),
         ),
       );
-      expect(find.text(entry.value), findsOneWidget);
+      expect(
+        find.byWidgetPredicate((w) => w is ClayText && w.text == entry.value),
+        findsOneWidget,
+      );
     }
   });
 
