@@ -392,9 +392,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('NIVEAU 1 RÉUSSI !'), findsOneWidget);
+    expect(find.bySemanticsLabel('NIVEAU 1 RÉUSSI !'), findsOneWidget);
     expect(
-      find.textContaining('objectif ${level.targetRedeals}'),
+      find.bySemanticsLabel(RegExp('objectif ${level.targetRedeals}')),
       findsOneWidget,
     );
     await tester.tap(find.byKey(const Key('solitaire-replay')));
