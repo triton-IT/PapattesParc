@@ -50,6 +50,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   LevelDefinition? _level;
   late final ActiveGameClock _clock;
   bool _newRecord = false;
+  CellPosition? _hinted;
   late final GameAudio _audio;
   late bool _musicEnabled;
   late bool _effectsEnabled;
@@ -87,6 +88,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   void _startSelectedLevel() {
+    _hinted = null;
     _level = levels[_selectedLevelIndex];
     unawaited(_audio.playLevel(_level!.temperament));
     _board = null;
@@ -101,6 +103,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   void _startCustomLevel(LevelDefinition level) {
+    _hinted = null;
     _level = level;
     unawaited(_audio.playLevel(level.temperament));
     _board = null;
@@ -110,6 +113,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   Future<void> _reveal(CellPosition position) async {
+    _hinted = null;
     _clock.flush();
     if (_screen != _Screen.playing) return;
     if (_session!.status == GameStatus.waitingFirstMove) {
@@ -124,6 +128,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   Future<void> _toggleFlag(CellPosition position) async {
+    _hinted = null;
     _clock.flush();
     if (_screen != _Screen.playing) return;
     if (_session!.status == GameStatus.waitingFirstMove) {
@@ -203,6 +208,7 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   void _replaySameBoard() {
+    _hinted = null;
     _session = GameSession(_level!.config)
       ..prepare(_board!, practice: !_level!.isCustom);
     _clock.reset();
@@ -210,10 +216,34 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
   }
 
   void _replayNewBoard() {
+    _hinted = null;
     _board = null;
     _session = GameSession(_level!.config);
     _clock.reset();
     setState(() => _screen = _Screen.playing);
+  }
+
+  void _hint() {
+    if (_screen != _Screen.playing ||
+        (_level!.isCustom == false && _session!.hintsUsed >= 3)) {
+      return;
+    }
+    final hint = _session!.hint();
+    if (hint == null) {
+      _toast('Aucun indice disponible pour cette grille.');
+      return;
+    }
+    setState(() {
+      _hinted = hint.$1;
+      _session!.hintsUsed++;
+    });
+    _toast(hint.$2);
+  }
+
+  void _undo() {
+    if (!_session!.undo()) return;
+    setState(() => _hinted = null);
+    unawaited(_audio.playEffect(SoundEffect.click));
   }
 
   void _startNextLevel() {
@@ -332,6 +362,9 @@ class _RefugeGameFlowState extends State<RefugeGameFlow> {
         elapsed: _clock,
         level: _level!,
         session: _session!,
+        hinted: _hinted,
+        onHint: _hint,
+        onUndo: _undo,
         generating: _screen == _Screen.generating,
         finished: _screen == _Screen.finished,
         newRecord: _newRecord,

@@ -23,6 +23,7 @@ class RepasScreen extends StatelessWidget {
     this.freeGameLabel,
     required this.onMove,
     required this.onUndo,
+    this.onHint,
     required this.onRestart,
     required this.onLevels,
     required this.onRetry,
@@ -38,6 +39,7 @@ class RepasScreen extends StatelessWidget {
   final String? freeGameLabel;
   final ValueChanged<RepasDirection> onMove;
   final VoidCallback onUndo;
+  final VoidCallback? onHint;
   final VoidCallback onRestart;
   final VoidCallback onLevels;
   final VoidCallback onRetry;
@@ -85,6 +87,19 @@ class RepasScreen extends StatelessWidget {
     onBack: onLevels,
     backTooltip: 'Retour aux niveaux',
     helpKind: GameHelpKind.repasAnimaux,
+    fixedActions: [
+      GameStageAction(
+        key: const Key('repas-hint'),
+        icon: Icons.lightbulb_rounded,
+        badgeLabel: freeGameLabel != null ? null : '${3 - session.hintsUsed}',
+        tooltip: freeGameLabel != null
+            ? 'Indice'
+            : 'Indice ${3 - session.hintsUsed}/3',
+        onPressed: !finished && (freeGameLabel != null || session.hintsUsed < 3)
+            ? onHint
+            : null,
+      ),
+    ],
     metrics: [
       GameStageMetric(
         icon: Icons.inventory_2_rounded,
@@ -264,6 +279,12 @@ class RepasScreen extends StatelessWidget {
                         onMove: onMove,
                         onUndo: onUndo,
                         onRestart: onRestart,
+                        onHint:
+                            !finished &&
+                                (freeGameLabel != null || session.hintsUsed < 3)
+                            ? onHint
+                            : null,
+                        freeGame: freeGameLabel != null,
                       ),
                     ),
                   ],
@@ -745,16 +766,27 @@ class _SceneCommands extends StatelessWidget {
     required this.onMove,
     required this.onUndo,
     required this.onRestart,
+    required this.onHint,
+    required this.freeGame,
   });
   final RepasSession session;
   final ValueChanged<RepasDirection> onMove;
   final VoidCallback onUndo, onRestart;
+  final VoidCallback? onHint;
+  final bool freeGame;
   @override
   Widget build(BuildContext context) => Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       _DirectionPad(onMove: onMove, wooden: true),
-      const SizedBox(height: 20),
+      const SizedBox(height: 10),
+      _sign(
+        const Key('repas-hint'),
+        Icons.lightbulb_rounded,
+        freeGame ? 'INDICE' : 'INDICE ${3 - session.hintsUsed}/3',
+        onHint,
+      ),
+      const SizedBox(height: 10),
       _sign(
         const Key('repas-undo'),
         Icons.undo_rounded,
@@ -853,21 +885,29 @@ class _ControlButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (wooden) {
-      return SizedBox.square(
-        dimension: 48,
-        child: DecoratedBox(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/optimized/sudoku/camera-stone.webp'),
-              fit: BoxFit.fill,
-            ),
-          ),
+      return SizedBox(
+        width: 72,
+        height: 48,
+        child: WoodenSign(
           child: IconButton(
             tooltip: tooltip,
             onPressed: onPressed,
-            color: const Color(0xff226957),
-            iconSize: 28,
-            icon: ClaySymbol(icon),
+            color: const Color(0xffffedc2),
+            iconSize: 32,
+            icon: RotatedBox(
+              quarterTurns: switch (icon) {
+                Icons.arrow_forward_rounded => 1,
+                Icons.arrow_downward_rounded => 2,
+                Icons.arrow_back_rounded => 3,
+                _ => 0,
+              },
+              child: Image.asset(
+                'assets/optimized/clay_type/direction-arrow.png',
+                width: 32,
+                height: 32,
+                cacheWidth: 128,
+              ),
+            ),
           ),
         ),
       );
@@ -901,14 +941,29 @@ class _DirectionPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    width: 160,
+    width: wooden ? 224 : 160,
     height: 104,
     child: Stack(
       children: [
-        _button(RepasDirection.north, Icons.arrow_upward_rounded, 56, 0),
+        _button(
+          RepasDirection.north,
+          Icons.arrow_upward_rounded,
+          wooden ? 76 : 56,
+          0,
+        ),
         _button(RepasDirection.west, Icons.arrow_back_rounded, 0, 56),
-        _button(RepasDirection.south, Icons.arrow_downward_rounded, 56, 56),
-        _button(RepasDirection.east, Icons.arrow_forward_rounded, 112, 56),
+        _button(
+          RepasDirection.south,
+          Icons.arrow_downward_rounded,
+          wooden ? 76 : 56,
+          56,
+        ),
+        _button(
+          RepasDirection.east,
+          Icons.arrow_forward_rounded,
+          wooden ? 152 : 112,
+          56,
+        ),
       ],
     ),
   );
@@ -972,58 +1027,61 @@ class _ResultOverlay extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(
+                const GameResultIcon(
                   Icons.restaurant_rounded,
                   size: 54,
                   color: AppColors.sun,
                 ),
                 const SizedBox(height: 10),
-                Text(
+                GameResultText(
                   'REPAS DISTRIBUÉ !',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),
-                Text(
+                GameResultText(
                   freeGame
                       ? '${session.pushes} poussées'
                       : '${session.pushes} poussées · '
                             '${session.footprints()} empreinte(s)'
                             '${newRecord ? '\nNouveau record !' : ''}',
                   textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 18),
                 if (onNew != null)
                   FilledButton.icon(
                     key: const Key('repas-new-free-game'),
                     onPressed: onNew,
-                    icon: const Icon(Icons.auto_awesome_rounded),
-                    label: const Text('NOUVELLE GRILLE'),
+                    icon: const GameResultIcon(Icons.auto_awesome_rounded),
+                    label: const GameResultText('NOUVELLE GRILLE'),
                   )
                 else if (onNext != null)
                   FilledButton.icon(
                     key: const Key('repas-next-level'),
                     onPressed: onNext,
-                    icon: const Icon(Icons.arrow_forward_rounded),
-                    label: const Text('NIVEAU SUIVANT'),
+                    icon: const GameResultIcon(Icons.arrow_forward_rounded),
+                    label: const GameResultText('NIVEAU SUIVANT'),
                   ),
                 TextButton.icon(
                   key: const Key('repas-retry'),
                   onPressed: onRetry,
                   icon: const ClaySymbol(Icons.refresh_rounded),
-                  label: const Text('REJOUER'),
+                  label: const GameResultText('REJOUER'),
                 ),
                 if (onConfigure != null)
                   TextButton.icon(
                     onPressed: onConfigure,
-                    icon: const Icon(Icons.tune_rounded),
-                    label: const Text('CONFIGURER'),
+                    icon: const GameResultIcon(Icons.tune_rounded),
+                    label: const GameResultText('CONFIGURER'),
                   )
                 else
                   TextButton.icon(
                     onPressed: onLevels,
-                    icon: const Icon(Icons.map_rounded),
-                    label: const Text('CHOISIR UN NIVEAU'),
+                    icon: const GameResultIcon(Icons.map_rounded),
+                    label: const GameResultText('CHOISIR UN NIVEAU'),
                   ),
               ],
             ),

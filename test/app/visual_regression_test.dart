@@ -93,6 +93,8 @@ void main() {
         GameScreen(
           level: level,
           session: playing,
+          onHint: () {},
+          onUndo: () {},
           generating: false,
           finished: false,
           newRecord: false,
@@ -160,6 +162,9 @@ void main() {
         Match3Screen(
           session: match3Session,
           selected: const Match3Position(3, 3),
+          onHint: () {},
+          onUndo: () {},
+          onRestart: () {},
           onSelect: (_) {},
           onSwap: (_, _) {},
           onLevels: () {},
@@ -225,6 +230,8 @@ void main() {
           session: sudokuSession,
           selectedIndex: selected,
           noteMode: true,
+          onUndo: () {},
+          onRestart: () {},
           wrongIndex: null,
           finished: false,
           newRecord: false,
@@ -317,6 +324,7 @@ void main() {
         RepasScreen(
           session: repasSession,
           finished: false,
+          onHint: () {},
           newRecord: false,
           onMove: (_) {},
           onUndo: () {},

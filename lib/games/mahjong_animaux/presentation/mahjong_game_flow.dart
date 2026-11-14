@@ -178,6 +178,38 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
     setState(() {});
   }
 
+  void _undo() {
+    if (!_session!.undo()) return;
+    _hintTimer?.cancel();
+    setState(() => _hintedIds = {});
+    unawaited(_audio.playEffect(SoundEffect.click));
+  }
+
+  Future<void> _restart() async {
+    if (_session!.hasMoved) {
+      final restart = await showDialog<bool>(
+        context: context,
+        builder: (context) => GameConfirmDialog(
+          biome: _session!.biome,
+          title: const Text('Recommencer cette partie ?'),
+          content: const Text('La progression de cette partie sera perdue.'),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Continuer'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Recommencer'),
+            ),
+          ],
+        ),
+      );
+      if (restart != true || !mounted) return;
+    }
+    _replaySame();
+  }
+
   Future<void> _finish() async {
     final won = _session!.status == MahjongStatus.won;
     unawaited(_audio.playEffect(won ? SoundEffect.win : SoundEffect.lose));
@@ -327,6 +359,8 @@ class _MahjongGameFlowState extends State<MahjongGameFlow> {
         onBlocked: _blockedMessage,
         onHint: _hint,
         onShuffle: _shuffle,
+        onUndo: _undo,
+        onRestart: () => unawaited(_restart()),
         onBack: () => unawaited(_requestBack()),
         onReplaySame: _replaySame,
         onReplayNew: _replayNew,

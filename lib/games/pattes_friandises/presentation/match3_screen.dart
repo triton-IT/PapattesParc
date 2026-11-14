@@ -1,4 +1,5 @@
 import '../../../shared/clay_hud_icon.dart';
+import '../../../shared/clay_animal_frame.dart';
 import '../../../shared/clay_text.dart';
 import '../../../shared/wooden_sign.dart';
 import 'dart:math' as math;
@@ -24,6 +25,10 @@ class Match3Screen extends StatelessWidget {
     this.inputEnabled = true,
     this.showResult,
     required this.selected,
+    this.hinted = const {},
+    this.onHint,
+    this.onUndo,
+    this.onRestart,
     required this.onSelect,
     required this.onSwap,
     required this.onLevels,
@@ -42,6 +47,9 @@ class Match3Screen extends StatelessWidget {
   final bool inputEnabled;
   final bool? showResult;
   final Match3Position? selected;
+  final Set<Match3Position> hinted;
+  final VoidCallback? onHint;
+  final VoidCallback? onUndo, onRestart;
   final ValueChanged<Match3Position> onSelect;
   final void Function(Match3Position, Match3Position) onSwap;
   final VoidCallback onLevels;
@@ -81,6 +89,29 @@ class Match3Screen extends StatelessWidget {
     backKey: const Key('match3-back-to-levels'),
     onBack: onBack ?? onLevels,
     helpKind: GameHelpKind.match3,
+    fixedActions: [
+      GameStageAction(
+        key: const Key('match3-undo'),
+        icon: Icons.undo_rounded,
+        tooltip: 'Annuler',
+        onPressed: inputEnabled && session.canUndo ? onUndo : null,
+      ),
+      GameStageAction(
+        key: const Key('match3-restart'),
+        icon: Icons.refresh_rounded,
+        tooltip: 'Recommencer',
+        onPressed: inputEnabled ? onRestart : null,
+      ),
+      GameStageAction(
+        key: const Key('match3-hint'),
+        icon: Icons.lightbulb_rounded,
+        badgeLabel: isFreeGame ? null : '${3 - session.hintsUsed}',
+        tooltip: isFreeGame ? 'Indice' : 'Indice ${3 - session.hintsUsed}/3',
+        onPressed: inputEnabled && (isFreeGame || session.hintsUsed < 3)
+            ? onHint
+            : null,
+      ),
+    ],
     metrics: [
       GameStageMetric(
         icon: Icons.touch_app_rounded,
@@ -270,7 +301,74 @@ class Match3Screen extends StatelessWidget {
                       top: 329,
                       width: 430,
                       height: 350,
-                      child: SingleChildScrollView(child: _objectives),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(child: _objectives),
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: IconButton(
+                                  key: const Key('match3-undo'),
+                                  tooltip: 'Annuler',
+                                  onPressed: inputEnabled && session.canUndo
+                                      ? onUndo
+                                      : null,
+                                  icon: const ClaySymbol(
+                                    Icons.undo_rounded,
+                                    size: 38,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: IconButton(
+                                  key: const Key('match3-restart'),
+                                  tooltip: 'Recommencer',
+                                  onPressed: inputEnabled ? onRestart : null,
+                                  icon: const ClaySymbol(
+                                    Icons.refresh_rounded,
+                                    size: 38,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 75,
+                            width: double.infinity,
+                            child: WoodenSign(
+                              child: TextButton.icon(
+                                key: const Key('match3-hint'),
+                                onPressed:
+                                    inputEnabled &&
+                                        (isFreeGame || session.hintsUsed < 3)
+                                    ? onHint
+                                    : null,
+                                icon: const ClaySymbol(
+                                  Icons.lightbulb_rounded,
+                                  size: 35,
+                                ),
+                                label: ClayText(
+                                  isFreeGame
+                                      ? 'INDICE'
+                                      : 'INDICE ${3 - session.hintsUsed}/3',
+                                  style: const TextStyle(
+                                    fontSize: 27,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xffffedc2),
+                                  disabledForegroundColor: const Color(
+                                    0xffe1c9a0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     if (!inputEnabled)
                       Positioned(
@@ -315,6 +413,7 @@ class Match3Screen extends StatelessWidget {
     clearing: clearing,
     inputEnabled: inputEnabled,
     selected: selected,
+    hinted: hinted,
     onSelect: onSelect,
     onSwap: onSwap,
     integrated: true,
@@ -326,6 +425,7 @@ class Match3Screen extends StatelessWidget {
     clearing: clearing,
     inputEnabled: inputEnabled,
     selected: selected,
+    hinted: hinted,
     onSelect: onSelect,
     onSwap: onSwap,
   );
@@ -377,6 +477,7 @@ class Match3Board extends StatefulWidget {
     required this.clearing,
     required this.inputEnabled,
     required this.selected,
+    this.hinted = const {},
     required this.onSelect,
     required this.onSwap,
     this.integrated = false,
@@ -389,6 +490,7 @@ class Match3Board extends StatefulWidget {
   final Set<Match3Position> clearing;
   final bool inputEnabled;
   final Match3Position? selected;
+  final Set<Match3Position> hinted;
   final ValueChanged<Match3Position> onSelect;
   final void Function(Match3Position, Match3Position) onSwap;
 
@@ -490,7 +592,9 @@ class _Match3BoardState extends State<Match3Board> {
                           haloColor: snapshot.tile?.isBasket == false
                               ? animalHaloColor(snapshot.tile!.animal)
                               : const Color(0xfffffdf5),
-                          selected: widget.selected == position,
+                          selected:
+                              widget.selected == position ||
+                              widget.hinted.contains(position),
                         ),
                       ),
                     ),
@@ -766,13 +870,16 @@ class _GoalLine extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     children: [
       if (goal.kind == Match3GoalKind.collectAnimal)
-        Container(
+        SizedBox(
           key: Key('match3-goal-animal-${goal.animal!.name}'),
           width: 28,
           height: 28,
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          child: ArtworkImage(goal.animal!.asset),
+          child: ClayAnimalFrame(
+            color: color,
+            circular: true,
+            padding: const EdgeInsets.all(3),
+            child: ArtworkImage(goal.animal!.asset),
+          ),
         )
       else
         Icon(_icon, color: const Color(0xff563619), size: 24),
@@ -781,23 +888,26 @@ class _GoalLine extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _label,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Color(0xff563619),
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: ClayText(
+                _label,
+                style: const TextStyle(
+                  color: Color(0xff563619),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
-            Text(
+            ClayText(
               '$progress / ${goal.target}',
               style: TextStyle(
                 color: progress >= goal.target
                     ? const Color(0xff39784f)
                     : const Color(0xff563619),
                 fontWeight: FontWeight.w900,
+                fontSize: 14,
               ),
             ),
           ],
@@ -863,51 +973,54 @@ class _ResultOverlay extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(
+                  GameResultIcon(
                     won ? Icons.pets_rounded : Icons.refresh_rounded,
                     size: 54,
                     color: won ? AppColors.sun : AppColors.danger,
                   ),
                   const SizedBox(height: 10),
-                  Text(
+                  GameResultText(
                     won ? 'MISSION ACCOMPLIE !' : 'PLUS DE COUPS',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  GameResultText(
                     won
                         ? isFreeGame
                               ? '${session.score} points'
                               : '${session.score} points · ${session.footprintsForScore()} empreinte(s)'
                         : 'La mission peut être réussie autrement. Réessaie sans limite.',
                     textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontSize: 20),
                   ),
                   const SizedBox(height: 18),
                   if (won && onNext != null)
                     FilledButton.icon(
                       key: const Key('match3-next-level'),
                       onPressed: onNext,
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text('NIVEAU SUIVANT'),
+                      icon: const GameResultIcon(Icons.arrow_forward_rounded),
+                      label: const GameResultText('NIVEAU SUIVANT'),
                     ),
                   TextButton.icon(
                     key: const Key('match3-retry'),
                     onPressed: onRetry,
                     icon: const ClaySymbol(Icons.refresh_rounded),
-                    label: const Text('REJOUER'),
+                    label: const GameResultText('REJOUER'),
                   ),
                   if (onConfigure != null)
                     TextButton.icon(
                       key: const Key('match3-configure'),
                       onPressed: onConfigure,
-                      icon: const Icon(Icons.tune_rounded),
-                      label: const Text('MODIFIER LES RÉGLAGES'),
+                      icon: const GameResultIcon(Icons.tune_rounded),
+                      label: const GameResultText('MODIFIER LES RÉGLAGES'),
                     ),
                   TextButton.icon(
                     onPressed: onLevels,
-                    icon: const Icon(Icons.map_rounded),
-                    label: const Text('CHOISIR UN NIVEAU'),
+                    icon: const GameResultIcon(Icons.map_rounded),
+                    label: const GameResultText('CHOISIR UN NIVEAU'),
                   ),
                 ],
               ),

@@ -234,27 +234,6 @@ const artworkVariants = <String, List<({String path, int width, int height})>>{
       height: 256,
     ),
   ],
-  "assets/food_sort/ui/basket.png": [
-    (
-      path: "assets/optimized/food_sort/ui/basket-1254.webp",
-      width: 1254,
-      height: 1254,
-    ),
-  ],
-  "assets/food_sort/ui/cart-landscape.png": [
-    (
-      path: "assets/optimized/food_sort/ui/cart-landscape-1374.webp",
-      width: 1374,
-      height: 723,
-    ),
-  ],
-  "assets/food_sort/ui/cart-portrait.png": [
-    (
-      path: "assets/optimized/food_sort/ui/cart-portrait-849.webp",
-      width: 849,
-      height: 1001,
-    ),
-  ],
   "assets/food_sort/urial.png": [
     (
       path: "assets/optimized/food_sort/urial-256.webp",

@@ -651,6 +651,103 @@ class GameResultViewport extends StatelessWidget {
   );
 }
 
+/// Modelled lettering that can wrap on narrow result signs.
+class GameResultText extends StatelessWidget {
+  const GameResultText(this.text, {this.style, this.textAlign, super.key});
+
+  final String text;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+
+  @override
+  Widget build(BuildContext context) {
+    final inherited = DefaultTextStyle.of(context).style;
+    final effective = inherited
+        .merge(style)
+        .copyWith(
+          color: style == null ? inherited.color : const Color(0xff315b3d),
+        );
+    final align = textAlign == TextAlign.center
+        ? WrapAlignment.center
+        : WrapAlignment.start;
+    return Semantics(
+      label: text,
+      child: ExcludeSemantics(
+        child: LayoutBuilder(
+          builder: (context, constraints) => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final line in text.split('\n'))
+                Wrap(
+                  alignment: align,
+                  spacing: (effective.fontSize ?? 14) * .27,
+                  children: [
+                    for (final word
+                        in line.split(' ').where((word) => word.isNotEmpty))
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth,
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: ClayText(word, style: effective),
+                        ),
+                      ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Result symbols use dark clay so they remain legible against parchment.
+class GameResultIcon extends StatelessWidget {
+  const GameResultIcon(this.icon, {this.size, this.color, super.key});
+
+  final IconData icon;
+  final double? size;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    if (icon == Icons.arrow_forward_rounded) {
+      return Transform.rotate(
+        angle: math.pi,
+        child: ClayHudIcon(
+          ClayHudIconKind.back,
+          size: size ?? IconTheme.of(context).size ?? 24,
+          color: color ?? IconTheme.of(context).color,
+        ),
+      );
+    }
+    final mapped = switch (icon) {
+      Icons.shopping_basket_rounded => Icons.inventory_2_rounded,
+      Icons.verified_rounded => Icons.pets_rounded,
+      Icons.block_rounded => Icons.refresh_rounded,
+      Icons.replay_rounded => Icons.refresh_rounded,
+      Icons.shuffle_rounded ||
+      Icons.casino_rounded ||
+      Icons.auto_awesome_rounded => Icons.replay_circle_filled_rounded,
+      Icons.tune_rounded => Icons.pan_tool_outlined,
+      Icons.grid_view_rounded ||
+      Icons.map_rounded ||
+      Icons.home_rounded => Icons.route_rounded,
+      _ => icon,
+    };
+    final inherited = IconTheme.of(context).color;
+    final tone = color == null ? inherited : const Color(0xff315b3d);
+    return ClaySymbol(
+      mapped,
+      size: size,
+      color: tone?.withValues(alpha: color?.a ?? tone.a),
+    );
+  }
+}
+
 /// A handcrafted result sign, coloured to suit the current habitat.
 class GameResultPanel extends StatelessWidget {
   const GameResultPanel({required this.biome, required this.child, super.key});

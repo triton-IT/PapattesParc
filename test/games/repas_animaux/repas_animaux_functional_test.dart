@@ -5,9 +5,57 @@ import 'package:papatte_parc/games/repas_animaux/domain/campaign.dart';
 import 'package:papatte_parc/games/repas_animaux/domain/generator.dart';
 import 'package:papatte_parc/games/repas_animaux/domain/models.dart';
 import 'package:papatte_parc/games/repas_animaux/domain/repas_session.dart';
+import 'package:papatte_parc/games/repas_animaux/domain/solver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test('les indices successifs permettent de finir une partie du parcours', () {
+    final level = buildRepasCampaign(levels).first;
+    final session = RepasSession(level);
+    for (
+      var step = 0;
+      step < 100 && session.status != RepasStatus.won;
+      step++
+    ) {
+      final direction = nextRepasSolutionStep(
+        floor: level.floor,
+        targets: level.targets,
+        crates: session.crates,
+        keeper: session.keeper,
+      );
+      expect(direction, isNotNull, reason: 'étape $step');
+      expect(session.move(direction!), isNot(RepasMoveResult.blocked));
+    }
+    expect(session.status, RepasStatus.won);
+  });
+  test(
+    'les indices suivent une solution et refusent les positions bloquées',
+    () {
+      final level = RepasLevelDefinition(
+        stage: levels.first,
+        parPushes: 1,
+        rows: const ['######', '#....#', '#sct.#', '#....#', '######'],
+      );
+      final session = RepasSession(level);
+      final hint = nextRepasSolutionStep(
+        floor: level.floor,
+        targets: level.targets,
+        crates: session.crates,
+        keeper: session.keeper,
+      );
+      expect(hint, RepasDirection.east);
+      expect(session.move(hint!), RepasMoveResult.won);
+      expect(
+        nextRepasSolutionStep(
+          floor: level.floor,
+          targets: level.targets,
+          crates: {const RepasPosition(1, 1)},
+          keeper: const RepasPosition(2, 1),
+        ),
+        isNull,
+      );
+    },
+  );
   test(
     'les déplacements, poussées, blocages et annulations restent cohérents',
     () {

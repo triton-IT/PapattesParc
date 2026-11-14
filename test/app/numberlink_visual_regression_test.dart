@@ -181,6 +181,16 @@ Future<void> _pump(
   tester.view.physicalSize = size;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(MaterialApp(theme: buildAppTheme(), home: screen));
+  await tester.runAsync(
+    () => precacheImage(
+      const ResizeImage(
+        AssetImage('assets/optimized/sudoku/parchment-panel.webp'),
+        width: 384,
+        height: 384,
+      ),
+      tester.element(find.byType(MaterialApp)),
+    ),
+  );
   for (final asset in assets) {
     await tester.runAsync(
       () => precacheArtwork(
@@ -228,6 +238,7 @@ NumberlinkScreen _screen(NumberlinkSession session, {required bool finished}) =>
       onHint: session.hint,
       onBack: () {},
       onRestart: () {},
+      onUndo: () {},
       onReplay: () {},
       onLevels: () {},
       onNext: () {},

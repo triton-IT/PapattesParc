@@ -4,8 +4,49 @@ import 'package:meta/meta.dart';
 
 import 'models.dart';
 
+/// Allows undo to restore the random stream as well as the board.
+class _ReplayRandom implements Random {
+  _ReplayRandom(this.seed) : _random = Random(seed);
+  final int seed;
+  Random _random;
+  final List<int> _calls = [];
+  int get position => _calls.length;
+
+  void rewind(int position) {
+    _calls.removeRange(position, _calls.length);
+    _random = Random(seed);
+    for (final call in _calls) {
+      if (call == -1) {
+        _random.nextDouble();
+      } else if (call == -2) {
+        _random.nextBool();
+      } else {
+        _random.nextInt(call);
+      }
+    }
+  }
+
+  @override
+  int nextInt(int max) {
+    _calls.add(max);
+    return _random.nextInt(max);
+  }
+
+  @override
+  double nextDouble() {
+    _calls.add(-1);
+    return _random.nextDouble();
+  }
+
+  @override
+  bool nextBool() {
+    _calls.add(-2);
+    return _random.nextBool();
+  }
+}
+
 class Match3Session {
-  Match3Session(this.level, int seed) : _random = Random(seed) {
+  Match3Session(this.level, int seed) : _random = _ReplayRandom(seed) {
     _inactive.addAll(level.inactiveCells.map(_index));
     for (final placement in level.blockers) {
       final index = _index(placement.position);
@@ -29,7 +70,7 @@ class Match3Session {
   static const size = 8;
 
   final Match3LevelDefinition level;
-  final Random _random;
+  final _ReplayRandom _random;
   final List<Match3Tile?> _tiles = List.filled(size * size, null);
   final List<BlockerKind?> _blockers = List.filled(size * size, null);
   final List<int> _blockerLayers = List.filled(size * size, 0);
@@ -39,6 +80,25 @@ class Match3Session {
   Match3Status status = Match3Status.playing;
   late int movesLeft = level.moves;
   int score = 0;
+  int hintsUsed = 0;
+  final List<
+    (List<Match3Tile?>, List<BlockerKind?>, List<int>, List<int>, int, int, int)
+  >
+  _history = [];
+  bool get canUndo => _history.isNotEmpty && status == Match3Status.playing;
+  bool undo() {
+    if (!canUndo) return false;
+    final (tiles, blockers, layers, goals, moves, oldScore, randomPosition) =
+        _history.removeLast();
+    _tiles.setAll(0, tiles);
+    _blockers.setAll(0, blockers);
+    _blockerLayers.setAll(0, layers);
+    _goalProgress.setAll(0, goals);
+    movesLeft = moves;
+    score = oldScore;
+    _random.rewind(randomPosition);
+    return true;
+  }
 
   int goalProgress(int index) => _goalProgress[index];
 
@@ -74,6 +134,15 @@ class Match3Session {
     }
     final firstTile = _tiles[firstIndex]!;
     final secondTile = _tiles[secondIndex]!;
+    final undoState = (
+      List<Match3Tile?>.of(_tiles),
+      List<BlockerKind?>.of(_blockers),
+      List<int>.of(_blockerLayers),
+      List<int>.of(_goalProgress),
+      movesLeft,
+      score,
+      _random.position,
+    );
     _swap(firstIndex, secondIndex);
 
     final matches = _analyzeMatches();
@@ -84,6 +153,8 @@ class Match3Session {
       _swap(firstIndex, secondIndex);
       return const Match3MoveResult(changed: false, reshuffled: false);
     }
+
+    _history.add(undoState);
 
     movesLeft--;
     final initial = _snapshot();
@@ -721,7 +792,10 @@ class Match3Session {
     return true;
   }
 
-  bool _hasAvailableMove() {
+  bool _hasAvailableMove() => availableHint() != null;
+
+  (Match3Position, Match3Position)? availableHint() {
+    if (status != Match3Status.playing) return null;
     for (var index = 0; index < _tiles.length; index++) {
       if (!_canMove(index)) continue;
       final x = index % size;
@@ -735,15 +809,23 @@ class Match3Session {
         final secondSpecial = _tiles[next]!.special;
         if (firstSpecial != SpecialKind.none &&
             secondSpecial != SpecialKind.none) {
-          return true;
+          return (
+            Match3Position(x, y),
+            Match3Position(next % size, next ~/ size),
+          );
         }
         _swap(index, next);
         final matches = _analyzeMatches().isNotEmpty;
         _swap(index, next);
-        if (matches) return true;
+        if (matches) {
+          return (
+            Match3Position(x, y),
+            Match3Position(next % size, next ~/ size),
+          );
+        }
       }
     }
-    return false;
+    return null;
   }
 
   void _reshuffle() {

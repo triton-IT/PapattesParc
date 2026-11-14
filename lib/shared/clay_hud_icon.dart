@@ -15,6 +15,14 @@ enum ClayHudIconKind {
   zoomOut,
   pan,
   recenter,
+  tap,
+  score,
+  pairs,
+  redeal,
+  crate,
+  walking,
+  route,
+  meal,
 }
 
 /// Bitmap icons share the same modelled material as the game HUD lettering.
@@ -28,9 +36,11 @@ class ClayHudIcon extends StatelessWidget {
   static final Future<ui.Image> _atlas = _load('icons.png');
   static final Future<ui.Image> _actions = _load('actions.png');
   static final Future<ui.Image> _greenCamera = _load('camera-green.png');
+  static final Future<ui.Image> _metrics = _load('metrics.png');
 
   bool get _usesGreenCamera =>
       kind.index >= ClayHudIconKind.zoomIn.index &&
+      kind.index <= ClayHudIconKind.recenter.index &&
       color != null &&
       color!.g > color!.r * 1.2 &&
       color!.g > color!.b;
@@ -51,6 +61,8 @@ class ClayHudIcon extends StatelessWidget {
     child: FutureBuilder<ui.Image>(
       future: _usesGreenCamera
           ? _greenCamera
+          : kind.index >= ClayHudIconKind.tap.index
+          ? _metrics
           : kind.index <= ClayHudIconKind.help.index
           ? _atlas
           : _actions,
@@ -70,6 +82,14 @@ class ClayHudIcon extends StatelessWidget {
               ClayHudIconKind.zoomOut => Icons.zoom_out,
               ClayHudIconKind.pan => Icons.pan_tool_outlined,
               ClayHudIconKind.recenter => Icons.center_focus_strong,
+              ClayHudIconKind.tap => Icons.touch_app_rounded,
+              ClayHudIconKind.score => Icons.stars_rounded,
+              ClayHudIconKind.pairs => Icons.layers_rounded,
+              ClayHudIconKind.redeal => Icons.replay_circle_filled_rounded,
+              ClayHudIconKind.crate => Icons.inventory_2_rounded,
+              ClayHudIconKind.walking => Icons.directions_walk_rounded,
+              ClayHudIconKind.route => Icons.route_rounded,
+              ClayHudIconKind.meal => Icons.restaurant_rounded,
             },
             color: color ?? const Color(0xffffecd0),
             size: size,
@@ -102,6 +122,14 @@ class ClaySymbol extends StatelessWidget {
       Icons.zoom_out => ClayHudIconKind.zoomOut,
       Icons.pan_tool_outlined => ClayHudIconKind.pan,
       Icons.center_focus_strong => ClayHudIconKind.recenter,
+      Icons.touch_app_rounded => ClayHudIconKind.tap,
+      Icons.stars_rounded => ClayHudIconKind.score,
+      Icons.layers_rounded => ClayHudIconKind.pairs,
+      Icons.replay_circle_filled_rounded => ClayHudIconKind.redeal,
+      Icons.inventory_2_rounded => ClayHudIconKind.crate,
+      Icons.directions_walk_rounded => ClayHudIconKind.walking,
+      Icons.route_rounded => ClayHudIconKind.route,
+      Icons.restaurant_rounded => ClayHudIconKind.meal,
       _ => null,
     };
     if (kind == null) return Icon(icon, size: size, color: color);
@@ -157,6 +185,14 @@ class _ClayIconPainter extends CustomPainter {
               1697,
               811,
             ),
+            ClayHudIconKind.tap => const Rect.fromLTRB(96, 68, 352, 409),
+            ClayHudIconKind.score => const Rect.fromLTRB(506, 73, 819, 396),
+            ClayHudIconKind.pairs => const Rect.fromLTRB(977, 78, 1236, 403),
+            ClayHudIconKind.redeal => const Rect.fromLTRB(1390, 73, 1705, 399),
+            ClayHudIconKind.crate => const Rect.fromLTRB(65, 516, 379, 820),
+            ClayHudIconKind.walking => const Rect.fromLTRB(522, 483, 794, 836),
+            ClayHudIconKind.route => const Rect.fromLTRB(942, 508, 1259, 812),
+            ClayHudIconKind.meal => const Rect.fromLTRB(1387, 485, 1705, 832),
           };
     final destination = applyBoxFit(
       BoxFit.contain,

@@ -21,6 +21,34 @@ abstract final class AppColors {
   static const muted = Color(0xff8d6e63);
 }
 
+/// Parchment tooltip styling shared by the park and every game.
+const parkTooltipTheme = TooltipThemeData(
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xffffefcf), Color(0xffe8c997)],
+    ),
+    border: Border.fromBorderSide(
+      BorderSide(color: Color(0xff895b32), width: 1.5),
+    ),
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+    boxShadow: [
+      BoxShadow(color: Color(0x553b2412), blurRadius: 4, offset: Offset(0, 2)),
+    ],
+  ),
+  textStyle: TextStyle(
+    color: Color(0xff563619),
+    fontFamily: 'Nunito',
+    fontSize: 14,
+    fontWeight: FontWeight.w800,
+  ),
+  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  margin: EdgeInsets.all(8),
+  verticalOffset: 12,
+  preferBelow: true,
+);
+
 ThemeData buildAppTheme() {
   const scheme = ColorScheme.light(
     primary: AppColors.primary,
@@ -42,6 +70,7 @@ ThemeData buildAppTheme() {
     colorScheme: scheme,
     scaffoldBackgroundColor: AppColors.background,
     fontFamily: 'Nunito',
+    tooltipTheme: parkTooltipTheme,
     textTheme: baseText.copyWith(
       displaySmall: baseText.displaySmall?.copyWith(
         fontWeight: FontWeight.w800,

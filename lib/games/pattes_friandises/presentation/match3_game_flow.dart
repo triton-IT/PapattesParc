@@ -47,12 +47,14 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
   Match3FreeGameConfig? _freeConfig;
   Match3Session? _session;
   Match3Position? _selected;
+  Set<Match3Position> _hinted = {};
   Match3BoardSnapshot? _displayed;
   Set<Match3Position> _clearing = const {};
   int _cascade = 0;
   bool _resolving = false;
   bool _hasMoved = false;
   int _nonce = 0;
+  int _gameSeed = 0;
 
   @override
   void initState() {
@@ -86,13 +88,14 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
     _start(buildFreeMatch3Level(stage, config));
   }
 
-  void _start(Match3LevelDefinition level) {
+  void _start(Match3LevelDefinition level, {bool sameBoard = false}) {
     _level = level;
-    _session = Match3Session(
-      level,
-      DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919,
-    );
+    if (!sameBoard) {
+      _gameSeed = DateTime.now().millisecondsSinceEpoch + ++_nonce * 7919;
+    }
+    _session = Match3Session(level, _gameSeed);
     _selected = null;
+    _hinted = {};
     _displayed = null;
     _clearing = const {};
     _cascade = 0;
@@ -104,6 +107,7 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
 
   void _select(Match3Position position) {
     if (_resolving || _session!.status != Match3Status.playing) return;
+    _hinted = {};
     if (!_session!.canMove(position)) {
       setState(() => _selected = null);
       unawaited(_audio.playEffect(SoundEffect.blocked));
@@ -129,6 +133,7 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
 
   Future<void> _swap(Match3Position first, Match3Position second) async {
     if (_resolving) return;
+    _hinted = {};
     if (!_session!.canMove(first) || !_session!.canMove(second)) {
       final blocked = !_session!.canMove(first) ? first : second;
       unawaited(_audio.playEffect(SoundEffect.blocked));
@@ -171,6 +176,54 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
       unawaited(_finishLevel());
     }
     setState(() {});
+  }
+
+  void _hint() {
+    if (_resolving || (_freeConfig == null && _session!.hintsUsed >= 3)) return;
+    final move = _session!.availableHint();
+    if (move == null) {
+      _toast('Aucun échange disponible.');
+      return;
+    }
+    setState(() {
+      _selected = null;
+      _hinted = {move.$1, move.$2};
+      _session!.hintsUsed++;
+    });
+  }
+
+  void _undo() {
+    if (_resolving || !_session!.undo()) return;
+    setState(() {
+      _selected = null;
+      _hinted = {};
+    });
+    unawaited(_audio.playEffect(SoundEffect.click));
+  }
+
+  Future<void> _restart() async {
+    if (_hasMoved) {
+      final restart = await showDialog<bool>(
+        context: context,
+        builder: (context) => GameConfirmDialog(
+          biome: _level!.stage.biome,
+          title: const Text('Recommencer cette partie ?'),
+          content: const Text('La progression de cette partie sera perdue.'),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Continuer'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Recommencer'),
+            ),
+          ],
+        ),
+      );
+      if (restart != true || !mounted) return;
+    }
+    _start(_level!, sameBoard: true);
   }
 
   String _blockedMessage(Match3Position position) {
@@ -317,6 +370,10 @@ class _Match3GameFlowState extends State<Match3GameFlow> {
           inputEnabled: !_resolving,
           showResult: !_resolving && _session!.status != Match3Status.playing,
           selected: _selected,
+          hinted: _hinted,
+          onHint: _hint,
+          onUndo: _undo,
+          onRestart: () => unawaited(_restart()),
           onSelect: _select,
           onSwap: (first, second) => unawaited(_swap(first, second)),
           onLevels: _showLevels,

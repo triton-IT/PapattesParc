@@ -30,6 +30,27 @@ class MahjongSession {
   int shufflesRemaining = 3;
   int shufflesUsed = 0;
   int? selectedId;
+  final List<(List<MahjongTile>, List<bool>, List<MahjongPair>, int, int)>
+  _history = [];
+  bool get canUndo => _history.isNotEmpty && status == MahjongStatus.playing;
+  void _saveUndo() => _history.add((
+    List.of(_tiles),
+    List.of(_present),
+    List.of(_solution),
+    shufflesRemaining,
+    shufflesUsed,
+  ));
+  bool undo() {
+    if (!canUndo) return false;
+    final (tiles, present, solution, remaining, used) = _history.removeLast();
+    _tiles.setAll(0, tiles);
+    _present.setAll(0, present);
+    _solution = solution;
+    shufflesRemaining = remaining;
+    shufflesUsed = used;
+    selectedId = null;
+    return true;
+  }
 
   int get remainingPairs => _present.where((present) => present).length ~/ 2;
   bool get hasMoved =>
@@ -77,6 +98,7 @@ class MahjongSession {
       selectedId = id;
       return MahjongSelectionResult.replaced;
     }
+    _saveUndo();
     _present[selected] = false;
     _present[id] = false;
     final solutionIndex = _solution.indexWhere(
@@ -131,6 +153,7 @@ class MahjongSession {
       List.filled(layout.tileCount, 0),
     ).geometricRemovalOrder(_present);
     if (order.isEmpty) return false;
+    _saveUndo();
     final animals = <AnimalKind>[];
     for (var id = 0; id < _tiles.length; id++) {
       if (_present[id]) animals.add(_tiles[id].animal);

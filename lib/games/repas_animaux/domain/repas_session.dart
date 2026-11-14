@@ -13,6 +13,7 @@ class RepasSession {
   late RepasStatus status;
   late int moves;
   late int pushes;
+  int hintsUsed = 0;
 
   bool get canUndo => _history.isNotEmpty;
   bool get hasMoved => moves > 0;
@@ -52,6 +53,7 @@ class RepasSession {
   }
 
   void reset() {
+    hintsUsed = 0;
     keeper = level.initialKeeper;
     crates = {...level.initialCrates};
     facing = RepasDirection.south;

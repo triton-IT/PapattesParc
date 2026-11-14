@@ -8,6 +8,7 @@ import 'package:papatte_parc/games/sudoku_animaux/domain/sudoku_session.dart';
 import 'package:papatte_parc/games/sudoku_animaux/presentation/sudoku_screen.dart';
 import 'package:papatte_parc/shared/artwork.dart';
 import 'package:papatte_parc/shared/clay_text.dart';
+import 'package:papatte_parc/shared/clay_animal_frame.dart';
 
 void main() {
   testWidgets('le bandeau modelé est partagé par toute la campagne', (
@@ -118,6 +119,19 @@ void main() {
         });
         await tester.pump();
         expect(find.byKey(const Key('sudoku-board')), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('sudoku-animal-0')),
+            matching: find.byType(ClayAnimalFrame),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byWidgetPredicate(
+            (w) => w is ClayText && w.text.startsWith('MES PETITS MÉMOS :'),
+          ),
+          findsOneWidget,
+        );
         expect(
           find.byKey(Key('sudoku-cell-${session.entries.length - 1}')),
           findsOneWidget,
