@@ -1,4 +1,4 @@
-import '../../../shared/animal_catalog.dart';
+import 'sort_food.dart';
 import '../../../shared/park_catalog.dart';
 
 const animalSortZoneCapacity = 4;
@@ -24,14 +24,16 @@ class AnimalSortMove {
 class AnimalSortLevelDefinition {
   const AnimalSortLevelDefinition({
     required this.stage,
-    required this.animals,
+    required this.foods,
     required this.initialZones,
     required this.referenceSolution,
   });
 
   final ParkStage stage;
-  final List<AnimalKind> animals;
-  final List<List<AnimalKind>> initialZones;
+  final List<SortFood> foods;
+
+  /// Each zone is ordered from top to bottom; its last item is dispensed first.
+  final List<List<SortFood>> initialZones;
   final List<AnimalSortMove> referenceSolution;
 
   int get number => stage.number;

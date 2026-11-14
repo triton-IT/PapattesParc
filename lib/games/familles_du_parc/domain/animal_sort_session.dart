@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../../shared/animal_catalog.dart';
+import 'sort_food.dart';
 import 'models.dart';
 
 class AnimalSortSession {
@@ -10,7 +10,7 @@ class AnimalSortSession {
       ];
 
   final AnimalSortLevelDefinition level;
-  final List<List<AnimalKind>> zones;
+  final List<List<SortFood>> zones;
   final List<_AnimalSortSnapshot> _history = [];
   AnimalSortStatus status = AnimalSortStatus.playing;
   int moves = 0;
@@ -37,7 +37,7 @@ class AnimalSortSession {
     final source = zones[from];
     final animal = source.last;
     final count = min(
-      _topRun(source),
+      _bottomRun(source),
       animalSortZoneCapacity - zones[to].length,
     );
     source.removeRange(source.length - count, source.length);
@@ -96,10 +96,10 @@ class AnimalSortSession {
     _onReferencePath,
   );
 
-  bool _isComplete(List<AnimalKind> zone) =>
+  bool _isComplete(List<SortFood> zone) =>
       zone.length == animalSortZoneCapacity && zone.every((a) => a == zone[0]);
 
-  int _topRun(List<AnimalKind> zone) {
+  int _bottomRun(List<SortFood> zone) {
     var count = 1;
     while (count < zone.length && zone[zone.length - 1 - count] == zone.last) {
       count++;
@@ -117,7 +117,7 @@ class _AnimalSortSnapshot {
     this.onReferencePath,
   );
 
-  final List<List<AnimalKind>> zones;
+  final List<List<SortFood>> zones;
   final AnimalSortStatus status;
   final int moves;
   final int referenceIndex;

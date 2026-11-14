@@ -8,8 +8,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../shared/animal_catalog.dart';
-import '../../../shared/animal_food.dart';
+import '../domain/sort_food.dart';
 import '../../../shared/app_theme.dart';
 import '../../../shared/game_help.dart';
 import '../../../shared/game_stage_layout.dart';
@@ -83,8 +82,7 @@ class AnimalSortScreen extends StatelessWidget {
     metrics: [
       GameStageMetric(
         icon: Icons.restaurant_rounded,
-        label:
-            '${session.completedMeals}/${session.level.animals.length} repas',
+        label: '${session.completedMeals}/${session.level.foods.length} repas',
       ),
       GameStageMetric(
         icon: Icons.swap_vert_rounded,
@@ -259,7 +257,7 @@ class AnimalSortScreen extends StatelessWidget {
                       child: _SceneMetric(
                         icon: Icons.restaurant_rounded,
                         label:
-                            '${session.completedMeals}/${session.level.animals.length} repas',
+                            '${session.completedMeals}/${session.level.foods.length} repas',
                       ),
                     ),
                     Positioned(
@@ -431,7 +429,7 @@ class _AnimalSortBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = session.zones.length;
-    final designSize = landscape ? const Size(760, 400) : const Size(400, 472);
+    final designSize = landscape ? const Size(600, 500) : const Size(400, 472);
     final placements = landscape
         ? _landscapePlacements(count)
         : _portraitPlacements(count);
@@ -455,26 +453,12 @@ class _AnimalSortBoard extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  const Positioned(
-                    top: 8,
-                    left: 0,
-                    right: 0,
-                    child: Text(
-                      'Prends la portion du dessus',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xff633b20),
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
                   for (var index = 0; index < count; index++)
                     _PlacedBasket(
                       placement: placements[index],
                       child: _FoodBasket(
                         index: index,
-                        animals: session.zones[index],
+                        foods: session.zones[index],
                         selected: selectedZone == index,
                         completed: _complete(session.zones[index]),
                         hintSource: hintMove?.from == index,
@@ -499,24 +483,19 @@ class _AnimalSortBoard extends StatelessWidget {
     );
   }
 
-  bool _complete(List<AnimalKind> zone) =>
+  bool _complete(List<SortFood> zone) =>
       zone.length == animalSortZoneCapacity && zone.toSet().length == 1;
 
   List<_BasketPlacement> _landscapePlacements(int count) {
     final backCount = (count + 1) ~/ 2;
-    final backScale = backCount <= 3
-        ? .82
+    final scale = backCount <= 3
+        ? 1.15
         : backCount == 4
-        ? .70
-        : .58;
-    final frontScale = backCount <= 3
-        ? .94
-        : backCount == 4
-        ? .80
-        : .68;
+        ? .95
+        : .78;
     return [
-      ..._centeredRow(backCount, 760, 48, backScale, 34),
-      ..._centeredRow(count - backCount, 760, 172, frontScale, 34),
+      ..._centeredRow(backCount, 600, 24, scale, 28),
+      ..._centeredRow(count - backCount, 600, 258, scale, 28),
     ];
   }
 
@@ -609,7 +588,7 @@ class _PlacedBasket extends StatelessWidget {
 class _FoodBasket extends StatelessWidget {
   const _FoodBasket({
     required this.index,
-    required this.animals,
+    required this.foods,
     required this.selected,
     required this.completed,
     required this.hintSource,
@@ -619,7 +598,7 @@ class _FoodBasket extends StatelessWidget {
   });
 
   final int index;
-  final List<AnimalKind> animals;
+  final List<SortFood> foods;
   final bool selected;
   final bool completed;
   final bool hintSource;
@@ -632,10 +611,10 @@ class _FoodBasket extends StatelessWidget {
     final emphasized = selected || hintSource || hintDestination || completed;
     return Semantics(
       button: true,
-      label: animals.isEmpty
-          ? 'Panier ${index + 1}, vide'
-          : 'Panier ${index + 1}, ${animals.length} portions, en commençant par la portion du dessus : '
-                '${animals.reversed.map((a) => '${a.foodLabel} pour ${a.label}').join(', ')}',
+      label: foods.isEmpty
+          ? 'Réserve ${index + 1}, vide'
+          : 'Réserve ${index + 1}, ${foods.length} portions, en commençant par la portion du bas : '
+                '${foods.reversed.map((a) => a.label).join(', ')}',
       child: InkWell(
         key: Key('animal-sort-zone-$index'),
         borderRadius: BorderRadius.circular(38),
@@ -648,64 +627,58 @@ class _FoodBasket extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              Positioned(
-                left: 18,
-                right: 18,
-                top: 18,
-                bottom: 8,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: const Color(0xff754723),
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(28),
-                      top: Radius.circular(5),
-                    ),
-                    border: Border.all(
-                      color: emphasized
-                          ? AppColors.sun
-                          : const Color(0xffc99653),
-                      width: emphasized ? 5 : 4,
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x55000000),
-                        blurRadius: 5,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              for (var depth = animalSortZoneCapacity - 1; depth >= 0; depth--)
-                if (_animalAt(depth) case final animal?)
-                  Positioned(
-                    top:
-                        13 +
-                        (animalSortZoneCapacity - animals.length + depth) * 34,
-                    left: 28,
-                    right: 28,
-                    child: _FoodPortion(
-                      animal: animal,
-                      depth: depth,
-                      lifted: selected && _topGroupContains(depth),
-                      lift: (animalSortZoneCapacity - animals.length) * 34 + 14,
-                    ),
-                  ),
-              if (animals.isNotEmpty)
+              if (emphasized || validDestination)
                 Positioned(
-                  right: 0,
-                  top: 24 + (animalSortZoneCapacity - animals.length) * 34,
-                  child: const Icon(
-                    Icons.arrow_left_rounded,
-                    color: Color(0xffffdb70),
-                    size: 32,
+                  left: 22,
+                  right: 22,
+                  top: 12,
+                  bottom: 14,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              (emphasized ? AppColors.sun : AppColors.success)
+                                  .withValues(alpha: .8),
+                          blurRadius: 15,
+                          spreadRadius: 3,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              Positioned(
-                left: 0,
-                top: 35,
-                child: _LeafTag(index: index, completed: completed),
+              const Positioned.fill(
+                child: Image(
+                  image: AssetImage(
+                    'assets/optimized/food_sort/ui/dispenser-256.webp',
+                  ),
+                  fit: BoxFit.fill,
+                ),
               ),
+              for (var item = 0; item < foods.length; item++)
+                AnimatedPositioned(
+                  key: ValueKey('food-$item'),
+                  duration: const Duration(milliseconds: 240),
+                  curve: Curves.easeIn,
+                  top: 29 + (animalSortZoneCapacity - foods.length + item) * 29,
+                  left: 32,
+                  right: 32,
+                  child: _FoodPortion(
+                    animal: foods[item],
+                    selected: selected && _bottomGroupContains(item),
+                  ),
+                ),
+              if (foods.isNotEmpty)
+                const Positioned(
+                  right: 19,
+                  bottom: 27,
+                  child: Icon(
+                    Icons.arrow_drop_down_rounded,
+                    color: Color(0xffffdb70),
+                    size: 21,
+                  ),
+                ),
               if (completed)
                 const Positioned(right: 2, top: 29, child: _CompletionSeal()),
               if ((validDestination || hintDestination) && !selected)
@@ -721,87 +694,40 @@ class _FoodBasket extends StatelessWidget {
     );
   }
 
-  AnimalKind? _animalAt(int depth) {
-    final animalIndex = animals.length - 1 - depth;
-    return animalIndex >= 0 ? animals[animalIndex] : null;
-  }
-
-  bool _topGroupContains(int depth) {
+  bool _bottomGroupContains(int item) {
     var count = 1;
-    while (count < animals.length &&
-        animals[animals.length - 1 - count] == animals.last) {
+    while (count < foods.length &&
+        foods[foods.length - 1 - count] == foods.last) {
       count++;
     }
-    return depth < count;
+    return item >= foods.length - count;
   }
 }
 
 class _FoodPortion extends StatelessWidget {
-  const _FoodPortion({
-    required this.animal,
-    required this.depth,
-    required this.lifted,
-    required this.lift,
-  });
+  const _FoodPortion({required this.animal, required this.selected});
 
-  final AnimalKind animal;
-  final int depth;
-  final bool lifted;
-  final double lift;
+  final SortFood animal;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) => AnimatedSlide(
     duration: const Duration(milliseconds: 180),
-    offset: Offset(0, lifted ? -lift / 48 : 0),
-    child: AnimatedOpacity(
-      duration: const Duration(milliseconds: 180),
-      opacity: 1 - depth * .12,
-      child: SizedBox(
-        height: 48,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: depth == 0 && lifted
-                ? const [BoxShadow(color: Color(0xaaffd166), blurRadius: 18)]
-                : null,
-          ),
-          child: Semantics(
-            image: true,
-            label: '${animal.foodLabel} pour ${animal.label}',
-            child: ArtworkImage(animal.foodAsset, fit: BoxFit.contain),
-          ),
+    offset: Offset(0, selected ? .18 : 0),
+    child: SizedBox(
+      height: 32,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: selected
+              ? const [BoxShadow(color: Color(0xaaffd166), blurRadius: 18)]
+              : null,
         ),
-      ),
-    ),
-  );
-}
-
-class _LeafTag extends StatelessWidget {
-  const _LeafTag({required this.index, required this.completed});
-
-  final int index;
-  final bool completed;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 32,
-    height: 27,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(
-      color: completed ? AppColors.success : const Color(0xffd4a264),
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(18),
-        topRight: Radius.circular(5),
-        bottomLeft: Radius.circular(5),
-        bottomRight: Radius.circular(18),
-      ),
-      border: Border.all(color: const Color(0xff70472e), width: 1.5),
-    ),
-    child: Text(
-      '${index + 1}',
-      style: const TextStyle(
-        color: Color(0xff3e3024),
-        fontWeight: FontWeight.w900,
+        child: Semantics(
+          image: true,
+          label: animal.label,
+          child: ArtworkImage(animal.asset, fit: BoxFit.contain),
+        ),
       ),
     ),
   );

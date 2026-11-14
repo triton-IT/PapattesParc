@@ -7,9 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:papatte_parc/games/familles_du_parc/domain/animal_sort_session.dart';
 import 'package:papatte_parc/games/familles_du_parc/domain/campaign.dart';
+import 'package:papatte_parc/games/familles_du_parc/domain/models.dart';
+import 'package:papatte_parc/games/familles_du_parc/domain/sort_food.dart';
 import 'package:papatte_parc/games/familles_du_parc/presentation/animal_sort_screen.dart';
 import 'package:papatte_parc/games/refuge/domain/levels.dart';
-import 'package:papatte_parc/shared/animal_food.dart';
 import 'package:papatte_parc/shared/app_theme.dart';
 
 void main() {
@@ -22,8 +23,19 @@ void main() {
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
 
+  testWidgets('chaque repas possède son illustration', (tester) async {
+    for (final animal in SortFood.values) {
+      final path = animal.asset;
+      expect(
+        (await rootBundle.load(path)).lengthInBytes,
+        greaterThan(0),
+        reason: animal.name,
+      );
+    }
+  });
+
   testWidgets('références visuelles des réserves du parc', (tester) async {
-    final level = buildAnimalSortCampaign(levels).first;
+    final level = buildAnimalSortCampaign(levels)[1];
     final session = AnimalSortSession(level);
     for (final size in _sizes) {
       tester.view.devicePixelRatio = 1;
@@ -58,9 +70,9 @@ void main() {
             ArtworkResolver.provider(level.stage.artAsset!),
             tester.element(find.byType(MaterialApp)),
           ),
-          for (final animal in level.animals)
+          for (final animal in level.foods)
             precacheArtwork(
-              ArtworkResolver.provider(animal.foodAsset),
+              ArtworkResolver.provider(animal.asset),
               tester.element(find.byType(MaterialApp)),
             ),
         ]),
@@ -127,6 +139,59 @@ void main() {
     expect(viewer.transformationController!.value.getMaxScaleOnAxis(), 1);
   });
 
+  testWidgets('les portions restantes descendent après un déplacement', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1920, 1080);
+    addTearDown(tester.view.reset);
+    final session = AnimalSortSession(
+      AnimalSortLevelDefinition(
+        stage: levels.first,
+        foods: const [SortFood.beef, SortFood.acaciaLeaves],
+        initialZones: const [
+          [SortFood.beef, SortFood.acaciaLeaves],
+          [],
+          [],
+        ],
+        referenceSolution: const [AnimalSortMove(0, 1)],
+      ),
+    );
+    Widget screen() => MaterialApp(
+      theme: buildAppTheme(),
+      home: AnimalSortScreen(
+        session: session,
+        selectedZone: null,
+        hintMove: null,
+        finished: false,
+        newRecord: false,
+        freeGame: false,
+        onTapZone: (_) {},
+        onUndo: () {},
+        onHint: () {},
+        onBack: () {},
+        onRestart: () {},
+        onReplay: () {},
+        onLevels: () {},
+        onNext: () {},
+        onNewGame: null,
+        onConfigure: null,
+      ),
+    );
+    await tester.pumpWidget(screen());
+    await tester.pumpAndSettle();
+    final food = find.descendant(
+      of: find.byKey(const Key('animal-sort-zone-0')),
+      matching: find.byKey(const ValueKey('food-0')),
+    );
+    final before = tester.getTopLeft(food).dy;
+    expect(session.move(0, 1), AnimalSortMoveResult.moved);
+    await tester.pumpWidget(screen());
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(food).dy, greaterThan(before));
+    expect(find.text('Prends la portion du dessus'), findsNothing);
+  });
+
   testWidgets('les dix paniers restent dans le plateau', (tester) async {
     final level = buildAnimalSortCampaign(levels).last;
     final session = AnimalSortSession(level);
@@ -163,9 +228,9 @@ void main() {
             ArtworkResolver.provider(level.stage.artAsset!),
             tester.element(find.byType(MaterialApp)),
           ),
-          for (final animal in level.animals)
+          for (final animal in level.foods)
             precacheArtwork(
-              ArtworkResolver.provider(animal.foodAsset),
+              ArtworkResolver.provider(animal.asset),
               tester.element(find.byType(MaterialApp)),
             ),
         ]),
