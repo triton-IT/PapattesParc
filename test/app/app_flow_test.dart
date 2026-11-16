@@ -530,8 +530,8 @@ void main() {
     await _pumpApp(tester, store, const Size(1366, 768));
     await tester.tap(find.byTooltip('Réglages'));
     await tester.pumpAndSettle();
-    expect(find.text('Quitter l’application'), findsOneWidget);
-    await tester.tap(find.text('Quitter l’application'));
+    expect(_clayLabel('Quitter l’application'), findsOneWidget);
+    await tester.tap(_clayLabel('Quitter l’application'));
     await tester.pumpAndSettle();
     expect(applicationCall?.method, 'quit');
 
@@ -539,7 +539,7 @@ void main() {
     await _pumpApp(tester, store, const Size(1366, 768));
     await tester.tap(find.byTooltip('Réglages'));
     await tester.pumpAndSettle();
-    expect(find.text('Quitter l’application'), findsNothing);
+    expect(_clayLabel('Quitter l’application'), findsNothing);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -548,9 +548,9 @@ void main() {
     final store = await ProgressStore.load();
     await _pumpApp(tester, store, const Size(1366, 768));
 
-    expect(find.text('BALISES DU REFUGE'), findsOneWidget);
-    expect(find.text('Terrier des sentinelles'), findsOneWidget);
-    expect(find.text('Sélectionne un niveau'), findsOneWidget);
+    expect(_clayLabel('BALISES DU REFUGE'), findsOneWidget);
+    expect(_clayLabel('Terrier des sentinelles'), findsOneWidget);
+    expect(_clayLabel('Sélectionne un niveau'), findsOneWidget);
     await tester.tap(find.byKey(const Key('campaign-play-selected')));
     await tester.pump();
 
@@ -599,9 +599,7 @@ void main() {
       }),
       findsOneWidget,
     );
-    await tester.tap(
-      find.text('Lions d’Afrique').last,
-    );
+    await tester.tap(find.text('Lions d’Afrique').last);
     await tester.pumpAndSettle();
     final preview = tester.widget<ArtworkImage>(
       find.byKey(const Key('level-art')),
@@ -726,7 +724,7 @@ void main() {
     final store = await ProgressStore.load();
     await _pumpApp(tester, store, const Size(800, 1280));
 
-    expect(find.text('Prairie des alpagas'), findsOneWidget);
+    expect(_clayLabel('Prairie des alpagas'), findsOneWidget);
     expect(find.byKey(const Key('campaign-play-selected')), findsOneWidget);
   });
 
@@ -737,7 +735,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Réglages'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Musique'));
+    await tester.tap(_clayLabel('Musique'));
     await tester.pumpAndSettle();
     await tester.pump();
 
@@ -753,7 +751,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Réglages'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Effets sonores'));
+    await tester.tap(_clayLabel('Effets sonores'));
     await tester.pumpAndSettle();
     await tester.pump();
 
@@ -762,7 +760,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Réglages'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Musique'));
+    await tester.tap(_clayLabel('Musique'));
     await tester.pumpAndSettle();
     await tester.pump();
 
@@ -823,7 +821,10 @@ void main() {
     );
     expect(find.byKey(const Key('end-overlay')), findsOneWidget);
     expect(find.bySemanticsLabel('REFUGE SÉCURISÉ !'), findsOneWidget);
-    expect(find.bySemanticsLabel('Revoir cette grille · entraînement'), findsNothing);
+    expect(
+      find.bySemanticsLabel('Revoir cette grille · entraînement'),
+      findsNothing,
+    );
     await tester.tap(find.bySemanticsLabel('Nouvelle observation'));
     expect(newObservationPressed, isTrue);
     await tester.tap(find.bySemanticsLabel('Niveau suivant'));
@@ -1335,3 +1336,7 @@ GameSession _lostSession(LevelDefinition level) {
   session.reveal(_animalPositions(board).first);
   return session;
 }
+
+Finder _clayLabel(String text) => find.byWidgetPredicate(
+  (widget) => widget is ClayText && widget.text == text,
+);

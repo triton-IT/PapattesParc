@@ -104,6 +104,101 @@ class ClayHudIcon extends StatelessWidget {
 }
 
 /// Uses a modelled icon where available and preserves Material's fallback.
+/// Illustrated controls used by campaign menus and level lists.
+enum ClayMenuIconKind { lock, settings, list, chevron }
+
+class ClayMenuIcon extends StatelessWidget {
+  const ClayMenuIcon(
+    this.kind, {
+    this.size = 24,
+    this.onDark = false,
+    super.key,
+  });
+  final ClayMenuIconKind kind;
+  final double size;
+  final bool onDark;
+  static final Future<ui.Image> _atlas = ClayHudIcon._load('menu-icons.png');
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: size,
+    child: FutureBuilder<ui.Image>(
+      future: _atlas,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Icon(
+            switch (kind) {
+              ClayMenuIconKind.lock => Icons.lock_rounded,
+              ClayMenuIconKind.settings => Icons.settings_rounded,
+              ClayMenuIconKind.list => Icons.format_list_bulleted_rounded,
+              ClayMenuIconKind.chevron => Icons.expand_more_rounded,
+            },
+            size: size,
+            color: onDark ? const Color(0xffffedcb) : const Color(0xff315a3c),
+          );
+        }
+        return CustomPaint(
+          painter: _ClayMenuIconPainter(snapshot.data!, kind, onDark),
+        );
+      },
+    ),
+  );
+}
+
+class _ClayMenuIconPainter extends CustomPainter {
+  const _ClayMenuIconPainter(this.image, this.kind, this.onDark);
+  final ui.Image image;
+  final ClayMenuIconKind kind;
+  final bool onDark;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final source = switch (kind) {
+      ClayMenuIconKind.lock => const Rect.fromLTRB(75, 135, 465, 595),
+      ClayMenuIconKind.settings => const Rect.fromLTRB(600, 140, 1035, 590),
+      ClayMenuIconKind.list => const Rect.fromLTRB(1140, 205, 1580, 530),
+      ClayMenuIconKind.chevron => const Rect.fromLTRB(1685, 240, 2110, 515),
+    };
+    final paint = Paint()..filterQuality = FilterQuality.medium;
+    if (onDark) {
+      paint.colorFilter = const ColorFilter.matrix([
+        0,
+        .50,
+        0,
+        0,
+        145,
+        0,
+        .48,
+        0,
+        0,
+        137,
+        0,
+        .40,
+        0,
+        0,
+        111,
+        0,
+        0,
+        0,
+        1,
+        0,
+      ]);
+    }
+    canvas.drawImageRect(
+      image,
+      source,
+      Alignment.center.inscribe(
+        applyBoxFit(BoxFit.contain, source.size, size).destination,
+        Offset.zero & size,
+      ),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_ClayMenuIconPainter old) =>
+      image != old.image || kind != old.kind || onDark != old.onDark;
+}
+
 class ClaySymbol extends StatelessWidget {
   const ClaySymbol(this.icon, {this.size, this.color, super.key});
   final IconData icon;
