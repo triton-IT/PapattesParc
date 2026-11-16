@@ -651,7 +651,7 @@ class _FoodBasket extends StatelessWidget {
               const Positioned.fill(
                 child: Image(
                   image: AssetImage(
-                    'assets/optimized/food_sort/ui/dispenser-256.webp',
+                    'assets/optimized/food_sort/ui/dispenser-clay-256.webp',
                   ),
                   fit: BoxFit.fill,
                 ),
@@ -671,12 +671,16 @@ class _FoodBasket extends StatelessWidget {
                 ),
               if (foods.isNotEmpty)
                 const Positioned(
-                  right: 19,
-                  bottom: 27,
-                  child: Icon(
-                    Icons.arrow_drop_down_rounded,
-                    color: Color(0xffffdb70),
-                    size: 21,
+                  right: 15,
+                  bottom: 24,
+                  child: Image(
+                    image: AssetImage(
+                      'assets/optimized/food_sort/ui/bottom-marker-clay-256.webp',
+                    ),
+                    width: 26,
+                    height: 26,
+                    fit: BoxFit.contain,
+                    excludeFromSemantics: true,
                   ),
                 ),
               if (completed)

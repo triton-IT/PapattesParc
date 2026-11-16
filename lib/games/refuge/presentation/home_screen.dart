@@ -37,6 +37,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CampaignLevelSelectScreen(
+    clayStyle: true,
     title: 'BALISES DU REFUGE',
     tagline: 'Observe · Déduis · Protège',
     icon: Icons.grid_on_rounded,

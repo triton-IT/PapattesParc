@@ -134,6 +134,32 @@ class ClayText extends StatefulWidget {
   State<ClayText> createState() => _ClayTextState();
 }
 
+/// Wrap illustrated words while exposing one complete label to accessibility.
+class ClayParagraph extends StatelessWidget {
+  const ClayParagraph(
+    this.text, {
+    required this.style,
+    this.alignment = WrapAlignment.start,
+    super.key,
+  });
+  final String text;
+  final TextStyle style;
+  final WrapAlignment alignment;
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: text,
+    child: ExcludeSemantics(
+      child: Wrap(
+        alignment: alignment,
+        spacing: (style.fontSize ?? 14) * .22,
+        children: [
+          for (final word in text.split(' ')) ClayText(word, style: style),
+        ],
+      ),
+    ),
+  );
+}
+
 class _ClayTextState extends State<ClayText> {
   static List<ui.Image>? _cachedImages;
   static final Future<List<ui.Image>> _atlases = Future.wait([
