@@ -79,6 +79,7 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
   bool _detailsExpanded = false;
   final _sceneRootKey = GlobalKey();
   final _mapViewKey = GlobalKey();
+  final _journeyMapKey = GlobalKey<ParkJourneyMapState>();
   @override
   void initState() {
     super.initState();
@@ -170,15 +171,19 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
                   constraints.maxWidth >= 1100 && constraints.maxHeight >= 650;
               final map = KeyedSubtree(
                 key: _mapViewKey,
-                child: ParkJourneyMap(
+                child: KeyedSubtree(
                   key: Key('${widget.keyPrefix}-level-grid'),
-                  itemCount: widget.itemCount,
-                  unlockedLevel: widget.unlockedLevel,
-                  keyPrefix: widget.keyPrefix,
-                  labelBuilder: widget.labelBuilder,
-                  clayStyle: widget.clayStyle,
-                  controller: _selection,
-                  onSelect: _select,
+                  child: ParkJourneyMap(
+                    key: _journeyMapKey,
+                    itemCount: widget.itemCount,
+                    unlockedLevel: widget.unlockedLevel,
+                    keyPrefix: widget.keyPrefix,
+                    labelBuilder: widget.labelBuilder,
+                    clayStyle: widget.clayStyle,
+                    showControls: !widget.clayStyle,
+                    controller: _selection,
+                    onSelect: _select,
+                  ),
                 ),
               );
               final mission = AnimatedBuilder(
@@ -253,39 +258,6 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
                     ),
                   ),
                 ),
-              ),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ClayText(
-                  '${(widget.completedCount * 100 / widget.itemCount).round()}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Color(0xffffedcb),
-                  ),
-                ),
-                const Text(
-                  ' %',
-                  textScaler: TextScaler.noScaling,
-                  style: TextStyle(
-                    fontFamily: 'PapattesModelage',
-                    color: Color(0xffffedcb),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: MediaQuery.sizeOf(context).width < 500 ? 24 : 100,
-              child: LinearProgressIndicator(
-                key: Key('${widget.keyPrefix}-journey-progress'),
-                value: widget.completedCount / widget.itemCount,
-                semanticsLabel:
-                    '${widget.completedCount} niveaux terminés sur ${widget.itemCount}',
-                backgroundColor: const Color(0xff835132),
-                color: const Color(0xffffd475),
               ),
             ),
             PopupMenuButton<String>(
@@ -386,6 +358,7 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
       ),
     );
     return Container(
+      key: const Key('campaign-mission-panel'),
       margin: const EdgeInsets.all(8),
       decoration: parchmentDecoration,
       padding: const EdgeInsets.fromLTRB(30, 32, 30, 30),
@@ -494,6 +467,53 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
               key: Key('${widget.keyPrefix}-journey-legend'),
               style: const TextStyle(fontSize: 16, color: Color(0xff315a3c)),
             ),
+          ),
+          Wrap(
+            alignment: WrapAlignment.center,
+            children: [
+              IconButton(
+                tooltip: 'Zoom +',
+                onPressed: () => _journeyMapKey.currentState?.zoomIn(),
+                icon: const ClayHudIcon(
+                  ClayHudIconKind.zoomIn,
+                  size: 26,
+                  color: Color(0xff315a3c),
+                ),
+              ),
+              IconButton(
+                tooltip: 'Zoom −',
+                onPressed: () => _journeyMapKey.currentState?.zoomOut(),
+                icon: const ClayHudIcon(
+                  ClayHudIconKind.zoomOut,
+                  size: 26,
+                  color: Color(0xff315a3c),
+                ),
+              ),
+              IconButton(
+                tooltip: 'Recentrer',
+                onPressed: () => _journeyMapKey.currentState?.recenter(),
+                icon: const ClayHudIcon(
+                  ClayHudIconKind.recenter,
+                  size: 26,
+                  color: Color(0xff315a3c),
+                ),
+              ),
+              IconButton(
+                tooltip: 'Vue du parc',
+                onPressed: () => _journeyMapKey.currentState?.showOverview(),
+                icon: const ClaySymbol(
+                  Icons.route_rounded,
+                  size: 26,
+                  color: Color(0xff315a3c),
+                ),
+              ),
+              IconButton(
+                key: Key('${widget.keyPrefix}-level-list'),
+                tooltip: 'Liste des niveaux',
+                onPressed: () => _journeyMapKey.currentState?.showLevelList(),
+                icon: const ClayMenuIcon(ClayMenuIconKind.list, size: 26),
+              ),
+            ],
           ),
         ],
       ),

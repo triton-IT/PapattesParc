@@ -24,6 +24,7 @@ import '../games/sudoku_animaux/presentation/sudoku_game_flow.dart';
 import '../games/familles_du_parc/data/animal_sort_progress_store.dart';
 import '../games/familles_du_parc/presentation/animal_sort_game_flow.dart';
 import '../shared/app_theme.dart';
+import '../shared/park_cursor.dart';
 import '../shared/settings_store.dart';
 import 'main_menu_screen.dart';
 
@@ -56,10 +57,12 @@ class PapatteParcApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Papatte Parc',
-    builder: (context, child) => GameActivityBoundary(
-      child: Listener(
-        onPointerDown: (_) => GameAudio.onUserGesture(),
-        child: child!,
+    builder: (context, child) => ParkCursor(
+      child: GameActivityBoundary(
+        child: Listener(
+          onPointerDown: (_) => GameAudio.onUserGesture(),
+          child: child!,
+        ),
       ),
     ),
     debugShowCheckedModeBanner: false,
