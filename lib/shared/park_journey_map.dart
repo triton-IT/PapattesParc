@@ -40,10 +40,12 @@ class ParkJourneyMap extends StatefulWidget {
     required this.labelBuilder,
     required this.onSelect,
     this.clayStyle = false,
+    this.showControls = true,
     this.controller,
     super.key,
   });
   final bool clayStyle;
+  final bool showControls;
   final int itemCount;
   final int unlockedLevel;
   final String keyPrefix;
@@ -51,10 +53,10 @@ class ParkJourneyMap extends StatefulWidget {
   final ValueChanged<int> onSelect;
   final CampaignSelectionController? controller;
   @override
-  State<ParkJourneyMap> createState() => _ParkJourneyMapState();
+  State<ParkJourneyMap> createState() => ParkJourneyMapState();
 }
 
-class _ParkJourneyMapState extends State<ParkJourneyMap> {
+class ParkJourneyMapState extends State<ParkJourneyMap> {
   static const _world = Size(1491, 1055);
   late CampaignSelectionController _selection;
   bool _positionPending = false;
@@ -170,6 +172,26 @@ class _ParkJourneyMapState extends State<ParkJourneyMap> {
     );
   }
 
+  void zoomIn() {
+    if (_selection.viewport case final viewport?) _zoom(1.4, viewport);
+  }
+
+  void zoomOut() {
+    if (_selection.viewport case final viewport?) _zoom(1 / 1.4, viewport);
+  }
+
+  void recenter() {
+    if (_selection.viewport case final viewport?) _focus(viewport);
+  }
+
+  void showOverview() {
+    if (_selection.viewport case final viewport?) {
+      _focus(viewport, overview: true);
+    }
+  }
+
+  Future<void> showLevelList() => _list();
+
   Future<void> _list([List<int>? indices]) async {
     final entries = indices ?? List.generate(widget.itemCount, (i) => i);
     await showModalBottomSheet<void>(
@@ -208,60 +230,69 @@ class _ParkJourneyMapState extends State<ParkJourneyMap> {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: entries.length,
-                    itemBuilder: (context, position) {
-                      final index = entries[position];
-                      final unlocked = index < widget.unlockedLevel;
-                      return ListTile(
-                        key: Key('${widget.keyPrefix}-list-level-${index + 1}'),
-                        enabled: unlocked,
-                        selected: index == _selection.selectedIndex,
-                        leading: widget.clayStyle
-                            ? unlocked
-                                  ? const ClaySymbol(
-                                      Icons.pets_rounded,
-                                      size: 25,
-                                      color: Color(0xff315a3c),
-                                    )
-                                  : const ClayMenuIcon(
-                                      ClayMenuIconKind.lock,
-                                      size: 25,
-                                    )
-                            : Icon(
-                                unlocked
-                                    ? Icons.pets_rounded
-                                    : Icons.lock_rounded,
-                              ),
-                        title: widget.clayStyle
-                            ? FittedBox(
-                                fit: BoxFit.scaleDown,
-                                alignment: Alignment.centerLeft,
-                                child: ClayText(
-                                  '${index + 1} · ${widget.labelBuilder(index)}',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: unlocked
-                                        ? const Color(0xff315a3c)
-                                        : const Color(0xff826e50),
-                                  ),
+                  child: _wrapLevelList(
+                    ListView.builder(
+                      primary: widget.clayStyle ? true : null,
+                      padding: widget.clayStyle
+                          ? const EdgeInsets.only(right: 30)
+                          : null,
+                      itemCount: entries.length,
+                      itemBuilder: (context, position) {
+                        final index = entries[position];
+                        final unlocked = index < widget.unlockedLevel;
+                        return ListTile(
+                          key: Key(
+                            '${widget.keyPrefix}-list-level-${index + 1}',
+                          ),
+                          enabled: unlocked,
+                          selected: index == _selection.selectedIndex,
+                          leading: widget.clayStyle
+                              ? unlocked
+                                    ? const ClaySymbol(
+                                        Icons.pets_rounded,
+                                        size: 25,
+                                        color: Color(0xff315a3c),
+                                      )
+                                    : const ClayMenuIcon(
+                                        ClayMenuIconKind.lock,
+                                        size: 25,
+                                      )
+                              : Icon(
+                                  unlocked
+                                      ? Icons.pets_rounded
+                                      : Icons.lock_rounded,
                                 ),
-                              )
-                            : Text(
-                                '${index + 1} · ${widget.labelBuilder(index)}',
-                              ),
-                        onTap: unlocked
-                            ? () {
-                                Navigator.pop(context);
-                                _selection.select(index);
-                                widget.onSelect(index);
-                                if (_selection.viewport case final viewport?) {
-                                  _focus(viewport);
+                          title: widget.clayStyle
+                              ? FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: ClayText(
+                                    '${index + 1} · ${widget.labelBuilder(index)}',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: unlocked
+                                          ? const Color(0xff315a3c)
+                                          : const Color(0xff826e50),
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  '${index + 1} · ${widget.labelBuilder(index)}',
+                                ),
+                          onTap: unlocked
+                              ? () {
+                                  Navigator.pop(context);
+                                  _selection.select(index);
+                                  widget.onSelect(index);
+                                  if (_selection.viewport
+                                      case final viewport?) {
+                                    _focus(viewport);
+                                  }
                                 }
-                              }
-                            : null,
-                      );
-                    },
+                              : null,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -271,6 +302,9 @@ class _ParkJourneyMapState extends State<ParkJourneyMap> {
       ),
     );
   }
+
+  Widget _wrapLevelList(Widget list) =>
+      widget.clayStyle ? _ClayLevelScrollbar(child: list) : list;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
@@ -374,83 +408,84 @@ class _ParkJourneyMapState extends State<ParkJourneyMap> {
                 );
               },
             ),
-            Positioned(
-              top: 4,
-              right: 4,
-              child: Container(
-                decoration: widget.clayStyle ? parchmentDecoration : null,
-                padding: widget.clayStyle
-                    ? const EdgeInsets.all(6)
-                    : EdgeInsets.zero,
-                child: Material(
-                  color: widget.clayStyle
-                      ? Colors.transparent
-                      : AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  elevation: widget.clayStyle ? 0 : 2,
-                  child: Wrap(
-                    direction: Axis.vertical,
-                    children: [
-                      IconButton(
-                        tooltip: 'Zoom +',
-                        onPressed: () => _zoom(1.4, viewport),
-                        icon: widget.clayStyle
-                            ? const ClayHudIcon(
-                                ClayHudIconKind.zoomIn,
-                                size: 26,
-                                color: Color(0xff315a3c),
-                              )
-                            : const Icon(Icons.add),
-                      ),
-                      IconButton(
-                        tooltip: 'Zoom −',
-                        onPressed: () => _zoom(1 / 1.4, viewport),
-                        icon: widget.clayStyle
-                            ? const ClayHudIcon(
-                                ClayHudIconKind.zoomOut,
-                                size: 26,
-                                color: Color(0xff315a3c),
-                              )
-                            : const Icon(Icons.remove),
-                      ),
-                      IconButton(
-                        tooltip: 'Recentrer',
-                        onPressed: () => _focus(viewport),
-                        icon: widget.clayStyle
-                            ? const ClayHudIcon(
-                                ClayHudIconKind.recenter,
-                                size: 26,
-                                color: Color(0xff315a3c),
-                              )
-                            : const Icon(Icons.my_location),
-                      ),
-                      IconButton(
-                        tooltip: 'Vue du parc',
-                        onPressed: () => _focus(viewport, overview: true),
-                        icon: widget.clayStyle
-                            ? const ClaySymbol(
-                                Icons.route_rounded,
-                                size: 26,
-                                color: Color(0xff315a3c),
-                              )
-                            : const Icon(Icons.map_outlined),
-                      ),
-                      IconButton(
-                        key: Key('${widget.keyPrefix}-level-list'),
-                        tooltip: 'Liste des niveaux',
-                        onPressed: _list,
-                        icon: widget.clayStyle
-                            ? const ClayMenuIcon(
-                                ClayMenuIconKind.list,
-                                size: 26,
-                              )
-                            : const Icon(Icons.format_list_numbered),
-                      ),
-                    ],
+            if (widget.showControls)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: Container(
+                  decoration: widget.clayStyle ? parchmentDecoration : null,
+                  padding: widget.clayStyle
+                      ? const EdgeInsets.all(6)
+                      : EdgeInsets.zero,
+                  child: Material(
+                    color: widget.clayStyle
+                        ? Colors.transparent
+                        : AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    elevation: widget.clayStyle ? 0 : 2,
+                    child: Wrap(
+                      direction: Axis.vertical,
+                      children: [
+                        IconButton(
+                          tooltip: 'Zoom +',
+                          onPressed: () => _zoom(1.4, viewport),
+                          icon: widget.clayStyle
+                              ? const ClayHudIcon(
+                                  ClayHudIconKind.zoomIn,
+                                  size: 26,
+                                  color: Color(0xff315a3c),
+                                )
+                              : const Icon(Icons.add),
+                        ),
+                        IconButton(
+                          tooltip: 'Zoom −',
+                          onPressed: () => _zoom(1 / 1.4, viewport),
+                          icon: widget.clayStyle
+                              ? const ClayHudIcon(
+                                  ClayHudIconKind.zoomOut,
+                                  size: 26,
+                                  color: Color(0xff315a3c),
+                                )
+                              : const Icon(Icons.remove),
+                        ),
+                        IconButton(
+                          tooltip: 'Recentrer',
+                          onPressed: () => _focus(viewport),
+                          icon: widget.clayStyle
+                              ? const ClayHudIcon(
+                                  ClayHudIconKind.recenter,
+                                  size: 26,
+                                  color: Color(0xff315a3c),
+                                )
+                              : const Icon(Icons.my_location),
+                        ),
+                        IconButton(
+                          tooltip: 'Vue du parc',
+                          onPressed: () => _focus(viewport, overview: true),
+                          icon: widget.clayStyle
+                              ? const ClaySymbol(
+                                  Icons.route_rounded,
+                                  size: 26,
+                                  color: Color(0xff315a3c),
+                                )
+                              : const Icon(Icons.map_outlined),
+                        ),
+                        IconButton(
+                          key: Key('${widget.keyPrefix}-level-list'),
+                          tooltip: 'Liste des niveaux',
+                          onPressed: _list,
+                          icon: widget.clayStyle
+                              ? const ClayMenuIcon(
+                                  ClayMenuIconKind.list,
+                                  size: 26,
+                                )
+                              : const Icon(Icons.format_list_numbered),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         );
       },
@@ -552,6 +587,201 @@ class _ParkJourneyMapState extends State<ParkJourneyMap> {
       ),
     );
   }
+}
+
+/// A draggable clay handle; the underlying list keeps its normal wheel and
+/// touch scrolling, while the handle also works with assistive technologies.
+class _ClayLevelScrollbar extends StatefulWidget {
+  const _ClayLevelScrollbar({required this.child});
+  final Widget child;
+
+  @override
+  State<_ClayLevelScrollbar> createState() => _ClayLevelScrollbarState();
+}
+
+class _ClayLevelScrollbarState extends State<_ClayLevelScrollbar> {
+  final _controller = ScrollController();
+  bool _metricsUpdatePending = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _refreshMetrics() {
+    if (_metricsUpdatePending) return;
+    _metricsUpdatePending = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _metricsUpdatePending = false;
+      if (mounted) setState(() {});
+    });
+  }
+
+  void _scrollBy(double amount) {
+    if (!_controller.hasClients) return;
+    final position = _controller.position;
+    _controller.jumpTo(
+      (position.pixels + amount).clamp(0.0, position.maxScrollExtent),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => PrimaryScrollController(
+      controller: _controller,
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: NotificationListener<ScrollMetricsNotification>(
+          onNotification: (_) {
+            _refreshMetrics();
+            return false;
+          },
+          child: Stack(
+            children: [
+              widget.child,
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, _) {
+                  if (!_controller.hasClients ||
+                      !_controller.position.hasContentDimensions) {
+                    return const SizedBox.shrink();
+                  }
+                  final position = _controller.position;
+                  final maximum = position.maxScrollExtent;
+                  if (maximum <= 0) return const SizedBox.shrink();
+                  const bottomInset = 32.0;
+                  final height = math.max(
+                    0.0,
+                    constraints.maxHeight - bottomInset,
+                  );
+                  if (height == 0) return const SizedBox.shrink();
+                  final thumbHeight =
+                      (height *
+                              position.viewportDimension /
+                              (position.viewportDimension + maximum))
+                          .clamp(math.min(40.0, height), height)
+                          .toDouble();
+                  final travel = height - thumbHeight;
+                  final top =
+                      travel * (position.pixels / maximum).clamp(0.0, 1.0);
+                  return Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: bottomInset,
+                    width: 30,
+                    child: Semantics(
+                      label: 'Défilement des niveaux',
+                      value: '${(position.pixels / maximum * 100).round()} %',
+                      increasedValue:
+                          '${((position.pixels + position.viewportDimension * .8).clamp(0.0, maximum) / maximum * 100).round()} %',
+                      decreasedValue:
+                          '${((position.pixels - position.viewportDimension * .8).clamp(0.0, maximum) / maximum * 100).round()} %',
+                      slider: true,
+                      onIncrease: () =>
+                          _scrollBy(position.viewportDimension * .8),
+                      onDecrease: () =>
+                          _scrollBy(-position.viewportDimension * .8),
+                      child: GestureDetector(
+                        key: const Key('clay-level-scrollbar'),
+                        behavior: HitTestBehavior.opaque,
+                        onTapDown: (details) {
+                          if (travel <= 0) return;
+                          final fraction =
+                              ((details.localPosition.dy - thumbHeight / 2) /
+                                      travel)
+                                  .clamp(0.0, 1.0);
+                          _controller.jumpTo(fraction * maximum);
+                        },
+                        onVerticalDragUpdate: (details) {
+                          if (travel > 0) {
+                            _scrollBy(details.delta.dy * maximum / travel);
+                          }
+                        },
+                        child: Stack(
+                          children: [
+                            const Positioned(
+                              left: 4,
+                              right: 4,
+                              top: 2,
+                              bottom: 2,
+                              child: _ClayScrollSprite(track: true),
+                            ),
+                            Positioned(
+                              top: top,
+                              left: 3,
+                              right: 3,
+                              height: thumbHeight,
+                              child: const _ClayScrollSprite(track: false),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// Keep the rounded ends at their natural proportions; repeat only the middle.
+class _ClayScrollSprite extends StatelessWidget {
+  const _ClayScrollSprite({required this.track});
+  final bool track;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final capHeight = math.min(
+        constraints.maxWidth,
+        constraints.maxHeight / 2,
+      );
+      final name = track ? 'scroll-track' : 'scroll-thumb';
+      Widget sprite(
+        String piece, {
+        ImageRepeat repeat = ImageRepeat.noRepeat,
+      }) => Image.asset(
+        'assets/optimized/clay_type/$name-$piece.webp',
+        fit: repeat == ImageRepeat.noRepeat ? BoxFit.fill : BoxFit.fitWidth,
+        repeat: repeat,
+        alignment: Alignment.topCenter,
+        excludeFromSemantics: true,
+      );
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: capHeight,
+            child: sprite('top'),
+          ),
+          Positioned(
+            top: capHeight,
+            bottom: capHeight,
+            left: 0,
+            right: 0,
+            child: ClipRect(
+              child: sprite('middle', repeat: ImageRepeat.repeatY),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: capHeight,
+            child: sprite('bottom'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 /// One illustration contains the park and its surroundings. Its outermost
