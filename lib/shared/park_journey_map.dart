@@ -8,30 +8,6 @@ import 'package:flutter/material.dart';
 import 'app_theme.dart';
 import 'campaign_selection_controller.dart';
 
-class ParkJourneyProgress extends StatelessWidget {
-  const ParkJourneyProgress({
-    required this.currentLevel,
-    required this.itemCount,
-    super.key,
-  });
-  final int currentLevel;
-  final int itemCount;
-  @override
-  Widget build(BuildContext context) => Chip(
-    avatar: const Icon(Icons.verified_rounded, size: 20),
-    label: Text('$currentLevel / $itemCount'),
-  );
-}
-
-class ParkJourneyLegend extends StatelessWidget {
-  const ParkJourneyLegend({super.key});
-  @override
-  Widget build(BuildContext context) => const Text(
-    'Sélectionne un niveau',
-    style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
-  );
-}
-
 class ParkJourneyMap extends StatefulWidget {
   const ParkJourneyMap({
     required this.itemCount,
@@ -39,12 +15,10 @@ class ParkJourneyMap extends StatefulWidget {
     required this.keyPrefix,
     required this.labelBuilder,
     required this.onSelect,
-    this.clayStyle = false,
     this.showControls = true,
     this.controller,
     super.key,
   });
-  final bool clayStyle;
   final bool showControls;
   final int itemCount;
   final int unlockedLevel;
@@ -197,45 +171,33 @@ class ParkJourneyMapState extends State<ParkJourneyMap> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: widget.clayStyle ? Colors.transparent : null,
-      showDragHandle: !widget.clayStyle,
+      backgroundColor: Colors.transparent,
+      showDragHandle: false,
       builder: (context) => SafeArea(
         child: Container(
-          decoration: widget.clayStyle ? parchmentDecoration : null,
-          padding: widget.clayStyle
-              ? const EdgeInsets.fromLTRB(32, 30, 32, 20)
-              : EdgeInsets.zero,
+          decoration: parchmentDecoration,
+          padding: const EdgeInsets.fromLTRB(32, 30, 32, 20),
           child: SizedBox(
             height: MediaQuery.sizeOf(context).height * .78,
             child: Column(
               children: [
-                if (widget.clayStyle)
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: ClayText(
-                      indices == null
-                          ? 'Niveaux du parc'
-                          : 'Niveaux de cette zone',
-                      style: const TextStyle(
-                        fontSize: 26,
-                        color: Color(0xff315a3c),
-                      ),
-                    ),
-                  )
-                else
-                  Text(
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: ClayText(
                     indices == null
                         ? 'Niveaux du parc'
                         : 'Niveaux de cette zone',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      color: Color(0xff315a3c),
+                    ),
                   ),
+                ),
                 Expanded(
                   child: _wrapLevelList(
                     ListView.builder(
-                      primary: widget.clayStyle ? true : null,
-                      padding: widget.clayStyle
-                          ? const EdgeInsets.only(right: 30)
-                          : null,
+                      primary: true,
+                      padding: const EdgeInsets.only(right: 30),
                       itemCount: entries.length,
                       itemBuilder: (context, position) {
                         final index = entries[position];
@@ -246,39 +208,29 @@ class ParkJourneyMapState extends State<ParkJourneyMap> {
                           ),
                           enabled: unlocked,
                           selected: index == _selection.selectedIndex,
-                          leading: widget.clayStyle
-                              ? unlocked
-                                    ? const ClaySymbol(
-                                        Icons.pets_rounded,
-                                        size: 25,
-                                        color: Color(0xff315a3c),
-                                      )
-                                    : const ClayMenuIcon(
-                                        ClayMenuIconKind.lock,
-                                        size: 25,
-                                      )
-                              : Icon(
-                                  unlocked
-                                      ? Icons.pets_rounded
-                                      : Icons.lock_rounded,
-                                ),
-                          title: widget.clayStyle
-                              ? FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: ClayText(
-                                    '${index + 1} · ${widget.labelBuilder(index)}',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: unlocked
-                                          ? const Color(0xff315a3c)
-                                          : const Color(0xff826e50),
-                                    ),
-                                  ),
+                          leading: unlocked
+                              ? const ClaySymbol(
+                                  Icons.pets_rounded,
+                                  size: 25,
+                                  color: Color(0xff315a3c),
                                 )
-                              : Text(
-                                  '${index + 1} · ${widget.labelBuilder(index)}',
+                              : const ClayMenuIcon(
+                                  ClayMenuIconKind.lock,
+                                  size: 25,
                                 ),
+                          title: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: ClayText(
+                              '${index + 1} · ${widget.labelBuilder(index)}',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: unlocked
+                                    ? const Color(0xff315a3c)
+                                    : const Color(0xff826e50),
+                              ),
+                            ),
+                          ),
                           onTap: unlocked
                               ? () {
                                   Navigator.pop(context);
@@ -303,12 +255,11 @@ class ParkJourneyMapState extends State<ParkJourneyMap> {
     );
   }
 
-  Widget _wrapLevelList(Widget list) =>
-      widget.clayStyle ? _ClayLevelScrollbar(child: list) : list;
+  Widget _wrapLevelList(Widget list) => _ClayLevelScrollbar(child: list);
 
   @override
   Widget build(BuildContext context) => ColoredBox(
-    color: widget.clayStyle ? Colors.transparent : const Color(0xffa9653a),
+    color: Colors.transparent,
     child: LayoutBuilder(
       builder: (context, constraints) {
         final viewport = constraints.biggest;
@@ -352,21 +303,7 @@ class ParkJourneyMapState extends State<ParkJourneyMap> {
               onInteractionEnd: (_) => _constrainCamera(viewport),
               child: SizedBox.fromSize(
                 size: _sceneSize(viewport),
-                child: Stack(
-                  children: [
-                    if (!widget.clayStyle)
-                      Positioned(
-                        left: _mapOffset(viewport).dx,
-                        top: _mapOffset(viewport).dy,
-                        width: _world.width,
-                        height: _world.height,
-                        child: Image.asset(
-                          'assets/optimized/park-scene-clay.png',
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                  ],
-                ),
+                child: const SizedBox.expand(),
               ),
             ),
             AnimatedBuilder(
@@ -413,73 +350,59 @@ class ParkJourneyMapState extends State<ParkJourneyMap> {
                 top: 4,
                 right: 4,
                 child: Container(
-                  decoration: widget.clayStyle ? parchmentDecoration : null,
-                  padding: widget.clayStyle
-                      ? const EdgeInsets.all(6)
-                      : EdgeInsets.zero,
+                  decoration: parchmentDecoration,
+                  padding: const EdgeInsets.all(6),
                   child: Material(
-                    color: widget.clayStyle
-                        ? Colors.transparent
-                        : AppColors.surface,
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(16),
-                    elevation: widget.clayStyle ? 0 : 2,
+                    elevation: 0,
                     child: Wrap(
                       direction: Axis.vertical,
                       children: [
                         IconButton(
                           tooltip: 'Zoom +',
                           onPressed: () => _zoom(1.4, viewport),
-                          icon: widget.clayStyle
-                              ? const ClayHudIcon(
-                                  ClayHudIconKind.zoomIn,
-                                  size: 26,
-                                  color: Color(0xff315a3c),
-                                )
-                              : const Icon(Icons.add),
+                          icon: const ClayHudIcon(
+                            ClayHudIconKind.zoomIn,
+                            size: 26,
+                            color: Color(0xff315a3c),
+                          ),
                         ),
                         IconButton(
                           tooltip: 'Zoom −',
                           onPressed: () => _zoom(1 / 1.4, viewport),
-                          icon: widget.clayStyle
-                              ? const ClayHudIcon(
-                                  ClayHudIconKind.zoomOut,
-                                  size: 26,
-                                  color: Color(0xff315a3c),
-                                )
-                              : const Icon(Icons.remove),
+                          icon: const ClayHudIcon(
+                            ClayHudIconKind.zoomOut,
+                            size: 26,
+                            color: Color(0xff315a3c),
+                          ),
                         ),
                         IconButton(
                           tooltip: 'Recentrer',
                           onPressed: () => _focus(viewport),
-                          icon: widget.clayStyle
-                              ? const ClayHudIcon(
-                                  ClayHudIconKind.recenter,
-                                  size: 26,
-                                  color: Color(0xff315a3c),
-                                )
-                              : const Icon(Icons.my_location),
+                          icon: const ClayHudIcon(
+                            ClayHudIconKind.recenter,
+                            size: 26,
+                            color: Color(0xff315a3c),
+                          ),
                         ),
                         IconButton(
                           tooltip: 'Vue du parc',
                           onPressed: () => _focus(viewport, overview: true),
-                          icon: widget.clayStyle
-                              ? const ClaySymbol(
-                                  Icons.route_rounded,
-                                  size: 26,
-                                  color: Color(0xff315a3c),
-                                )
-                              : const Icon(Icons.map_outlined),
+                          icon: const ClaySymbol(
+                            Icons.route_rounded,
+                            size: 26,
+                            color: Color(0xff315a3c),
+                          ),
                         ),
                         IconButton(
                           key: Key('${widget.keyPrefix}-level-list'),
                           tooltip: 'Liste des niveaux',
                           onPressed: _list,
-                          icon: widget.clayStyle
-                              ? const ClayMenuIcon(
-                                  ClayMenuIconKind.list,
-                                  size: 26,
-                                )
-                              : const Icon(Icons.format_list_numbered),
+                          icon: const ClayMenuIcon(
+                            ClayMenuIconKind.list,
+                            size: 26,
+                          ),
                         ),
                       ],
                     ),
@@ -519,9 +442,7 @@ class ParkJourneyMapState extends State<ParkJourneyMap> {
                 ? AppColors.success
                 : AppColors.deep,
             shape: CircleBorder(
-              side: widget.clayStyle
-                  ? const BorderSide(color: Color(0xffd9b076), width: 3)
-                  : BorderSide.none,
+              side: const BorderSide(color: Color(0xffd9b076), width: 3),
             ),
             elevation: 3,
             child: InkWell(
@@ -544,40 +465,19 @@ class ParkJourneyMapState extends State<ParkJourneyMap> {
                 height: 48,
                 child: Center(
                   child: group.length > 1 || unlocked
-                      ? widget.clayStyle
-                            ? ClayText(
-                                group.length > 1
-                                    ? '${group.length}'
-                                    : '${index + 1}',
-                                style: TextStyle(
-                                  fontSize: 19,
-                                  color: containsSelection
-                                      ? const Color(0xff315a3c)
-                                      : const Color(0xffffedcb),
-                                ),
-                              )
-                            : Text(
-                                group.length > 1
-                                    ? '${group.length}'
-                                    : '${index + 1}',
-                                style: TextStyle(
-                                  fontFamily: 'Nunito',
-                                  fontWeight: FontWeight.w900,
-                                  color: containsSelection
-                                      ? AppColors.deep
-                                      : Colors.white,
-                                ),
-                              )
-                      : widget.clayStyle
-                      ? const ClayMenuIcon(
+                      ? ClayText(
+                          group.length > 1 ? '${group.length}' : '${index + 1}',
+                          style: TextStyle(
+                            fontSize: 19,
+                            color: containsSelection
+                                ? const Color(0xff315a3c)
+                                : const Color(0xffffedcb),
+                          ),
+                        )
+                      : const ClayMenuIcon(
                           ClayMenuIconKind.lock,
                           size: 23,
                           onDark: true,
-                        )
-                      : const Icon(
-                          Icons.lock_rounded,
-                          color: Colors.white,
-                          size: 20,
                         ),
                 ),
               ),
@@ -789,7 +689,7 @@ class _ClayScrollSprite extends StatelessWidget {
 class ParkSceneBackdrop extends StatelessWidget {
   const ParkSceneBackdrop({required this.imageRect, super.key});
   final Rect imageRect;
-  static final Future<ui.Image> _image = _load();
+  static final Future<ui.Image> ready = _load();
 
   static Future<ui.Image> _load() async {
     final data = await rootBundle.load(
@@ -803,7 +703,7 @@ class ParkSceneBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => FutureBuilder<ui.Image>(
-    future: _image,
+    future: ready,
     builder: (context, snapshot) => snapshot.hasData
         ? CustomPaint(painter: _ParkScenePainter(snapshot.data!, imageRect))
         : const ColoredBox(color: Color(0xffc77b2a)),

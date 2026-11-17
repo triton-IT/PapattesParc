@@ -109,6 +109,7 @@ const _sizes = [
 ];
 
 Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
+  await loadParkScene(tester);
   await tester.pumpWidget(const SizedBox.shrink());
   await tester.pump();
   tester.view.devicePixelRatio = 1;

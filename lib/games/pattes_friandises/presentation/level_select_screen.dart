@@ -35,14 +35,12 @@ class Match3LevelSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CampaignLevelSelectScreen(
       title: 'ALIGN’ANIMAUX',
-      tagline: 'Aligne · Combine · Protège',
-      icon: Icons.pets_rounded,
+
       helpKind: GameHelpKind.match3,
       keyPrefix: 'match3',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
-      completedCount: store.completedCount,
-      progressLabel: 'HABITATS PRÉSERVÉS',
+
       missionBuilder: (index) {
         final mission = levels[index];
         return CampaignMission(

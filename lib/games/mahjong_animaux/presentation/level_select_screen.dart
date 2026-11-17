@@ -35,14 +35,12 @@ class MahjongLevelSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CampaignLevelSelectScreen(
       title: 'MAHJONG DES ANIMAUX',
-      tagline: 'Observe · Libère · Réunis',
-      icon: Icons.view_module_rounded,
+
       helpKind: GameHelpKind.mahjong,
       keyPrefix: 'mahjong',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
-      completedCount: store.completedCount,
-      progressLabel: 'DUOS RÉUNIS',
+
       missionBuilder: (index) {
         final mission = levels[index];
         return CampaignMission(

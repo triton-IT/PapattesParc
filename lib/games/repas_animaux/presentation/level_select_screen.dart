@@ -35,14 +35,12 @@ class RepasLevelSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CampaignLevelSelectScreen(
       title: 'LE REPAS DES ANIMAUX',
-      tagline: 'Observe · Planifie · Nourris',
-      icon: Icons.restaurant_rounded,
+
       helpKind: GameHelpKind.repasAnimaux,
       keyPrefix: 'repas',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
-      completedCount: store.completedCount,
-      progressLabel: 'REPAS DISTRIBUÉS',
+
       missionBuilder: (index) {
         final mission = levels[index];
         return CampaignMission(

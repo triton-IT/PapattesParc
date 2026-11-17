@@ -35,14 +35,12 @@ class SudokuLevelSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CampaignLevelSelectScreen(
       title: 'LE DÉFI DES PAPATTES',
-      tagline: 'Observe · Raisonne · Replace',
-      icon: Icons.grid_view_rounded,
+
       helpKind: GameHelpKind.sudoku,
       keyPrefix: 'sudoku',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
-      completedCount: store.completedCount,
-      progressLabel: 'PARADE PRÊTE',
+
       missionBuilder: (index) {
         final mission = levels[index];
         return CampaignMission(

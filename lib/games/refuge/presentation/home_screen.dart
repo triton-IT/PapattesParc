@@ -37,16 +37,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CampaignLevelSelectScreen(
-    clayStyle: true,
     title: 'BALISES DU REFUGE',
-    tagline: 'Observe · Déduis · Protège',
-    icon: Icons.grid_on_rounded,
+
     helpKind: GameHelpKind.refuge,
     keyPrefix: 'refuge',
     itemCount: levels.length,
     unlockedLevel: store.unlockedLevel,
-    completedCount: store.completedCount,
-    progressLabel: 'PARC EN SÉCURITÉ',
+
     missionBuilder: (index) {
       final level = levels[index];
       final record = store.bestTime(level);
