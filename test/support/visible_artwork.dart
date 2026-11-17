@@ -3,6 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:papatte_parc/shared/artwork.dart';
 import 'package:papatte_parc/shared/game_stage_layout.dart';
 import 'package:papatte_parc/shared/wooden_sign.dart';
+import 'package:papatte_parc/shared/park_journey_map.dart';
+
+Future<void> loadParkScene(WidgetTester tester) async {
+  await tester.runAsync(() async => ParkSceneBackdrop.ready);
+}
 
 /// Goldens describe the loaded screen rather than image decoding races.
 Future<void> loadVisibleArtwork(WidgetTester tester) async {
@@ -12,7 +17,9 @@ Future<void> loadVisibleArtwork(WidgetTester tester) async {
       .toSet();
   final context = tester.element(find.byType(MaterialApp));
   final hasResultPanel = find.byType(GameResultPanel).evaluate().isNotEmpty;
+  final hasParkScene = find.byType(ParkSceneBackdrop).evaluate().isNotEmpty;
   await tester.runAsync(() async {
+    if (hasParkScene) await ParkSceneBackdrop.ready;
     if (hasResultPanel) {
       await precacheArtwork(
         const ResizeImage(

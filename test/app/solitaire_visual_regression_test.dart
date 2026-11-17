@@ -156,7 +156,7 @@ void main() {
       tester.getSize(find.byKey(const Key('solitaire-level-grid'))).height,
       greaterThan(size.height * .6),
     );
-    expect(find.text('JOUER'), findsOneWidget);
+    expect(find.byKey(const Key('campaign-play-selected')), findsOneWidget);
   });
 }
 
@@ -169,6 +169,7 @@ const _sizes = [
 ];
 
 Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
+  await loadParkScene(tester);
   await tester.pumpWidget(const SizedBox.shrink());
   await tester.pump();
   tester.view.devicePixelRatio = 1;

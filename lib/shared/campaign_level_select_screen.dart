@@ -4,7 +4,6 @@ import 'clay_text.dart';
 import 'clay_hud_icon.dart';
 import 'wooden_sign.dart';
 import 'package:flutter/material.dart';
-import 'app_theme.dart';
 import 'campaign_selection_controller.dart';
 import 'game_help.dart';
 import 'park_journey_map.dart';
@@ -35,14 +34,10 @@ class CampaignMission {
 class CampaignLevelSelectScreen extends StatefulWidget {
   const CampaignLevelSelectScreen({
     required this.title,
-    required this.tagline,
-    required this.icon,
     required this.helpKind,
     required this.keyPrefix,
     required this.itemCount,
     required this.unlockedLevel,
-    required this.completedCount,
-    required this.progressLabel,
     required this.missionBuilder,
     required this.labelBuilder,
     required this.musicEnabled,
@@ -52,16 +47,13 @@ class CampaignLevelSelectScreen extends StatefulWidget {
     required this.onCustom,
     required this.onToggleMusic,
     required this.onToggleEffects,
-    this.clayStyle = false,
     this.onQuit,
     this.onSelectionChanged,
     super.key,
   });
-  final bool clayStyle;
-  final String title, tagline, keyPrefix, progressLabel;
-  final IconData icon;
+  final String title, keyPrefix;
   final GameHelpKind helpKind;
-  final int itemCount, unlockedLevel, completedCount;
+  final int itemCount, unlockedLevel;
   final CampaignMission Function(int index) missionBuilder;
   final String Function(int index) labelBuilder;
   final bool musicEnabled, effectsEnabled;
@@ -89,11 +81,9 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
     );
     // The retained camera may not emit a change when this screen is remounted.
     // Rebuild once after layout so the backdrop can locate the new map viewport.
-    if (widget.clayStyle) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() {});
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -117,52 +107,44 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
       key: _sceneRootKey,
       fit: StackFit.expand,
       children: [
-        if (widget.clayStyle)
-          AnimatedBuilder(
-            animation: _selection.camera,
-            builder: (context, child) {
-              final viewport = _selection.viewport;
-              final mapBox =
-                  _mapViewKey.currentContext?.findRenderObject() as RenderBox?;
-              final rootBox =
-                  _sceneRootKey.currentContext?.findRenderObject()
-                      as RenderBox?;
-              if (viewport == null ||
-                  viewport.isEmpty ||
-                  mapBox == null ||
-                  rootBox == null ||
-                  !mapBox.hasSize ||
-                  !rootBox.hasSize) {
-                return child!;
-              }
-              final origin = mapBox.localToGlobal(
-                Offset.zero,
-                ancestor: rootBox,
-              );
-              final fit = math.min(
-                viewport.width / 1491,
-                viewport.height / 1055,
-              );
-              final sceneWidth = math.max(1491.0, viewport.width / fit);
-              final sceneHeight = math.max(1055.0, viewport.height / fit);
-              final matrix = _selection.camera.value;
-              final scale = matrix.getMaxScaleOnAxis();
-              final mapOffset = Offset(
-                (sceneWidth - 1491) / 2,
-                (sceneHeight - 1055) / 2,
-              );
-              final imageOrigin =
-                  origin +
-                  Offset(matrix.getTranslation().x, matrix.getTranslation().y) +
-                  mapOffset * scale;
-              return ParkSceneBackdrop(
-                imageRect:
-                    (imageOrigin - Offset(147 * scale, 90 * scale)) &
-                    Size(2215 * scale, 1246 * scale),
-              );
-            },
-            child: const ColoredBox(color: Color(0xffc77b2a)),
-          ),
+        AnimatedBuilder(
+          animation: _selection.camera,
+          builder: (context, child) {
+            final viewport = _selection.viewport;
+            final mapBox =
+                _mapViewKey.currentContext?.findRenderObject() as RenderBox?;
+            final rootBox =
+                _sceneRootKey.currentContext?.findRenderObject() as RenderBox?;
+            if (viewport == null ||
+                viewport.isEmpty ||
+                mapBox == null ||
+                rootBox == null ||
+                !mapBox.hasSize ||
+                !rootBox.hasSize) {
+              return child!;
+            }
+            final origin = mapBox.localToGlobal(Offset.zero, ancestor: rootBox);
+            final fit = math.min(viewport.width / 1491, viewport.height / 1055);
+            final sceneWidth = math.max(1491.0, viewport.width / fit);
+            final sceneHeight = math.max(1055.0, viewport.height / fit);
+            final matrix = _selection.camera.value;
+            final scale = matrix.getMaxScaleOnAxis();
+            final mapOffset = Offset(
+              (sceneWidth - 1491) / 2,
+              (sceneHeight - 1055) / 2,
+            );
+            final imageOrigin =
+                origin +
+                Offset(matrix.getTranslation().x, matrix.getTranslation().y) +
+                mapOffset * scale;
+            return ParkSceneBackdrop(
+              imageRect:
+                  (imageOrigin - Offset(147 * scale, 90 * scale)) &
+                  Size(2215 * scale, 1246 * scale),
+            );
+          },
+          child: const ColoredBox(color: Color(0xffc77b2a)),
+        ),
         SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -179,8 +161,7 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
                     unlockedLevel: widget.unlockedLevel,
                     keyPrefix: widget.keyPrefix,
                     labelBuilder: widget.labelBuilder,
-                    clayStyle: widget.clayStyle,
-                    showControls: !widget.clayStyle,
+                    showControls: false,
                     controller: _selection,
                     onSelect: _select,
                   ),
@@ -188,13 +169,11 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
               );
               final mission = AnimatedBuilder(
                 animation: _selection,
-                builder: (context, _) => widget.clayStyle
-                    ? _clayMission(context, large: large)
-                    : _mission(context, large: large),
+                builder: (context, _) => _clayMission(context, large: large),
               );
               return Column(
                 children: [
-                  widget.clayStyle ? _clayHeader(context) : _header(context),
+                  _clayHeader(context),
                   Expanded(
                     child: landscape
                         ? Row(
@@ -514,180 +493,6 @@ class _CampaignLevelSelectScreenState extends State<CampaignLevelSelectScreen> {
                 icon: const ClayMenuIcon(ClayMenuIconKind.list, size: 26),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _header(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            IconButton(
-              key: Key('${widget.keyPrefix}-back-to-games'),
-              tooltip: 'Choisir un jeu',
-              onPressed: widget.onBack,
-              icon: const Icon(Icons.arrow_back_rounded),
-            ),
-            const SizedBox(width: 4),
-            Icon(widget.icon, color: AppColors.primary),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    widget.tagline,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-            PopupMenuButton<String>(
-              tooltip: 'Réglages',
-              onSelected: (value) {
-                switch (value) {
-                  case 'music':
-                    widget.onToggleMusic();
-                  case 'effects':
-                    widget.onToggleEffects();
-                  case 'quit':
-                    widget.onQuit?.call();
-                }
-              },
-              itemBuilder: (_) => [
-                CheckedPopupMenuItem(
-                  value: 'music',
-                  checked: widget.musicEnabled,
-                  child: const Text('Musique'),
-                ),
-                CheckedPopupMenuItem(
-                  value: 'effects',
-                  checked: widget.effectsEnabled,
-                  child: const Text('Effets sonores'),
-                ),
-                if (widget.onQuit != null)
-                  const PopupMenuItem(
-                    value: 'quit',
-                    child: Text('Quitter l’application'),
-                  ),
-              ],
-            ),
-            GameHelpButton(kind: widget.helpKind, compact: true),
-          ],
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: LinearProgressIndicator(
-                key: Key('${widget.keyPrefix}-journey-progress'),
-                value: widget.completedCount / widget.itemCount,
-                semanticsLabel:
-                    '${widget.completedCount} niveaux terminés sur ${widget.itemCount}',
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              '${(widget.completedCount * 100 / widget.itemCount).round()} %',
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-  Widget _mission(BuildContext context, {required bool large}) {
-    final index = _selection.selectedIndex.clamp(0, widget.itemCount - 1);
-    final mission = widget.missionBuilder(index);
-    return Card(
-      margin: const EdgeInsets.all(8),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (large)
-            SizedBox(
-              height: 150,
-              child: ArtworkImage(mission.artAsset, fit: BoxFit.cover),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'MISSION ${index + 1} · ${mission.completed ? 'TERMINÉE' : 'DÉBLOQUÉE'}',
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-                Text(
-                  mission.title,
-                  key: const Key('campaign-next-level-title'),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                FilledButton.icon(
-                  key: const Key('campaign-play-selected'),
-                  onPressed: index < widget.unlockedLevel
-                      ? () => widget.onPlay(index)
-                      : null,
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('JOUER'),
-                ),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: [
-                    TextButton(
-                      key: const Key('campaign-continue'),
-                      onPressed: () => widget.onPlay(widget.unlockedLevel - 1),
-                      child: const Text('CONTINUER'),
-                    ),
-                    TextButton.icon(
-                      key: Key('${widget.keyPrefix}-open-custom'),
-                      onPressed: widget.onCustom,
-                      icon: const Icon(Icons.grid_view_rounded),
-                      label: const Text('PARTIE LIBRE'),
-                    ),
-                  ],
-                ),
-                ExpansionTile(
-                  tilePadding: EdgeInsets.zero,
-                  title: const Text('Détails et record'),
-                  children: [
-                    Text(mission.subtitle),
-                    Text(
-                      mission.difficultyLabel == null
-                          ? 'Défi : ${mission.stats.take(2).map((stat) => '${stat.value} ${stat.label}').join(' · ')}'
-                          : 'Difficulté : ${mission.difficultyLabel}',
-                    ),
-                    Text(mission.bestResult),
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 8,
-                      children: [
-                        for (final stat in mission.stats)
-                          Text('${stat.value} ${stat.label}'),
-                      ],
-                    ),
-                  ],
-                ),
-                ParkJourneyLegend(
-                  key: Key('${widget.keyPrefix}-journey-legend'),
-                ),
-              ],
-            ),
           ),
         ],
       ),

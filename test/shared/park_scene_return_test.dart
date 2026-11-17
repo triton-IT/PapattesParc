@@ -26,16 +26,13 @@ void main() {
                   child: const Text('Retour du jeu'),
                 )
               : CampaignLevelSelectScreen(
-                  clayStyle: true,
                   title: 'BALISES DU REFUGE',
-                  tagline: '',
-                  icon: Icons.pets,
+
                   helpKind: GameHelpKind.refuge,
                   keyPrefix: 'backdrop-return',
                   itemCount: 1,
                   unlockedLevel: 1,
-                  completedCount: 0,
-                  progressLabel: '',
+
                   missionBuilder: (_) => const CampaignMission(
                     title: 'Mission',
                     subtitle: 'Animaux',

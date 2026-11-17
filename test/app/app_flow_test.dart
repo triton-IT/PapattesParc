@@ -52,13 +52,9 @@ void main() {
     await tester.pump();
 
     expect(find.byKey(const Key('match3-level-grid')), findsOneWidget);
-    expect(find.byKey(const Key('match3-journey-progress')), findsOneWidget);
+    expect(find.byKey(const Key('campaign-mission-panel')), findsOneWidget);
     expect(find.byKey(const Key('match3-journey-legend')), findsOneWidget);
-    expect(find.text('Aligne · Combine · Protège'), findsOneWidget);
     expect(find.byKey(const Key('campaign-continue')), findsOneWidget);
-    if (defaultTargetPlatform == TargetPlatform.windows) {
-      expect(find.byKey(const Key('match3-quit-app')), findsOneWidget);
-    }
     await openLevel(tester, 'match3', 1);
     await tester.pump();
 
@@ -70,7 +66,7 @@ void main() {
     await tester.tap(find.byKey(const Key('game-mahjong-animaux')));
     await tester.pump();
     expect(find.byKey(const Key('mahjong-level-grid')), findsOneWidget);
-    expect(find.byKey(const Key('mahjong-journey-progress')), findsOneWidget);
+    expect(find.byKey(const Key('campaign-mission-panel')), findsOneWidget);
     expect(find.byKey(const Key('mahjong-journey-legend')), findsOneWidget);
     await openLevel(tester, 'mahjong', 1);
     await tester.pump();
@@ -81,7 +77,7 @@ void main() {
     await tester.tap(find.byKey(const Key('game-sudoku-animaux')));
     await tester.pump();
     expect(find.byKey(const Key('sudoku-level-grid')), findsOneWidget);
-    expect(find.byKey(const Key('sudoku-journey-progress')), findsOneWidget);
+    expect(find.byKey(const Key('campaign-mission-panel')), findsOneWidget);
     expect(find.byKey(const Key('sudoku-journey-legend')), findsOneWidget);
     await openLevel(tester, 'sudoku', 1);
     await tester.pump();
@@ -106,9 +102,8 @@ void main() {
     await tester.tap(find.byKey(const Key('game-repas-animaux')));
     await tester.pump();
     expect(find.byKey(const Key('repas-level-grid')), findsOneWidget);
-    expect(find.byKey(const Key('repas-journey-progress')), findsOneWidget);
+    expect(find.byKey(const Key('campaign-mission-panel')), findsOneWidget);
     expect(find.byKey(const Key('repas-journey-legend')), findsOneWidget);
-    expect(find.text('Observe · Planifie · Nourris'), findsOneWidget);
     expect(find.byKey(const Key('campaign-continue')), findsOneWidget);
     final firstRepasLevel = buildRepasCampaign(levels).first;
     await openLevel(tester, 'repas', 1);
@@ -137,11 +132,7 @@ void main() {
     await tester.tap(find.byKey(const Key('game-numberlink')));
     await tester.pump();
     expect(find.byKey(const Key('numberlink-level-grid')), findsOneWidget);
-    expect(
-      find.byKey(const Key('numberlink-journey-progress')),
-      findsOneWidget,
-    );
-    expect(find.text('Relie · Guide · Protège'), findsOneWidget);
+    expect(find.byKey(const Key('campaign-mission-panel')), findsOneWidget);
     await expectLockedLevel(tester, 'numberlink', 2);
     await openLevel(tester, 'numberlink', 1);
     await tester.pump();
@@ -200,7 +191,6 @@ void main() {
     await tester.tap(find.byKey(const Key('game-animal-sort')));
     await tester.pump();
     expect(find.byKey(const Key('animal-sort-level-grid')), findsOneWidget);
-    expect(find.text('Classe · Regroupe · Prépare'), findsOneWidget);
     await openLevel(tester, 'animal-sort', 1);
     await tester.pump();
     expect(find.byKey(const Key('animal-sort-board')), findsOneWidget);
@@ -241,10 +231,7 @@ void main() {
             .onTap!();
         await tester.pump();
         expect(find.byKey(const Key('solitaire-level-grid')), findsOneWidget);
-        expect(
-          find.byKey(const Key('solitaire-journey-progress')),
-          findsOneWidget,
-        );
+        expect(find.byKey(const Key('campaign-mission-panel')), findsOneWidget);
         expect(
           find.byKey(const Key('solitaire-journey-legend')),
           findsOneWidget,

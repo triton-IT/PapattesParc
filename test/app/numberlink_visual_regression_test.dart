@@ -175,6 +175,7 @@ Future<void> _pump(
   Widget screen,
   Set<String> assets,
 ) async {
+  await loadParkScene(tester);
   await tester.pumpWidget(const SizedBox.shrink());
   await tester.pump();
   tester.view.devicePixelRatio = 1;

@@ -46,13 +46,17 @@ Future<void> settleGeneration(WidgetTester tester) async {
 }
 
 Future<void> openLevel(WidgetTester tester, String prefix, int level) async {
+  await tester.ensureVisible(find.byKey(Key('$prefix-level-list')));
   await tester.tap(find.byKey(Key('$prefix-level-list')));
   await tester.pumpAndSettle();
   final tile = find.byKey(Key('$prefix-list-level-$level'));
   await tester.scrollUntilVisible(
     tile,
     200,
-    scrollable: find.byType(Scrollable).last,
+    scrollable: find.descendant(
+      of: find.byType(ListView).last,
+      matching: find.byType(Scrollable),
+    ),
   );
   await tester.tap(tile);
   await tester.pumpAndSettle();
@@ -67,13 +71,17 @@ Future<void> expectLockedLevel(
   String prefix,
   int level,
 ) async {
+  await tester.ensureVisible(find.byKey(Key('$prefix-level-list')));
   await tester.tap(find.byKey(Key('$prefix-level-list')));
   await tester.pumpAndSettle();
   final tile = find.byKey(Key('$prefix-list-level-$level'));
   await tester.scrollUntilVisible(
     tile,
     150,
-    scrollable: find.byType(Scrollable).last,
+    scrollable: find.descendant(
+      of: find.byType(ListView).last,
+      matching: find.byType(Scrollable),
+    ),
   );
   expect(tester.widget<ListTile>(tile).enabled, isFalse);
   Navigator.of(tester.element(tile)).pop();

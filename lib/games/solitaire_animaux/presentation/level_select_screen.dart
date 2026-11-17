@@ -35,14 +35,12 @@ class SolitaireLevelSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CampaignLevelSelectScreen(
       title: 'SOLITAIRE DES ANIMAUX',
-      tagline: 'Révèle · Range · Complète',
-      icon: Icons.style_rounded,
+
       helpKind: GameHelpKind.solitaire,
       keyPrefix: 'solitaire',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
-      completedCount: store.completedCount,
-      progressLabel: 'CARTES RANGÉES',
+
       missionBuilder: (index) {
         final mission = levels[index];
         return CampaignMission(

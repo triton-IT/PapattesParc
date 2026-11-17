@@ -35,14 +35,12 @@ class NumberlinkLevelSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CampaignLevelSelectScreen(
       title: 'SENTIERS SAUVAGES',
-      tagline: 'Relie · Guide · Protège',
-      icon: Icons.route_rounded,
+
       helpKind: GameHelpKind.numberlink,
       keyPrefix: 'numberlink',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
-      completedCount: store.completedCount,
-      progressLabel: 'SENTIERS TERMINÉS',
+
       missionBuilder: (index) {
         final mission = levels[index];
         return CampaignMission(

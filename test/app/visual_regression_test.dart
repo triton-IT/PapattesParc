@@ -490,6 +490,7 @@ const _sizes = [
 ];
 
 Future<void> _pump(WidgetTester tester, Size size, Widget screen) async {
+  await loadParkScene(tester);
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
   addTearDown(tester.view.reset);

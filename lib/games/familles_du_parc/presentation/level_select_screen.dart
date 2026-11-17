@@ -35,14 +35,12 @@ class AnimalSortLevelSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CampaignLevelSelectScreen(
       title: 'RÉSERVES DU PARC',
-      tagline: 'Classe · Regroupe · Prépare',
-      icon: Icons.inventory_2_rounded,
+
       helpKind: GameHelpKind.animalSort,
       keyPrefix: 'animal-sort',
       itemCount: levels.length,
       unlockedLevel: store.unlockedLevel,
-      completedCount: store.completedCount,
-      progressLabel: 'REPAS CLASSÉS',
+
       missionBuilder: (index) {
         final mission = levels[index];
         return CampaignMission(

@@ -20,16 +20,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: CampaignLevelSelectScreen(
-          clayStyle: true,
           title: 'BALISES DU REFUGE',
-          tagline: '',
-          icon: Icons.pets,
+
           helpKind: GameHelpKind.refuge,
           keyPrefix: 'clay-contract',
           itemCount: 3,
           unlockedLevel: 2,
-          completedCount: 1,
-          progressLabel: '',
+
           missionBuilder: (_) => const CampaignMission(
             title: 'Plaine sud-américaine',
             subtitle:
@@ -110,7 +107,6 @@ void main() {
       MaterialApp(
         home: Scaffold(
           body: ParkJourneyMap(
-            clayStyle: true,
             itemCount: 45,
             unlockedLevel: 45,
             keyPrefix: 'clay-scroll',
